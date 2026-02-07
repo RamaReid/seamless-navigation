@@ -48,6 +48,8 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
       { href: '/proyectos/jonohause', img: '/img/jonohause/jonohause-exterior-hero.png' },
       { href: '/proyectos/cedahause', img: '/img/cedahause/cedahause-exterior-hero-este.png' },
       { href: '/proyectos/markhause', img: '/img/markhause/markhause-exterior-hero.png' },
+      { href: '/proyectos/scohause', img: '/img/scohause/scohause-exterior-hero.png' },
+      { href: '/proyectos/vidahause', img: '/img/vidahause/vidahause-exterior-hero.png' },
     ];
 
     return (
