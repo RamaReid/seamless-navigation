@@ -59,10 +59,11 @@ body {
 }
 
 /* Spread layout: a single foto cubre dos páginas enfrentadas */
-/* auto 100% = altura llena el contenedor, ancho se ajusta manteniendo proporción */
+/* 200% auto = ancho cubre el spread (2 páginas), alto se ajusta manteniendo proporción */
+/* Si la foto es más alta que el contenedor, se recorta arriba/abajo (behavior tipo cover) */
 .page.spread .page-content {
     background-repeat: no-repeat;
-    background-size: auto 100%;
+    background-size: 200% auto;
     padding: 0;
 }
 
