@@ -328,7 +328,215 @@ body.hero-visible #plano-bg {
 }
 
 /* ======================================================
-   LOGO HEADER STYLES
+   HEADER (Arquitectura y Firma) - matching original home.css
+====================================================== */
+.gd-header {
+  position: fixed;
+  top: 5px;
+  left: 40px;
+  right: 40px;
+  z-index: 40;
+  transform: translateY(-130%);
+  opacity: 0;
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease;
+  pointer-events: none;
+}
+
+body.header-visible .gd-header {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.navbar {
+  max-width: 1375px;
+  margin: 40px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 35px 0 15px;
+  background: rgba(15, 19, 32, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.brand-link:hover .brand-logo {
+  filter: brightness(1.3);
+  transform: scale(1.1);
+}
+
+.brand-logo {
+  width: 100px;
+  height: auto;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+/* Estilos técnicos del Logo (Header version) */
+.gd-header .brand-logo .logoL0 {
+  stroke: hsl(300 1% 77%);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 3 1 3;
+  fill: none;
+}
+
+.gd-header .brand-logo .logoL1,
+.gd-header .brand-logo .logoL2 {
+  stroke: hsl(300 1% 77%);
+  stroke-width: 0.75;
+  fill: none;
+}
+
+.gd-header .brand-logo .logoL3 {
+  stroke: hsl(360 100% 50%);
+  stroke-width: 0.9;
+  fill: none;
+}
+
+.gd-header .brand-logo .logoL4 {
+  stroke: hsl(360 100% 50%);
+  stroke-width: 1;
+  fill: none;
+}
+
+.gd-header .brand-logo .logoL5 {
+  stroke: hsl(229 66% 48%);
+  stroke-width: 1;
+  fill: none;
+}
+
+.brand-tagline {
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(300 1% 77%);
+  white-space: nowrap;
+}
+
+/* NAVEGACIÓN */
+.nav-area {
+  display: flex;
+  align-items: center;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list a {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: hsl(300 1% 77%);
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.nav-list a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.7);
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+
+.nav-list a:hover {
+  transform: scale(1.1);
+  color: #ffffff;
+}
+
+.nav-list a:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-toggle {
+  display: none;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.nav-toggle span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: white;
+}
+
+/* Mobile navigation */
+@media (max-width: 768px) {
+  .gd-header {
+    left: 20px;
+    right: 20px;
+  }
+
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-area {
+    position: fixed;
+    top: 100px;
+    left: 20px;
+    right: 20px;
+    background: rgba(15, 19, 32, 0.95);
+    padding: 20px;
+    border-radius: 20px;
+    display: none;
+  }
+
+  body.nav-open .nav-area {
+    display: flex;
+  }
+
+  .nav-list {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .brand-tagline {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .brand-tagline {
+    display: none;
+  }
+}
+
+/* ======================================================
+   LOGO HEADER STYLES (standalone)
 ====================================================== */
 
 .brand-logo .logoL0 {
@@ -365,6 +573,7 @@ body.hero-visible #plano-bg {
 
 /* ======================================================
    HERO REVISTA / FLIP-BOOK
+   (Ported exactly from original revista.css + home.css)
 ====================================================== */
 
 .hero-revista-section {
@@ -377,6 +586,14 @@ body.hero-visible #plano-bg {
   padding: 25px;
   box-sizing: border-box;
   z-index: 30;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 2.5s ease-out;
+}
+
+body.hero-visible .hero-revista-section {
+  opacity: 1;
+  visibility: visible;
 }
 
 .hero-revista-shell {
@@ -387,41 +604,41 @@ body.hero-visible #plano-bg {
   overflow: hidden;
 }
 
-/* PageFlip styles */
+/* PageFlip styles - matching original revista.css */
 .flip-book {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   box-shadow: none;
   overflow: hidden;
   position: relative;
 }
 
 .flip-book .page {
-  background-color: hsl(var(--gd-background)) !important;
-  border: none !important;
+  /* Original revista.css page styling */
+  background-color: #fdfdfd;
+  border: 1px solid #c2c2c2;
   text-align: center;
   padding: 0;
+  font-size: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
   width: auto;
-  height: 100%;
+  height: 100vh;
   position: relative;
-  overflow: hidden;
 }
 
-/* Override PageFlip library default styles */
-.flip-book .stf__block {
-  background-color: hsl(var(--gd-background)) !important;
-  border: none !important;
+.flip-book .page[data-density="hard"] {
+  background-color: #e3e3e3;
+  font-weight: bold;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.flip-book .stf__item {
-  background-color: hsl(var(--gd-background)) !important;
-  border: none !important;
-}
-
+/* Page content - internal presentation */
 .flip-book .page-content {
   width: 100%;
   height: 100%;
@@ -429,54 +646,143 @@ body.hero-visible #plano-bg {
   align-items: center;
   justify-content: center;
   text-align: center;
+  padding: 24px;
   box-sizing: border-box;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
+  /* Smooth transition for ghosting fix */
+  transition: transform 280ms ease, opacity 280ms ease;
   will-change: transform, opacity;
-
-  /* Reduce flicker/seams during clip-path + 3D transforms */
-  backface-visibility: hidden;
-  transform: translateZ(0);
 }
 
+/* Hover effect on page */
+.flip-book .page:focus .page-content,
+.flip-book .page:hover .page-content {
+  transform: scale(1.01);
+}
+
+/* Spread layout: single image covers two facing pages */
 .flip-book .page.spread .page-content {
   background-repeat: no-repeat;
-  /* Slight bleed avoids a visible seam at the fold during the flip */
-  background-size: 202% 100%;
+  background-size: 200% auto;
+  padding: 0;
+}
+
+/* Mobile carousel */
+.carousel {
   width: 100%;
-  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
-/* Ensure pages fill their container completely */
-.flip-book .stf__parent {
-  background: transparent !important;
+.carousel-track {
+  display: flex;
+  gap: 16px;
+  scroll-snap-type: x mandatory;
+  padding: 0 16px;
 }
 
-.flip-book .stf__wrapper {
-  background: transparent !important;
+.slide {
+  flex: 0 0 85vw;
+  max-height: 75vh;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  scroll-snap-align: center;
 }
 
-/* Remove any shadow or border during flip animation */
-.flip-book .--left,
-.flip-book .--right,
-.flip-book .stf__hardShadow,
-.flip-book .stf__softShadow {
-  background-color: transparent !important;
-  border: none !important;
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+@media (max-width: 1199px) {
+  .desktop-only { display: none; }
+  .mobile-only { display: block; }
 }
 
-/* Make the entire page container dark to hide borders during animation */
-#mi-revista {
-  background-color: hsl(var(--gd-background));
+/* ======================================================
+   HOUSE HERO CAROUSEL CONTROLS
+====================================================== */
+
+.house-hero-carousel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
 }
 
-/* Keep .hero-revista-shell styling (glass) defined above; don't override here */
+.house-hero-control {
+  position: absolute;
+  top: 68%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(15, 19, 32, 0.55);
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: 0.12em;
+  text-transform: none;
+  font-size: 0.68rem;
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+  opacity: 0.7;
+  cursor: pointer;
+}
 
-/* Ensure smooth flip without visible edges */
-.flip-book .page::before,
-.flip-book .page::after {
-  display: none;
+.house-hero-control:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.04);
+  background: rgba(15, 19, 32, 0.75);
+}
+
+.house-hero-prev {
+  left: 22px;
+}
+
+.house-hero-next {
+  right: 22px;
+}
+
+.house-hero-arrow {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.house-hero-label {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .house-hero-control {
+    top: auto;
+    bottom: 22px;
+    transform: translateY(0);
+    font-size: 0.6rem;
+  }
+
+  .house-hero-prev {
+    left: 16px;
+  }
+
+  .house-hero-next {
+    right: 16px;
+  }
+
+  .house-hero-control:hover {
+    transform: translateY(0) scale(1.04);
+  }
 }
 
 /* ======================================================
