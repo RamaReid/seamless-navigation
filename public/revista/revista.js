@@ -1,76 +1,5 @@
 // Inicialización de PageFlip (versión estable + fix de ghosting)
-// Ported from original GDWeb/js/revista/revista.js
-
 document.addEventListener('DOMContentLoaded', function () {
-
-    // =======================================
-    // DETECTAR ASPECT RATIO DE IMÁGENES Y APLICAR CLASES
-    // =======================================
-    const detectImageAspectRatios = () => {
-        const spreads = document.querySelectorAll('.page.spread');
-        const processed = new Set();
-        
-        spreads.forEach(page => {
-            const content = page.querySelector('.page-content');
-            if (!content) return;
-            
-            const style = window.getComputedStyle(content);
-            const bgImage = style.backgroundImage;
-            if (!bgImage || bgImage === 'none') return;
-            
-            // Extraer URL de la imagen
-            const urlMatch = bgImage.match(/url\(["']?([^"')]+)["']?\)/);
-            if (!urlMatch) return;
-            const imageUrl = urlMatch[1];
-            
-            // Solo procesar cada imagen una vez
-            if (processed.has(imageUrl)) {
-                // Copiar clase del spread que ya procesamos
-                const spreadNum = page.id.match(/spread-(\d+)/)?.[1];
-                if (spreadNum) {
-                    const sibling = document.querySelector(`#spread-${spreadNum}-left, #spread-${spreadNum}-right`);
-                    if (sibling && sibling !== page) {
-                        if (sibling.classList.contains('--wide')) page.classList.add('--wide');
-                        if (sibling.classList.contains('--tall')) page.classList.add('--tall');
-                    }
-                }
-                return;
-            }
-            processed.add(imageUrl);
-            
-            // Cargar imagen para detectar dimensiones
-            const img = new Image();
-            img.onload = function() {
-                const imgAspect = this.width / this.height;
-                // Aspect ratio del spread: 2 páginas = viewport width / height
-                const spreadAspect = (window.innerWidth) / window.innerHeight;
-                
-                // Buscar ambas páginas del spread
-                const spreadNum = page.id.match(/spread-(\d+)/)?.[1];
-                if (!spreadNum) return;
-                
-                const leftPage = document.getElementById(`spread-${spreadNum}-left`);
-                const rightPage = document.getElementById(`spread-${spreadNum}-right`);
-                
-                if (imgAspect > spreadAspect) {
-                    // Imagen panorámica: usar alto como base
-                    leftPage?.classList.add('--wide');
-                    rightPage?.classList.add('--wide');
-                } else {
-                    // Imagen más vertical: usar ancho como base
-                    leftPage?.classList.add('--tall');
-                    rightPage?.classList.add('--tall');
-                }
-            };
-            img.src = imageUrl;
-        });
-    };
-    
-    // Ejecutar detección
-    detectImageAspectRatios();
-    
-    // Re-detectar en resize (por si cambia el aspect ratio del viewport)
-    window.addEventListener('resize', detectImageAspectRatios);
 
     // =======================================
     // AUTO HOVER EN ESQUINA (SIMULA HOVER REAL)
@@ -124,28 +53,52 @@ document.addEventListener('DOMContentLoaded', function () {
             cancelAnimationFrame(autoCornerState.rafId);
             autoCornerState.rafId = null;
         }
+        const container = document.getElementById('mi-revista');
+        if (autoCornerState.container) {
+            const rect = autoCornerState.container.getBoundingClientRect();
+            const leaveEvent = new MouseEvent('mouseleave', {
+                bubbles: true,
+                clientX: rect.left - 10,
+                clientY: rect.top - 10
+            });
+            autoCornerState.container.dispatchEvent(leaveEvent);
+        }
     };
 
     // =======================================
-    // AVISAR AL PADRE: INTERACCIONES DEL HERO
+    // AVISAR AL HOME: INTERACCIONES DEL HERO
+    // Enviar mensaje al padre en cada pointerdown dentro del hero
+    // para que el header pueda ocultarse cada vez que el usuario
+    // interactúe con la revista.
     // =======================================
     document.addEventListener("pointerdown", () => {
         stopAutoCorner();
-        window.parent.postMessage({ type: "HERO_INTERACTION" }, "*");
+        window.parent.postMessage(
+            { type: "HERO_INTERACTION" },
+            "*"
+        );
     });
 
     // =======================================
-    // AVISAR AL PADRE: INTENCIÓN DE SCROLL
+    // AVISAR AL HOME: INTENCIÓN DE SCROLL
     // =======================================
     let scrollIntentSent = false;
 
     const notifyScrollIntent = () => {
         if (scrollIntentSent) return;
+
         scrollIntentSent = true;
-        window.parent.postMessage({ type: "HERO_SCROLL_INTENT" }, "*");
+
+        window.parent.postMessage(
+            { type: "HERO_SCROLL_INTENT" },
+            "*"
+        );
     };
 
+    // Rueda de mouse
     document.addEventListener("wheel", notifyScrollIntent, { passive: true });
+
+    // Touch (mobile)
     document.addEventListener("touchmove", notifyScrollIntent, { passive: true });
 
     // ===============================
@@ -175,19 +128,10 @@ document.addEventListener('DOMContentLoaded', function () {
         size: 'stretch',
         minWidth: 315,
         maxWidth: 3000,
-        minHeight: 400,
-        maxHeight: 2000,
         drawShadow: true,
         maxShadowOpacity: 0.5,
         showCover: false,
-        mobileScrollSupport: false,
-        useMouseEvents: true,
-        swipeDistance: 30,
-        clickEventForward: false,
-        usePortrait: false,
-        startPage: 0,
-        autoSize: true,
-        showPageCorners: true
+        mobileScrollSupport: false
     });
 
     // ===============================
@@ -213,16 +157,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
     pageFlip.on('flip', () => {
         stopAutoCorner();
-        window.parent.postMessage({ type: "HERO_PAGE_FLIP" }, "*");
+        window.parent.postMessage(
+            { type: "HERO_PAGE_FLIP" },
+            "*"
+        );
     });
 
     startAutoCorner();
 
     console.log('PageFlip inicializado en #mi-revista', pageFlip);
 
+    // ===============================
+    // MAPA DE PÁGINAS (DEBUG)
+    // ===============================
+    (function logPageNames(){
+        const pages = container.querySelectorAll('.page');
+        const map = [];
+        pages.forEach((p, i) => {
+            map.push({ index: i, id: p.id || null, name: p.getAttribute('data-name') || null });
+        });
+        console.log('Mapa de páginas:', map);
+    })();
+
     // =====================================================
+    // 🔧 FIX REAL DEL PROBLEMA (GHOSTING AL AVANZAR)
+    // =====================================================
+    // NO toca CSS
+    // NO rompe fluidez
+    /// ===============================
     // FIX GHOSTING — versión estable
-    // =====================================================
+    // ===============================
     const pageContents = container.querySelectorAll('.page-content');
 
     // Asegurar visibilidad inicial
@@ -245,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     });
+    // Evita que PageFlip reutilice el frame anterior
 
     // ===============================
     // RESIZE
