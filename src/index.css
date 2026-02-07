@@ -434,11 +434,16 @@ body.hero-visible #plano-bg {
   background-size: cover;
   background-position: center center;
   will-change: transform, opacity;
+
+  /* Reduce flicker/seams during clip-path + 3D transforms */
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .flip-book .page.spread .page-content {
   background-repeat: no-repeat;
-  background-size: 200% auto;
+  /* Slight bleed avoids a visible seam at the fold during the flip */
+  background-size: 202% 100%;
   width: 100%;
   height: 100%;
 }
@@ -466,9 +471,7 @@ body.hero-visible #plano-bg {
   background-color: hsl(var(--gd-background));
 }
 
-.hero-revista-shell {
-  background-color: hsl(var(--gd-background));
-}
+/* Keep .hero-revista-shell styling (glass) defined above; don't override here */
 
 /* Ensure smooth flip without visible edges */
 .flip-book .page::before,

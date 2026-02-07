@@ -40,6 +40,8 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
     if (!visible || isMobile || !containerRef.current) return;
 
     // Small delay to ensure DOM is ready
+    let handleResize: (() => void) | null = null;
+
     const initTimer = setTimeout(() => {
       const container = containerRef.current;
       if (!container || pageFlipRef.current) return;
@@ -48,8 +50,9 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
       if (pages.length === 0) return;
 
       try {
-        const pageWidth = Math.floor(window.innerWidth / 2);
-        const pageHeight = window.innerHeight - 50; // Account for padding
+        const rect = container.getBoundingClientRect();
+        const pageWidth = Math.max(315, Math.floor(rect.width / 2));
+        const pageHeight = Math.max(400, Math.floor(rect.height));
 
         const pageFlip = new PageFlip(container, {
           width: pageWidth,
@@ -77,24 +80,17 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
         pageFlipRef.current = pageFlip;
         setIsReady(true);
 
-        // Handle resize
-        const handleResize = () => {
-          if (pageFlipRef.current) {
-            try {
-              const newPageWidth = Math.floor(window.innerWidth / 2);
-              const newPageHeight = window.innerHeight - 50;
-              pageFlipRef.current.updateState({ pageWidth: newPageWidth, pageHeight: newPageHeight } as any);
-            } catch (e) {
-              // Ignore resize errors
-            }
+        // Handle resize (update render area to match container)
+        handleResize = () => {
+          if (!pageFlipRef.current) return;
+          try {
+            pageFlipRef.current.update();
+          } catch {
+            // Ignore resize errors
           }
         };
 
         window.addEventListener('resize', handleResize);
-
-        return () => {
-          window.removeEventListener('resize', handleResize);
-        };
       } catch (error) {
         console.error('Error initializing PageFlip:', error);
       }
@@ -102,6 +98,8 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
 
     return () => {
       clearTimeout(initTimer);
+      if (handleResize) window.removeEventListener('resize', handleResize);
+
       if (pageFlipRef.current) {
         try {
           pageFlipRef.current.destroy();
@@ -183,8 +181,6 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
                   className="page-content"
                   style={{
                     backgroundImage: `url(${spread.src})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundSize: '200% auto',
                     backgroundPosition: 'left center',
                   }}
                 />
@@ -199,8 +195,6 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
                   className="page-content"
                   style={{
                     backgroundImage: `url(${spread.src})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundSize: '200% auto',
                     backgroundPosition: 'right center',
                   }}
                 />
