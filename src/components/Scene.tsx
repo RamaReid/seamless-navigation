@@ -8,16 +8,26 @@ interface SceneProps {
 }
 
 export const Scene: React.FC<SceneProps> = ({ variant = 'divider', children, className }) => {
+  const getVariantClass = () => {
+    switch (variant) {
+      case 'intro':
+        return 'scene scene-intro';
+      case 'divider':
+      case 'bridge':
+        return 'scene scene-divider';
+      case 'moments':
+      case 'details':
+        return 'scene scene-moments';
+      case 'space':
+        return 'scene';
+      default:
+        return 'scene';
+    }
+  };
+
   return (
     <section 
-      className={cn(
-        "max-w-gd mx-auto py-8 relative",
-        variant === 'intro' && "pb-5",
-        variant === 'divider' && "pb-2.5",
-        variant === 'moments' && "grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mt-8",
-        variant === 'details' && "grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mt-8",
-        className
-      )}
+      className={cn(getVariantClass(), className)}
       data-scene={variant}
     >
       {children}
@@ -25,20 +35,25 @@ export const Scene: React.FC<SceneProps> = ({ variant = 'divider', children, cla
   );
 };
 
-export const SceneTitle: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-  <p className={cn("text-3xl md:text-[40px] font-bold text-center text-white mb-5 mx-auto", className)}>
+interface SceneTextProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const SceneTitle: React.FC<SceneTextProps> = ({ children, className }) => (
+  <p className={cn("scene-title", className)}>
     {children}
   </p>
 );
 
-export const SceneSubtitle: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-  <p className={cn("text-xl md:text-[26px] font-bold text-center text-gd-grey mb-3 mx-auto", className)}>
+export const SceneSubtitle: React.FC<SceneTextProps> = ({ children, className }) => (
+  <p className={cn("scene-subtitle", className)}>
     {children}
   </p>
 );
 
-export const SceneText: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-  <p className={cn("text-xl md:text-[26px] leading-relaxed text-center max-w-gd mx-auto text-gd-grey", className)}>
+export const SceneText: React.FC<SceneTextProps> = ({ children, className }) => (
+  <p className={cn("scene-text", className)}>
     {children}
   </p>
 );

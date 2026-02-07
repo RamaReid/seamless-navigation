@@ -17,73 +17,11 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
   const [visible, setVisible] = useState(true);
   const [loaderCycles, setLoaderCycles] = useState(0);
   const [windowLoaded, setWindowLoaded] = useState(false);
+  const [revealRadius, setRevealRadius] = useState(0);
   
   const svgRef = useRef<SVGSVGElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const maskSvgRef = useRef<SVGSVGElement>(null);
-  const maskCircleRef = useRef<SVGCircleElement>(null);
-  const maskRectRef = useRef<SVGRectElement>(null);
   const cycleCountRef = useRef(0);
-
-  // Radial Reveal Animation (matching original radialReveal.js)
-  const startRadialReveal = useCallback(() => {
-    const overlay = overlayRef.current;
-    const svgMask = maskSvgRef.current;
-    const maskCircle = maskCircleRef.current;
-    const maskRect = maskRectRef.current;
-    const logo = svgRef.current;
-
-    if (!overlay || !svgMask || !maskCircle || !maskRect || !logo) {
-      console.warn('GD Reveal: Missing elements');
-      return;
-    }
-
-    // Medidas reales del overlay
-    const overlayRect = overlay.getBoundingClientRect();
-
-    // Ajustar el SVG del mask al tamaño real del overlay
-    svgMask.setAttribute("width", String(overlayRect.width));
-    svgMask.setAttribute("height", String(overlayRect.height));
-    svgMask.setAttribute("viewBox", `0 0 ${overlayRect.width} ${overlayRect.height}`);
-
-    maskRect.setAttribute("width", String(overlayRect.width));
-    maskRect.setAttribute("height", String(overlayRect.height));
-
-    // Medidas reales del logo final
-    const logoRect = logo.getBoundingClientRect();
-
-    // Centro del logo convertido al sistema de coordenadas del overlay
-    const cx = logoRect.left + logoRect.width / 2 - overlayRect.left;
-    const cy = logoRect.top + logoRect.height / 2 - overlayRect.top;
-
-    // Estado inicial del agujero
-    maskCircle.setAttribute("cx", String(cx));
-    maskCircle.setAttribute("cy", String(cy));
-    maskCircle.setAttribute("r", "0");
-
-    // Radio máximo seguro (cubre toda la pantalla)
-    const maxRadius = Math.hypot(overlayRect.width, overlayRect.height);
-
-    const startTime = performance.now();
-
-    function animate(now: number) {
-      const t = Math.min(1, (now - startTime) / RADIAL_REVEAL_DURATION);
-
-      // easing perceptual (cubic ease-out)
-      const eased = 1 - Math.pow(1 - t, 3);
-
-      maskCircle?.setAttribute("r", String(eased * maxRadius));
-
-      if (t < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        // El cover deja de interceptar interacción
-        if (overlay) overlay.style.pointerEvents = "none";
-      }
-    }
-
-    requestAnimationFrame(animate);
-  }, []);
+  const animationFrameRef = useRef<number>();
 
   // Track window load
   useEffect(() => {
@@ -134,36 +72,59 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
       } else if (e.animationName === 'drop') {
         setPhase('bounce');
       } else if (e.animationName === 'bounce') {
-        // Start radial reveal (matching original intro.js)
         setPhase('reveal');
-        
-        // Fade out the logo
-        svg.style.transition = "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
-        svg.style.opacity = "0";
-        
-        // Start radial reveal animation
-        startRadialReveal();
-        
-        // Dispatch introComplete event
-        window.dispatchEvent(new Event("introComplete"));
-        
-        // Remove sequence-only class
-        document.body.classList.remove("sequence-only");
-        
-        // Complete after reveal duration
+      }
+    };
+
+    svg.addEventListener('animationend', handleAnimationEnd as EventListener);
+    return () => svg.removeEventListener('animationend', handleAnimationEnd as EventListener);
+  }, [phase]);
+
+  // Radial Reveal Animation
+  useEffect(() => {
+    if (phase !== 'reveal') return;
+
+    const svg = svgRef.current;
+    if (svg) {
+      svg.style.transition = "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
+      svg.style.opacity = "0";
+    }
+
+    // Dispatch introComplete event
+    window.dispatchEvent(new Event("introComplete"));
+    document.body.classList.remove("sequence-only");
+
+    // Calculate max radius
+    const maxRadius = Math.hypot(window.innerWidth, window.innerHeight);
+    const startTime = performance.now();
+
+    const animate = (now: number) => {
+      const t = Math.min(1, (now - startTime) / RADIAL_REVEAL_DURATION);
+      const eased = 1 - Math.pow(1 - t, 3); // cubic ease-out
+      setRevealRadius(eased * maxRadius);
+
+      if (t < 1) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+      } else {
+        // Complete
         setTimeout(() => {
           setPhase('complete');
           setTimeout(() => {
             setVisible(false);
             onComplete?.();
           }, 500);
-        }, RADIAL_REVEAL_DURATION + 500);
+        }, 500);
       }
     };
 
-    svg.addEventListener('animationend', handleAnimationEnd as EventListener);
-    return () => svg.removeEventListener('animationend', handleAnimationEnd as EventListener);
-  }, [phase, onComplete, startRadialReveal]);
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [phase, onComplete]);
 
   if (!visible) return null;
 
@@ -180,29 +141,73 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
     }
   };
 
+  // Calculate center for reveal (center of screen)
+  const cx = typeof window !== 'undefined' ? window.innerWidth / 2 : 500;
+  const cy = typeof window !== 'undefined' ? window.innerHeight / 2 : 400;
+
   return (
     <>
+      {/* Intro Layer - Fixed fullscreen */}
       <div 
         id="intro-layer"
-        className={cn(
-          "fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
-        )}
+        className="fixed inset-0 z-[100] pointer-events-none"
       >
-        {/* Background overlay - uses radial mask */}
+        {/* 
+          CAPA DE COBERTURA - Esta es la capa sólida que cubre el plano de fondo.
+          Usa clip-path para crear el agujero circular que se expande.
+          Cuando revealRadius = 0, cubre todo. Cuando crece, revela el contenido.
+        */}
         <div 
           id="background-overlay"
-          ref={overlayRef}
-          className="absolute inset-0 bg-gd-cover z-[1]"
+          className="absolute inset-0 z-[1]"
           style={{
-            WebkitMask: 'url(#radialHoleMask)',
-            mask: 'url(#radialHoleMask)',
-            WebkitMaskRepeat: 'no-repeat',
-            maskRepeat: 'no-repeat',
+            backgroundColor: 'hsl(226 38% 10%)', // --gd-cover color
+            clipPath: phase === 'reveal' || phase === 'complete'
+              ? `circle(${revealRadius}px at ${cx}px ${cy}px)`
+              : 'none',
+            // Invertimos: cuando NO hay reveal, mostramos todo el overlay
+            // Cuando hay reveal, el clip-path define qué parte se MUESTRA (invertido)
+            opacity: phase === 'complete' ? 0 : 1,
+            transition: phase === 'complete' ? 'opacity 0.5s ease' : 'none',
           }}
         />
         
-        {/* Loader Stage */}
-        <div id="loader-stage" className="absolute inset-0 flex items-center justify-center z-[3]">
+        {/* 
+          Para el reveal correcto necesitamos que el overlay CUBRA todo
+          excepto el círculo que crece. Usamos una técnica diferente:
+          El overlay cubre TODO, pero tiene un "agujero" que crece.
+        */}
+        {(phase === 'reveal' || phase === 'complete') && (
+          <svg
+            className="absolute inset-0 w-full h-full z-[2]"
+            style={{ pointerEvents: 'none' }}
+          >
+            <defs>
+              <mask id="revealMask">
+                <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                <circle cx={cx} cy={cy} r={revealRadius} fill="black" />
+              </mask>
+            </defs>
+            <rect
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+              fill="hsl(226, 38%, 10%)"
+              mask="url(#revealMask)"
+              style={{
+                opacity: phase === 'complete' ? 0 : 1,
+                transition: 'opacity 0.5s ease',
+              }}
+            />
+          </svg>
+        )}
+        
+        {/* Loader Stage - Centered logo */}
+        <div 
+          id="loader-stage" 
+          className="absolute inset-0 flex items-center justify-center z-[3]"
+        >
           <div 
             id="loader-container"
             className="loader-container"
@@ -284,46 +289,17 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
         </div>
       </div>
 
-      {/* Radial Mask SVG (matching original index.html) */}
-      <svg 
-        ref={maskSvgRef}
-        id="radialMaskSVG"
-        width="100%"
-        height="100%"
-        preserveAspectRatio="none"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          pointerEvents: 'none',
-          zIndex: 20
-        }}
-      >
-        <defs>
-          <mask 
-            id="radialHoleMask"
-            maskUnits="userSpaceOnUse"
-            maskContentUnits="userSpaceOnUse"
-          >
-            <rect 
-              ref={maskRectRef}
-              id="maskRect"
-              x="0" 
-              y="0"
-              width="100%" 
-              height="100%"
-              fill="white"
-            />
-            <circle 
-              ref={maskCircleRef}
-              id="maskHole"
-              cx="0"
-              cy="0"
-              r="0"
-              fill="black"
-            />
-          </mask>
-        </defs>
-      </svg>
+      {/* Capa de cobertura SÓLIDA inicial - visible solo antes del reveal */}
+      {phase !== 'reveal' && phase !== 'complete' && (
+        <div
+          id="solid-cover"
+          className="fixed inset-0 z-[99]"
+          style={{
+            backgroundColor: 'hsl(226, 38%, 10%)',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
     </>
   );
 };
