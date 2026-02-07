@@ -23,7 +23,19 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [heroVisible, setHeroVisible] = useState(false);
 
-  // Run sequence after intro completes (matching home.js introComplete listener)
+  // Check if coming from internal navigation (skip intro)
+  useEffect(() => {
+    const isNavTransition = sessionStorage.getItem('gd_nav_transition') === '1';
+    if (isNavTransition) {
+      sessionStorage.removeItem('gd_nav_transition');
+      setLoading(false);
+      setHeroVisible(true);
+      document.body.classList.add('header-visible', 'hero-visible');
+      document.body.classList.remove('sequence-only');
+    }
+  }, []);
+
+  // Run sequence after intro completes
   const runSequence = useCallback(() => {
     // Show header first (BEAT * 3)
     setTimeout(() => {
@@ -39,31 +51,15 @@ const Index = () => {
     }, BEAT * 8);
 
     // Show header again with nav items (BEAT * 10)
-    const navItems = document.querySelectorAll('.nav-list li');
-    navItems.forEach((li, i) => {
-      setTimeout(() => {
-        (li as HTMLElement).style.opacity = '1';
-        (li as HTMLElement).style.transform = 'translateY(0)';
-      }, (BEAT * 10) + (i * 100));
-    });
+    setTimeout(() => {
+      document.body.classList.add('header-visible');
+    }, BEAT * 10);
   }, []);
 
   const handleLoaderComplete = useCallback(() => {
     setLoading(false);
-    // Listen for introComplete to start sequence
     runSequence();
   }, [runSequence]);
-
-  // Listen for introComplete event (matching original flow)
-  useEffect(() => {
-    const handleIntroComplete = () => {
-      if (!loading) return;
-      // Intro already completed via Loader onComplete
-    };
-
-    window.addEventListener('introComplete', handleIntroComplete);
-    return () => window.removeEventListener('introComplete', handleIntroComplete);
-  }, [loading]);
 
   // Manage body classes
   useEffect(() => {
@@ -79,7 +75,7 @@ const Index = () => {
     };
   }, [loading]);
 
-  // Intersection observer for scene cards (matching original home.js)
+  // Intersection observer for scene cards
   useEffect(() => {
     if (loading) return;
 
@@ -102,15 +98,12 @@ const Index = () => {
     return () => observer.disconnect();
   }, [loading]);
 
-  // Parallax for plano-bg (matching original home.js)
+  // Parallax for plano-bg
   useEffect(() => {
     let scrollUnlocked = false;
 
-    const handleMessage = (event: MessageEvent) => {
-      const type = event?.data?.type;
-      if (typeof type === 'string' && type.includes('HERO')) {
-        scrollUnlocked = true;
-      }
+    const handleHeroVisible = () => {
+      scrollUnlocked = true;
     };
 
     const handleScroll = () => {
@@ -121,11 +114,11 @@ const Index = () => {
       }
     };
 
-    window.addEventListener('message', handleMessage);
+    window.addEventListener('heroVisible', handleHeroVisible);
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      window.removeEventListener('message', handleMessage);
+      window.removeEventListener('heroVisible', handleHeroVisible);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
