@@ -129,32 +129,32 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, minCycles = 2 }) => 
             <defs>
               <mask id="maskX" maskUnits="userSpaceOnUse">
                 <rect x="0" y="0" width="210" height="170" fill="black"/>
-                <rect id="rectX" x="-210" y="0" width="210" height="170" fill="white" className="animate-[revealX_0.71s_cubic-bezier(0.55,0.08,0.44,0.99)_forwards]"/>
+                <rect id="rectX" x="0" y="0" width="210" height="170" fill="white" className="mask-reveal-x"/>
               </mask>
               
               <mask id="maskY" maskUnits="userSpaceOnUse">
                 <rect x="0" y="0" width="210" height="170" fill="black"/>
-                <rect id="rectY" x="0" y="-170" width="210" height="170" fill="white" className="animate-[revealY_0.71s_cubic-bezier(0.55,0.08,0.44,0.99)_forwards]" style={{ animationDelay: '0.64s' }}/>
+                <rect id="rectY" x="0" y="0" width="210" height="170" fill="white" className="mask-reveal-y"/>
               </mask>
               
               <mask id="maskTop" maskUnits="userSpaceOnUse">
                 <rect x="0" y="0" width="210" height="170" fill="black"/>
-                <rect id="rectTop" x="-210" y="0" width="210" height="170" fill="white" className="animate-[revealLeftToRight_0.36s_ease-in-out_forwards]" style={{ animationDelay: '1.38s' }}/>
+                <rect id="rectTop" x="0" y="0" width="210" height="170" fill="white" className="mask-reveal-ltr"/>
               </mask>
               
               <mask id="maskBottom" maskUnits="userSpaceOnUse">
                 <rect x="0" y="0" width="210" height="170" fill="black"/>
-                <rect id="rectBottom" x="210" y="0" width="210" height="170" fill="white" className="animate-[revealRightToLeft_0.36s_ease-in-out_forwards]" style={{ animationDelay: '1.68s' }}/>
+                <rect id="rectBottom" x="0" y="0" width="210" height="170" fill="white" className="mask-reveal-rtl"/>
               </mask>
               
               <mask id="maskLeft" maskUnits="userSpaceOnUse">
                 <rect x="0" y="0" width="210" height="170" fill="black"/>
-                <rect id="rectLeft" x="0" y="170" width="210" height="170" fill="white" className="animate-[revealTopToBottom_0.36s_ease-in-out_forwards]" style={{ animationDelay: '2s' }}/>
+                <rect id="rectLeft" x="0" y="0" width="210" height="170" fill="white" className="mask-reveal-ttb"/>
               </mask>
               
               <mask id="maskRight" maskUnits="userSpaceOnUse">
                 <rect x="0" y="0" width="210" height="170" fill="black"/>
-                <rect id="rectRight" x="0" y="-170" width="210" height="170" fill="white" className="animate-[revealBottomToTop_0.36s_ease-in-out_forwards]" style={{ animationDelay: '2.31s' }}/>
+                <rect id="rectRight" x="0" y="0" width="210" height="170" fill="white" className="mask-reveal-btt"/>
               </mask>
             </defs>
             

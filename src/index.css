@@ -226,6 +226,45 @@ body.hero-visible #plano-bg {
 }
 
 /* ======================================================
+   LOADER MASK REVEAL ANIMATIONS
+====================================================== */
+
+.mask-reveal-x {
+  transform: translateX(-210px);
+  animation: revealX 0.71s cubic-bezier(0.55, 0.08, 0.44, 0.99) forwards;
+}
+
+.mask-reveal-y {
+  transform: translateY(-170px);
+  animation: revealY 0.71s cubic-bezier(0.55, 0.08, 0.44, 0.99) forwards;
+  animation-delay: 0.64s;
+}
+
+.mask-reveal-ltr {
+  transform: translateX(-210px);
+  animation: revealLeftToRight 0.36s ease-in-out forwards;
+  animation-delay: 1.38s;
+}
+
+.mask-reveal-rtl {
+  transform: translateX(210px);
+  animation: revealRightToLeft 0.36s ease-in-out forwards;
+  animation-delay: 1.68s;
+}
+
+.mask-reveal-ttb {
+  transform: translateY(-170px);
+  animation: revealTopToBottom 0.36s ease-in-out forwards;
+  animation-delay: 2s;
+}
+
+.mask-reveal-btt {
+  transform: translateY(170px);
+  animation: revealBottomToTop 0.36s ease-in-out forwards;
+  animation-delay: 2.31s;
+}
+
+/* ======================================================
    LOADER STROKES
 ====================================================== */
 
