@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { cn } from '@/lib/utils';
+import fondoCasaM from '@/assets/img/FondoCasaM.png';
 
 interface HeroPhoto {
   id: string;
@@ -69,11 +70,11 @@ const Momentos = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Plano de fondo */}
+      {/* Plano de fondo con imagen FondoCasaM */}
       <div 
         id="plano-bg"
         style={{
-          backgroundImage: 'linear-gradient(135deg, hsl(226 38% 8%) 0%, hsl(226 38% 15%) 100%)'
+          backgroundImage: `url(${fondoCasaM})`
         }}
       />
 
