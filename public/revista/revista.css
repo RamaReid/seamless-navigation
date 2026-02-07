@@ -148,11 +148,11 @@ body {
 }
 
 #spread-10-left .page-content {
-    background-image: url('/img/vidahause/vidahause-exterior-norte.png');
+    background-image: url('/img/vidahause/vidahause-exterior-hero.png');
     background-position: left center;
 }
 #spread-10-right .page-content {
-    background-image: url('/img/vidahause/vidahause-exterior-norte.png');
+    background-image: url('/img/vidahause/vidahause-exterior-hero.png');
     background-position: right center;
 }
 
