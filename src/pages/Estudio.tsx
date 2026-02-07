@@ -3,7 +3,13 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { HeroSection } from '@/components/HeroSection';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
+import { SceneCard } from '@/components/SceneCard';
 import fondoCasaM from '@/assets/img/FondoCasaM.png';
+
+// Imágenes del estudio (del original)
+import cedahauseLiving from '@/assets/img/cedahause/cedahause-living.png';
+import gadehauseCocina from '@/assets/img/gadehause/gadehause-cocina-panoramica.png';
+import markhauseComedor from '@/assets/img/markhause/markhause-comedor.png';
 
 const Estudio = () => {
   const [headerVisible, setHeaderVisible] = useState(false);
@@ -18,6 +24,27 @@ const Estudio = () => {
     return () => {
       document.body.classList.remove('hero-visible', 'header-visible');
     };
+  }, []);
+
+  // Intersection observer for scene cards
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const cards = entry.target.querySelectorAll('.scene-card');
+            cards.forEach((card, index) => {
+              setTimeout(() => card.classList.add('is-visible'), index * 250);
+            });
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: '0px 0px -15% 0px' }
+    );
+
+    document.querySelectorAll('[data-scene]').forEach((scene) => observer.observe(scene));
+
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -40,10 +67,12 @@ const Estudio = () => {
         />
 
         <main id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">
+          {/* Título principal */}
           <Scene variant="intro">
             <SceneTitle>Estudio</SceneTitle>
           </Scene>
 
+          {/* Introducción */}
           <Scene variant="divider">
             <SceneSubtitle>
               Arquitectura que parte de la vida real.
@@ -54,6 +83,7 @@ const Estudio = () => {
             </SceneText>
           </Scene>
 
+          {/* Enfoque */}
           <Scene variant="divider">
             <SceneSubtitle>Enfoque</SceneSubtitle>
             <SceneText>
@@ -61,6 +91,7 @@ const Estudio = () => {
             </SceneText>
           </Scene>
 
+          {/* Proceso */}
           <Scene variant="divider">
             <SceneSubtitle>Proceso</SceneSubtitle>
             <SceneText>
@@ -68,10 +99,38 @@ const Estudio = () => {
             </SceneText>
           </Scene>
 
+          {/* Equipo */}
           <Scene variant="divider">
             <SceneSubtitle>Equipo</SceneSubtitle>
             <SceneText>
               Un equipo compacto con mirada arquitectónica y técnica.
+            </SceneText>
+          </Scene>
+
+          {/* Galería de espacios */}
+          <Scene variant="details">
+            <SceneCard
+              to="/proyectos/cedahause"
+              image={cedahauseLiving}
+              alt="Interior contemporáneo"
+            />
+            <SceneCard
+              to="/proyectos/gadehause"
+              image={gadehauseCocina}
+              alt="Cocina y detalle de materialidad"
+            />
+            <SceneCard
+              to="/proyectos/markhause"
+              image={markhauseComedor}
+              alt="Espacio social"
+            />
+          </Scene>
+
+          {/* Materialidad */}
+          <Scene variant="divider">
+            <SceneSubtitle>Materialidad</SceneSubtitle>
+            <SceneText>
+              Elegimos materiales honestos, mantenimiento simple y buena performance.
             </SceneText>
           </Scene>
 
