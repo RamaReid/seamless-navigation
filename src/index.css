@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* GD Arquitectura - Estilos originales */
+@import './styles/gd-variables.css';
+@import './styles/gd-loader.css';
+@import './styles/gd-intro.css';
+@import './styles/gd-home.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

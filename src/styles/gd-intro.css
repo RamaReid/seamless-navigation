@@ -1,0 +1,58 @@
+/* =====================================================
+   INTRO — tiempos apreciables (Preset A)
+   SOLO POST-LOOP (no afecta el loop)
+===================================================== */
+
+.loader-svg.lift-logo,
+.loader-svg.drop-logo,
+.loader-svg.bounce-logo {
+  width: var(--gd-logo-width, 280px);
+  max-width: 90vw;
+  height: auto;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+/* Estado base neutro */
+.loader-svg {
+  transform: scale(1);
+}
+
+/* ---------------- LIFT (más perceptible) ---------------- */
+.lift-logo {
+  animation: lift 2s cubic-bezier(0.22, 0.6, 0.2, 1) forwards;
+}
+
+@keyframes lift {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.45); }
+}
+
+/* ---------------- DROP (0.55s) ---------------- */
+.drop-logo {
+  animation: drop 0.55s cubic-bezier(0.0, 0.0, 0.2, 1) forwards;
+}
+
+@keyframes drop {
+  0%   { transform: scale(1.45); }
+  70%  { transform: scale(0.98); }
+  100% { transform: scale(1.00); }
+}
+
+/* ---------------- BOUNCE (0.40s) ---------------- */
+.bounce-logo {
+  animation: bounce 0.40s cubic-bezier(0.25, 0.5, 0.5, 1) forwards;
+}
+
+@keyframes bounce {
+  0%   { transform: scale(1.00); }
+  35%  { transform: scale(1.03); }
+  65%  { transform: scale(0.995); }
+  100% { transform: scale(1.00); }
+}
+
+#intro-layer,
+.intro-layer,
+.intro-overlay {
+  pointer-events: none;
+}

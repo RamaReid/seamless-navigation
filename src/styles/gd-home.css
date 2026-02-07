@@ -1,0 +1,525 @@
+/* ======================================================
+   GD HOME — Estilos principales de la página de inicio
+====================================================== */
+
+/* ======================================================
+   1. ESTRUCTURA Y BLOQUEO
+====================================================== */
+body { 
+  overflow-x: hidden; 
+  overflow-y: auto; 
+  color: var(--gd-grey); 
+  background: var(--gd-background); 
+  margin: 0; 
+}
+
+body.sequence-only { 
+  height: 100%; 
+  overflow: hidden; 
+}
+
+#app-layer { 
+  position: relative; 
+  z-index: 30;
+}
+
+/* ======================================================
+   2. EL PLANO (Nítido -> Blur)
+====================================================== */
+#plano-bg,
+.plano-bg {
+  position: fixed; 
+  inset: 0; 
+  z-index: 0; 
+  pointer-events: none;
+  background-image: url("/img/FondoCasaM.png");
+  background-position: center; 
+  background-repeat: no-repeat; 
+  background-size: cover;
+  filter: blur(0px);
+  transition: filter 3s ease, transform 3s ease;
+  will-change: filter, transform;
+}
+
+body.hero-visible #plano-bg,
+body.hero-visible .plano-bg { 
+  filter: blur(3px); 
+  transform: scale(1.03); 
+}
+
+/* ======================================================
+   3. HEADER (Arquitectura y Firma)
+====================================================== */
+.gd-header {
+  position: fixed; 
+  top: 5px; 
+  left: 40px; 
+  right: 40px; 
+  z-index: 40;
+  transform: translateY(-130%); 
+  opacity: 0;
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease;
+}
+
+body.header-visible .gd-header { 
+  transform: translateY(0); 
+  opacity: 1; 
+  pointer-events: auto; 
+}
+
+.brand { 
+  display: flex; 
+  align-items: center; 
+  gap: 14px; 
+}
+
+.brand-link { 
+  display: flex; 
+  align-items: center; 
+  text-decoration: none; 
+}
+
+.brand-logo { 
+  width: 100px; 
+  height: auto; 
+  display: block; 
+}
+
+/* Estilos técnicos del Logo */
+.gd-header .brand-logo .logoL0 { 
+  stroke: var(--gd-grey); 
+  stroke-width: 1.5; 
+  stroke-dasharray: 5 3 1 3; 
+  fill: none; 
+}
+
+.gd-header .brand-logo .logoL1, 
+.gd-header .brand-logo .logoL2 { 
+  stroke: var(--gd-grey); 
+  stroke-width: 0.75; 
+  fill: none; 
+}
+
+.gd-header .brand-logo .logoL3 { 
+  stroke: var(--gd-red); 
+  stroke-width: 0.9; 
+  fill: none; 
+}
+
+.gd-header .brand-logo .logoL4 { 
+  stroke: var(--gd-red); 
+  stroke-width: 1; 
+  fill: none; 
+}
+
+.gd-header .brand-logo .logoL5 { 
+  stroke: var(--gd-blue); 
+  stroke-width: 1; 
+  fill: none; 
+}
+
+.brand-tagline { 
+  font-size: 1rem; 
+  letter-spacing: 0.08em; 
+  text-transform: uppercase; 
+  color: var(--gd-grey); 
+  white-space: nowrap; 
+}
+
+body.header-visible .gd-header {
+  pointer-events: auto !important;
+}
+
+.brand-link:hover .brand-logo {
+  filter: brightness(1.3);
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
+/* NAVEGACIÓN */
+.navbar {
+  max-width: 1375px; 
+  margin: 40px auto 0;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between;
+  padding: 0 35px 0 15px; 
+  background: rgba(15, 19, 32, 0.5);
+  backdrop-filter: blur(5px); 
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.22); 
+  border-radius: 9999px;
+}
+
+.nav-area { 
+  display: flex; 
+  align-items: center; 
+}
+
+.nav-list { 
+  list-style: none; 
+  display: flex; 
+  gap: 28px; 
+  margin: 0; 
+  padding: 0; 
+}
+
+.nav-list a {
+  font-size: 1rem; 
+  letter-spacing: 0.1em; 
+  text-transform: uppercase;
+  color: var(--gd-grey); 
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.nav-list a::after {
+  content: "";
+  position: absolute; 
+  left: 0; 
+  bottom: -6px; 
+  width: 100%; 
+  height: 1px;
+  background: rgba(255, 255, 255, 0.7); 
+  transform: scaleX(0); 
+  transition: transform 0.2s ease;
+}
+
+.nav-list a:hover { 
+  transform: scale(1.1);
+  color: #ffffff;
+}
+
+.nav-list a:hover::after { 
+  transform: scaleX(1); 
+}
+
+.nav-toggle { 
+  display: none; 
+  width: 36px; 
+  height: 36px; 
+  background: none; 
+  border: 0; 
+  cursor: pointer; 
+  flex-direction: column; 
+  justify-content: center; 
+  gap: 6px; 
+}
+
+.nav-toggle span { 
+  display: block; 
+  height: 2px; 
+  width: 100%; 
+  background: white; 
+}
+
+/* ======================================================
+   4. HERO — REVISTA
+====================================================== */
+.hero-revista-section {
+  position: relative; 
+  width: 100%; 
+  height: 100vh;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  padding: 25px; 
+  box-sizing: border-box; 
+  z-index: 30;
+  opacity: 0; 
+  visibility: hidden; 
+  transition: opacity 2.5s ease-out;
+}
+
+.hero-revista-shell {
+  width: 100%; 
+  height: 100%; 
+  background: rgba(15, 19, 32, 0.55); 
+  border: 1px solid rgba(255, 255, 255, 0.22); 
+  overflow: hidden; 
+}
+
+body.hero-visible .hero-revista-section { 
+  opacity: 1; 
+  visibility: visible; 
+}
+
+/* ======================================================
+   5. HOME BOARD (Espacios de Diseño)
+====================================================== */
+#home-board { 
+  width: 100%; 
+  max-width: 1375px; 
+  margin: 0 auto; 
+  padding: 0 40px; 
+  box-sizing: border-box; 
+}
+
+.scene { 
+  max-width: 1375px; 
+  margin: 0 auto; 
+  padding: 30px 0; 
+  position: relative; 
+}
+
+.scene-intro { 
+  padding-bottom: 20px; 
+}
+
+.scene-divider { 
+  padding-bottom: 10px; 
+}
+
+.scene-title { 
+  font-size: 40px; 
+  font-weight: 700; 
+  text-align: center; 
+  color: white; 
+  margin: 0 auto 20px; 
+}
+
+.scene-subtitle { 
+  font-size: 26px; 
+  font-weight: 700; 
+  text-align: center; 
+  color: var(--gd-grey); 
+  margin: 0 auto 12px; 
+}
+
+.scene-text { 
+  font-size: 26px; 
+  line-height: 1.4; 
+  text-align: center; 
+  max-width: 1375px; 
+  margin: 0 auto; 
+}
+
+.scene-moments, 
+.scene-details { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 48px; 
+  margin-top: 30px; 
+}
+
+.scene-card {
+  display: block; 
+  width: 100%; 
+  border-radius: 6px; 
+  overflow: hidden; 
+  opacity: 0;
+  transform: translateY(15px) scale(0.99);
+  transition: opacity 1.5s ease, transform 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.scene-card.is-visible { 
+  opacity: 1; 
+  transform: translateY(0) scale(1); 
+}
+
+.scene-card.square img { 
+  width: 100%; 
+  aspect-ratio: 1/1; 
+  object-fit: cover; 
+}
+
+.scene-card.wide {
+  aspect-ratio: 2.56 / 1;
+  width: calc(100% + 80px);
+  margin: 0 -40px;
+}
+
+.scene-card.wide img { 
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;
+  display: block; 
+}
+
+.scene-card img { 
+  transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1); 
+}
+
+.scene-card:hover img { 
+  transform: scale(1.08); 
+}
+
+/* ======================================================
+   6. FOOTER
+====================================================== */
+#gd-footer { 
+  width: 100%; 
+  padding: 50px 0;
+  position: relative;
+  z-index: 100;   
+}
+
+.footer-icons { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 140px;
+}
+
+.footer-icons .icon-link {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: auto;
+}
+
+.footer-icons .icon-link img { 
+  width: 40px; 
+  height: auto; 
+  display: block;
+}
+
+.footer-icons .icon-link:nth-child(3) img { 
+  width: 45px; 
+}
+
+.footer-icons .icon-link:hover {
+  transform: translateY(-12px) scale(1.2);
+  transition: all 0.5s ease;
+}
+
+/* ======================================================
+   7. RESPONSIVE
+====================================================== */
+@media (max-width: 1024px) { 
+  .brand-tagline { display: none; } 
+}
+
+@media (max-width: 768px) {
+  .gd-header { 
+    left: 20px; 
+    right: 20px; 
+  }
+
+  .nav-toggle { 
+    display: flex; 
+  }
+
+  .nav-area {
+    position: fixed; 
+    top: 100px; 
+    left: 20px; 
+    right: 20px; 
+    background: rgba(15, 19, 32, 0.95); 
+    padding: 20px; 
+    border-radius: 20px; 
+    display: none; 
+  }
+
+  body.nav-open .nav-area { 
+    display: flex; 
+  }
+
+  .nav-list { 
+    flex-direction: column; 
+    gap: 20px; 
+  }
+
+  .scene-moments, 
+  .scene-details { 
+    grid-template-columns: 1fr; 
+    gap: 30px; 
+  }
+
+  .scene-title { 
+    font-size: 32px; 
+  }
+
+  .scene-text, 
+  .scene-subtitle { 
+    font-size: 20px; 
+  }
+
+  .scene-card.wide {
+    width: calc(100% + 40px);
+    margin: 0 -20px;
+  }
+
+  .footer-icons { 
+    gap: 30px;
+  }
+}
+
+/* ======================================================
+   INTRO LAYER
+====================================================== */
+#intro-layer,
+.intro-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; 
+}
+
+#background-overlay,
+.background-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--gd-cover);
+  z-index: 1;
+  -webkit-mask: url(#radialHoleMask);
+  mask: url(#radialHoleMask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+#loader-stage,
+.loader-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+}
+
+#loader-container,
+.loader-container {
+  width: var(--gd-logo-width);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader-container svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ======================================================
+   SCROLLBAR — OCULTA
+====================================================== */
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* ======================================================
+   PLANO ATENUACIÓN
+====================================================== */
+#plano-bg::after,
+.plano-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(15, 19, 32, 0.60);
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
+}
