@@ -42,14 +42,22 @@ const Index = () => {
   useEffect(() => {
     if (loading) {
       document.body.classList.add('sequence-only');
+      document.body.classList.remove('hero-visible', 'header-visible');
     } else {
       document.body.classList.remove('sequence-only');
-      if (heroVisible) {
-        document.body.classList.add('hero-visible');
-      }
-      if (headerVisible) {
-        document.body.classList.add('header-visible');
-      }
+    }
+    
+    // Update body classes based on state (matching original home.css behavior)
+    if (heroVisible) {
+      document.body.classList.add('hero-visible');
+    } else {
+      document.body.classList.remove('hero-visible');
+    }
+    
+    if (headerVisible) {
+      document.body.classList.add('header-visible');
+    } else {
+      document.body.classList.remove('header-visible');
     }
     
     return () => {

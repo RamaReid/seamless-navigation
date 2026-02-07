@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { PageFlip } from 'page-flip';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-// Hero images for spreads - 8 spreads total
+// Hero images for spreads - 10 spreads total (matching original)
 import magahauseHero from '@/assets/img/magahause/magahause-exterior-sur-entrada-hero.png';
 import donahauseHero from '@/assets/img/donahause/donahause-hero2.png';
 import gadehauseHero from '@/assets/img/gadehause/gadehause-exterior-hero-sur.png';
@@ -13,6 +14,7 @@ import jonohauseHero from '@/assets/img/jonohause/jonohause-exterior-hero.png';
 import cedahauseHero from '@/assets/img/cedahause/cedahause-exterior-hero-este.png';
 import markhauseHero from '@/assets/img/markhause/markhause-exterior-hero.png';
 
+// Spread configuration matching original revista.js
 const SPREAD_IMAGES = [
   { id: 1, src: magahauseHero, alt: 'MaGaHause exterior', link: '/proyectos/magahause' },
   { id: 2, src: donahauseHero, alt: 'DoNaHause exterior', link: '/proyectos/donahause' },
@@ -34,12 +36,26 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
   const pageFlipRef = useRef<PageFlip | null>(null);
   const isMobile = useIsMobile();
   const [isReady, setIsReady] = useState(false);
+  const [currentSpread, setCurrentSpread] = useState(0);
+  const pageContentsRef = useRef<HTMLDivElement[]>([]);
+
+  // Fix ghosting: hide page contents during flip, show on read state
+  const hideAllPageContents = useCallback(() => {
+    pageContentsRef.current.forEach(el => {
+      if (el) el.style.opacity = '0';
+    });
+  }, []);
+
+  const showAllPageContents = useCallback(() => {
+    pageContentsRef.current.forEach(el => {
+      if (el) el.style.opacity = '1';
+    });
+  }, []);
 
   // Initialize PageFlip after component mounts and is visible
   useEffect(() => {
     if (!visible || isMobile || !containerRef.current) return;
 
-    // Small delay to ensure DOM is ready
     let handleResize: (() => void) | null = null;
 
     const initTimer = setTimeout(() => {
@@ -49,10 +65,13 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
       const pages = container.querySelectorAll('.page');
       if (pages.length === 0) return;
 
+      // Collect all page-content elements for ghosting fix
+      pageContentsRef.current = Array.from(container.querySelectorAll('.page-content')) as HTMLDivElement[];
+
       try {
-        const rect = container.getBoundingClientRect();
-        const pageWidth = Math.max(315, Math.floor(rect.width / 2));
-        const pageHeight = Math.max(400, Math.floor(rect.height));
+        // Use container dimensions (matching original revista.js)
+        const pageWidth = Math.floor(window.innerWidth / 2);
+        const pageHeight = window.innerHeight;
 
         const pageFlip = new PageFlip(container, {
           width: pageWidth,
@@ -62,9 +81,8 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
           maxWidth: 3000,
           minHeight: 400,
           maxHeight: 2000,
-          drawShadow: false, // Remove shadow for cleaner look
-          flippingTime: 600,
-          maxShadowOpacity: 0,
+          drawShadow: true,
+          maxShadowOpacity: 0.5,
           showCover: false,
           mobileScrollSupport: false,
           useMouseEvents: true,
@@ -73,18 +91,41 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
           usePortrait: false,
           startPage: 0,
           autoSize: true,
-          showPageCorners: false, // Remove corner indicators
+          showPageCorners: true,
         });
 
         pageFlip.loadFromHTML(pages);
         pageFlipRef.current = pageFlip;
+        
+        // Ensure initial visibility
+        showAllPageContents();
         setIsReady(true);
 
-        // Handle resize (update render area to match container)
+        // FIX GHOSTING: During flip -> hide page contents
+        pageFlip.on('flip', () => {
+          hideAllPageContents();
+          // Update current spread for navigation
+          const pageIndex = pageFlip.getCurrentPageIndex();
+          setCurrentSpread(Math.floor(pageIndex / 2));
+        });
+
+        // When flip ends and stable ('read' state) -> show page contents
+        pageFlip.on('changeState', (e: any) => {
+          if (e.data === 'read') {
+            showAllPageContents();
+          }
+        });
+
+        // Handle resize
         handleResize = () => {
           if (!pageFlipRef.current) return;
           try {
-            pageFlipRef.current.update();
+            const newPageWidth = Math.floor(window.innerWidth / 2);
+            const newPageHeight = window.innerHeight;
+            // Use update method as per original
+            if (typeof (pageFlipRef.current as any).update === 'function') {
+              (pageFlipRef.current as any).update({ width: newPageWidth, height: newPageHeight });
+            }
           } catch {
             // Ignore resize errors
           }
@@ -109,7 +150,24 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
         pageFlipRef.current = null;
       }
     };
-  }, [visible, isMobile]);
+  }, [visible, isMobile, hideAllPageContents, showAllPageContents]);
+
+  // Navigation handlers
+  const goToPrev = useCallback(() => {
+    if (pageFlipRef.current) {
+      pageFlipRef.current.flipPrev();
+    }
+  }, []);
+
+  const goToNext = useCallback(() => {
+    if (pageFlipRef.current) {
+      pageFlipRef.current.flipNext();
+    }
+  }, []);
+
+  // Get adjacent spread labels
+  const prevSpread = currentSpread > 0 ? SPREAD_IMAGES[currentSpread - 1] : null;
+  const nextSpread = currentSpread < SPREAD_IMAGES.length - 1 ? SPREAD_IMAGES[currentSpread + 1] : null;
 
   // Mobile carousel fallback
   if (isMobile) {
@@ -125,13 +183,13 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
         aria-label="Hero Revista"
       >
         <div className="hero-revista-shell">
-          <div className="w-full h-full overflow-x-auto overflow-y-hidden">
-            <div className="flex gap-4 h-full px-4 snap-x snap-mandatory scroll-smooth">
+          <div id="hero-carousel" className="carousel w-full h-full overflow-x-auto overflow-y-hidden">
+            <div className="carousel-track flex gap-4 h-full px-4 snap-x snap-mandatory scroll-smooth">
               {SPREAD_IMAGES.map((spread) => (
-                <a
+                <Link
                   key={spread.id}
-                  href={spread.link}
-                  className="flex-shrink-0 w-[85vw] h-full rounded-lg snap-center block"
+                  to={spread.link}
+                  className="slide flex-shrink-0 w-[85vw] h-full rounded-lg snap-center block"
                   style={{
                     backgroundImage: `url(${spread.src})`,
                     backgroundSize: 'cover',
@@ -166,7 +224,7 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
         <div
           ref={containerRef}
           id="mi-revista"
-          className="flip-book"
+          className="flip-book desktop-only"
         >
           {/* Generate spread pages - each spread needs left and right pages */}
           {SPREAD_IMAGES.map((spread) => (
@@ -179,6 +237,9 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
               >
                 <div
                   className="page-content"
+                  ref={(el) => {
+                    if (el) pageContentsRef.current.push(el);
+                  }}
                   style={{
                     backgroundImage: `url(${spread.src})`,
                     backgroundPosition: 'left center',
@@ -193,6 +254,9 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
               >
                 <div
                   className="page-content"
+                  ref={(el) => {
+                    if (el) pageContentsRef.current.push(el);
+                  }}
                   style={{
                     backgroundImage: `url(${spread.src})`,
                     backgroundPosition: 'right center',
@@ -204,16 +268,30 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
         </div>
       </div>
       
-      {/* Flip hints */}
+      {/* Hero carousel controls (matching original home.css) */}
       {isReady && (
-        <>
-          <div className="hero-hint hero-flip-hint-left is-visible">
-            <span className="flip-arrow">‹</span>
-          </div>
-          <div className="hero-hint hero-flip-hint-right is-visible">
-            <span className="flip-arrow">›</span>
-          </div>
-        </>
+        <div className="house-hero-carousel">
+          {prevSpread && (
+            <button 
+              className="house-hero-control house-hero-prev"
+              onClick={goToPrev}
+              aria-label={`Anterior: ${prevSpread.alt}`}
+            >
+              <span className="house-hero-arrow">‹</span>
+              <span className="house-hero-label">{prevSpread.alt.split(' ')[0]}</span>
+            </button>
+          )}
+          {nextSpread && (
+            <button 
+              className="house-hero-control house-hero-next"
+              onClick={goToNext}
+              aria-label={`Siguiente: ${nextSpread.alt}`}
+            >
+              <span className="house-hero-label">{nextSpread.alt.split(' ')[0]}</span>
+              <span className="house-hero-arrow">›</span>
+            </button>
+          )}
+        </div>
       )}
     </section>
   );
