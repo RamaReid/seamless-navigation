@@ -1401,6 +1401,12 @@ body.project-index.hero-visible #plano-bg {
   color: #1a1a1a;
   opacity: 0.45;
   transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+.projects-nav a:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
 }
 
 .projects-nav a.is-active {
