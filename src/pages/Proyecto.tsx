@@ -157,8 +157,9 @@ const Proyecto: React.FC = () => {
                 <img
                   src={img.src}
                   alt={img.alt}
-                  className="w-full aspect-square object-cover rounded-md"
+                  className="w-full aspect-square object-cover object-center rounded-md"
                   loading="lazy"
+                  draggable={false}
                 />
               </div>
             ))}
@@ -182,6 +183,8 @@ const Proyecto: React.FC = () => {
               src={project.images[lightboxIndex].src}
               alt={project.images[lightboxIndex].alt}
               className="gd-lightbox-image"
+              style={{ objectFit: 'contain', maxWidth: '90vw', maxHeight: '90vh' }}
+              draggable={false}
             />
           )}
           <button
