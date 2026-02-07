@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Revista</title>
+    <link rel="stylesheet" href="revista.css">
+</head>
+<body>
+
+    <!-- Flip-book: spread (imagen ocupando dos páginas) -->
+    <div id="mi-revista" class="flip-book desktop-only">
+        <!-- Spread 1: MaGaHause -->
+        <div id="spread-1-left" class="page spread" data-name="spread-1-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-1-right" class="page spread" data-name="spread-1-right">
+            <div class="page-content"></div>
+        </div>
+
+        <!-- Spread 2: DoNaHause -->
+        <div id="spread-2-left" class="page spread" data-name="spread-2-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-2-right" class="page spread" data-name="spread-2-right">
+            <div class="page-content"></div>
+        </div>
+
+        <!-- Spread 3: GaDeHause -->
+        <div id="spread-3-left" class="page spread" data-name="spread-3-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-3-right" class="page spread" data-name="spread-3-right">
+            <div class="page-content"></div>
+        </div>
+
+        <!-- Spread 4: JoBeHause -->
+        <div id="spread-4-left" class="page spread" data-name="spread-4-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-4-right" class="page spread" data-name="spread-4-right">
+            <div class="page-content"></div>
+        </div>
+
+        <!-- Spread 5: JoMaHause -->
+        <div id="spread-5-left" class="page spread" data-name="spread-5-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-5-right" class="page spread" data-name="spread-5-right">
+            <div class="page-content"></div>
+        </div>
+
+        <!-- Spread 6: JoNoHause -->
+        <div id="spread-6-left" class="page spread" data-name="spread-6-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-6-right" class="page spread" data-name="spread-6-right">
+            <div class="page-content"></div>
+        </div>
+
+        <!-- Spread 7: CeDaHause -->
+        <div id="spread-7-left" class="page spread" data-name="spread-7-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-7-right" class="page spread" data-name="spread-7-right">
+            <div class="page-content"></div>
+        </div>
+
+        <!-- Spread 8: MarkHause -->
+        <div id="spread-8-left" class="page spread" data-name="spread-8-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-8-right" class="page spread" data-name="spread-8-right">
+            <div class="page-content"></div>
+        </div>
+
+        <!-- Spread 9: ScoHause -->
+        <div id="spread-9-left" class="page spread" data-name="spread-9-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-9-right" class="page spread" data-name="spread-9-right">
+            <div class="page-content"></div>
+        </div>
+
+        <!-- Spread 10: ViDaHause -->
+        <div id="spread-10-left" class="page spread" data-name="spread-10-left">
+            <div class="page-content"></div>
+        </div>
+        <div id="spread-10-right" class="page spread" data-name="spread-10-right">
+            <div class="page-content"></div>
+        </div>
+    </div>
+
+    <!-- Mobile carousel fallback -->
+    <div id="hero-carousel" class="carousel mobile-only">
+        <div class="carousel-track">
+            <a class="slide" href="/proyectos/magahause" style="background-image:url('/img/magahause/magahause-exterior-sur-entrada-hero.png')"></a>
+            <a class="slide" href="/proyectos/donahause" style="background-image:url('/img/donahause/donahause-hero2.png')"></a>
+            <a class="slide" href="/proyectos/gadehause" style="background-image:url('/img/gadehause/gadehause-exterior-hero-sur.png')"></a>
+            <a class="slide" href="/proyectos/jobehause" style="background-image:url('/img/jobehause/jobehause-exterior-frente-hero.png')"></a>
+            <a class="slide" href="/proyectos/jomahause" style="background-image:url('/img/jomahause/jomahause-exterior-hero.png')"></a>
+            <a class="slide" href="/proyectos/jonohause" style="background-image:url('/img/jonohause/jonohause-exterior-hero.png')"></a>
+            <a class="slide" href="/proyectos/cedahause" style="background-image:url('/img/cedahause/cedahause-exterior-hero-este.png')"></a>
+            <a class="slide" href="/proyectos/markhause" style="background-image:url('/img/markhause/markhause-exterior-hero.png')"></a>
+            <a class="slide" href="/proyectos/scohause" style="background-image:url('/img/scohause/scohause-exterior-hero.png')"></a>
+            <a class="slide" href="/proyectos/vidahause" style="background-image:url('/img/vidahause/vidahause-exterior-norte.png')"></a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@1.2.0/dist/js/page-flip.browser.min.js"></script>
+    <script src="revista.js"></script>
+</body>
+</html>

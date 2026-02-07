@@ -5,20 +5,25 @@ interface LoaderProps {
   onComplete?: () => void;
 }
 
-// Timing constants (based on CSS animation delays + durations)
-const STR5_DELAY = 3300; // 3.3s delay
-const STR5_DURATION = 1300; // 1.3s duration
-const INTRO_START_TIME = STR5_DELAY + STR5_DURATION + 200; // ~4.8s after mount
+// Timing constants matching original boot.js + intro.js
+const LOADER_CYCLES_REQUIRED = 2;
+const STR5_DELAY = 3300; // 3.3s delay for str5
+const STR5_DURATION = 1300; // 1.3s duration for str5
+const CYCLE_DURATION = STR5_DELAY + STR5_DURATION; // ~4.6s per cycle
 const RADIAL_REVEAL_DURATION = 6000; // 6s for radial reveal
 
 export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
   const [phase, setPhase] = useState<'loading' | 'lift' | 'drop' | 'bounce' | 'reveal' | 'complete'>('loading');
   const [visible, setVisible] = useState(true);
+  const [loaderCycles, setLoaderCycles] = useState(0);
+  const [windowLoaded, setWindowLoaded] = useState(false);
+  
   const svgRef = useRef<SVGSVGElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const maskSvgRef = useRef<SVGSVGElement>(null);
   const maskCircleRef = useRef<SVGCircleElement>(null);
   const maskRectRef = useRef<SVGRectElement>(null);
+  const cycleCountRef = useRef(0);
 
   // Radial Reveal Animation (matching original radialReveal.js)
   const startRadialReveal = useCallback(() => {
@@ -29,6 +34,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
     const logo = svgRef.current;
 
     if (!overlay || !svgMask || !maskCircle || !maskRect || !logo) {
+      console.warn('GD Reveal: Missing elements');
       return;
     }
 
@@ -79,16 +85,39 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
     requestAnimationFrame(animate);
   }, []);
 
-  // Start intro sequence after all stroke animations complete
+  // Track window load
+  useEffect(() => {
+    const handleLoad = () => setWindowLoaded(true);
+    
+    if (document.readyState === 'complete') {
+      setWindowLoaded(true);
+    } else {
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
+  }, []);
+
+  // Simulate loader cycles (matching loader.js behavior)
   useEffect(() => {
     if (phase !== 'loading') return;
 
-    const timer = setTimeout(() => {
-      setPhase('lift');
-    }, INTRO_START_TIME);
+    const cycleTimer = setInterval(() => {
+      cycleCountRef.current += 1;
+      setLoaderCycles(cycleCountRef.current);
+    }, CYCLE_DURATION);
 
-    return () => clearTimeout(timer);
+    return () => clearInterval(cycleTimer);
   }, [phase]);
+
+  // Gate: window.load + loaderCycles >= 2 => start intro (matching boot.js)
+  useEffect(() => {
+    if (phase !== 'loading') return;
+    if (!windowLoaded) return;
+    if (loaderCycles < LOADER_CYCLES_REQUIRED) return;
+
+    // Gate passed - start intro sequence
+    setPhase('lift');
+  }, [phase, windowLoaded, loaderCycles]);
 
   // Handle phase transitions (lift -> drop -> bounce -> reveal)
   useEffect(() => {
@@ -114,6 +143,12 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
         
         // Start radial reveal animation
         startRadialReveal();
+        
+        // Dispatch introComplete event
+        window.dispatchEvent(new Event("introComplete"));
+        
+        // Remove sequence-only class
+        document.body.classList.remove("sequence-only");
         
         // Complete after reveal duration
         setTimeout(() => {
