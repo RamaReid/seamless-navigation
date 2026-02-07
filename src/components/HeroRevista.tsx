@@ -102,12 +102,12 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
         ref={shellRef}
         className="hero-revista-shell"
         id="hero-revista-shell"
-        data-hero-src="/revista/revista.html?v=2"
+        data-hero-src="/revista/revista.html"
         data-no-smooth
       >
         <iframe
           id="hero-iframe"
-          src="/revista/revista.html?v=2"
+          src="/revista/revista.html"
           style={{
             width: '100%',
             height: '100%',
