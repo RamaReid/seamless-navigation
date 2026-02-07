@@ -59,9 +59,9 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
           maxWidth: 3000,
           minHeight: 400,
           maxHeight: 2000,
-          drawShadow: true,
-          flippingTime: 800,
-          maxShadowOpacity: 0.5,
+          drawShadow: false, // Remove shadow for cleaner look
+          flippingTime: 600,
+          maxShadowOpacity: 0,
           showCover: false,
           mobileScrollSupport: false,
           useMouseEvents: true,
@@ -70,7 +70,7 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
           usePortrait: false,
           startPage: 0,
           autoSize: true,
-          showPageCorners: true,
+          showPageCorners: false, // Remove corner indicators
         });
 
         pageFlip.loadFromHTML(pages);
