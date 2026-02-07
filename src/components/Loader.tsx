@@ -1,35 +1,33 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 interface LoaderProps {
   onComplete?: () => void;
-  minCycles?: number;
 }
 
-export const Loader: React.FC<LoaderProps> = ({ onComplete, minCycles = 2 }) => {
+// Timing constants (based on CSS animation delays + durations)
+const STR5_DELAY = 3300; // 3.3s delay
+const STR5_DURATION = 1300; // 1.3s duration
+const INTRO_START_TIME = STR5_DELAY + STR5_DURATION + 200; // ~4.8s after mount
+
+export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
   const [phase, setPhase] = useState<'loading' | 'lift' | 'drop' | 'bounce' | 'reveal' | 'complete'>('loading');
   const [visible, setVisible] = useState(true);
-  const [cycleCount, setCycleCount] = useState(0);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const loaderContainerRef = useRef<HTMLDivElement>(null);
 
-  // Track when last stroke animation ends (signals a cycle completion)
-  const handleStrokeAnimationEnd = useCallback((e: AnimationEvent) => {
-    const target = e.target as Element;
-    if (target.classList.contains('str5')) {
-      setCycleCount(prev => prev + 1);
-    }
-  }, []);
-
-  // Start intro sequence when enough cycles complete
+  // Start intro sequence after all stroke animations complete
   useEffect(() => {
-    if (cycleCount >= minCycles && phase === 'loading') {
-      setPhase('lift');
-    }
-  }, [cycleCount, minCycles, phase]);
+    if (phase !== 'loading') return;
 
-  // Handle phase transitions
+    const timer = setTimeout(() => {
+      setPhase('lift');
+    }, INTRO_START_TIME);
+
+    return () => clearTimeout(timer);
+  }, [phase]);
+
+  // Handle phase transitions (lift -> drop -> bounce -> reveal)
   useEffect(() => {
     if (phase === 'loading') return;
 
@@ -45,7 +43,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, minCycles = 2 }) => 
         setPhase('bounce');
       } else if (e.animationName === 'bounce') {
         setPhase('reveal');
-        // Start radial reveal and fade out
+        // Start fade out
         setTimeout(() => {
           setPhase('complete');
           setTimeout(() => {
@@ -59,15 +57,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, minCycles = 2 }) => 
     svg.addEventListener('animationend', handleAnimationEnd as EventListener);
     return () => svg.removeEventListener('animationend', handleAnimationEnd as EventListener);
   }, [phase, onComplete]);
-
-  // Listen for stroke animation ends
-  useEffect(() => {
-    const container = loaderContainerRef.current;
-    if (!container) return;
-
-    container.addEventListener('animationend', handleStrokeAnimationEnd as EventListener);
-    return () => container.removeEventListener('animationend', handleStrokeAnimationEnd as EventListener);
-  }, [handleStrokeAnimationEnd]);
 
   if (!visible) return null;
 
@@ -92,11 +81,11 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, minCycles = 2 }) => 
         "fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
       )}
     >
-      {/* Background overlay with radial mask */}
+      {/* Background overlay */}
       <div 
         id="background-overlay"
         className={cn(
-          "absolute inset-0 bg-gd-cover z-[1] transition-opacity duration-[6000ms]",
+          "absolute inset-0 bg-gd-cover z-[1] transition-opacity duration-[600ms]",
           phase === 'reveal' || phase === 'complete' ? "opacity-0" : "opacity-100"
         )}
       />
@@ -104,7 +93,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, minCycles = 2 }) => 
       {/* Loader Stage */}
       <div id="loader-stage" className="absolute inset-0 flex items-center justify-center z-[3]">
         <div 
-          ref={loaderContainerRef}
           className="loader-container"
           style={{ 
             width: 'var(--gd-logo-width, 300px)', 
