@@ -33,8 +33,9 @@ export const SceneCard: React.FC<SceneCardProps> = ({
       <img
         src={image}
         alt={alt}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover object-center"
         loading="lazy"
+        draggable={false}
       />
     </Link>
   );
