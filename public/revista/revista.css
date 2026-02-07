@@ -59,12 +59,20 @@ body {
 }
 
 /* Spread layout: a single foto cubre dos páginas enfrentadas */
-/* 200% auto = ancho cubre el spread (2 páginas), alto se ajusta manteniendo proporción */
-/* Si la foto es más alta que el contenedor, se recorta arriba/abajo (behavior tipo cover) */
+/* Por defecto: comportamiento "cover" adaptativo */
 .page.spread .page-content {
     background-repeat: no-repeat;
-    background-size: 200% auto;
     padding: 0;
+}
+
+/* Foto panorámica (más ancha que alta): alto como base, recorta lados */
+.page.spread.--wide .page-content {
+    background-size: auto 100%;
+}
+
+/* Foto vertical/cuadrada (más alta que ancha): ancho como base, recorta arriba/abajo */
+.page.spread.--tall .page-content {
+    background-size: 200% auto;
 }
 
 /* Spread images - Using public paths */

@@ -4,6 +4,75 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // =======================================
+    // DETECTAR ASPECT RATIO DE IMÁGENES Y APLICAR CLASES
+    // =======================================
+    const detectImageAspectRatios = () => {
+        const spreads = document.querySelectorAll('.page.spread');
+        const processed = new Set();
+        
+        spreads.forEach(page => {
+            const content = page.querySelector('.page-content');
+            if (!content) return;
+            
+            const style = window.getComputedStyle(content);
+            const bgImage = style.backgroundImage;
+            if (!bgImage || bgImage === 'none') return;
+            
+            // Extraer URL de la imagen
+            const urlMatch = bgImage.match(/url\(["']?([^"')]+)["']?\)/);
+            if (!urlMatch) return;
+            const imageUrl = urlMatch[1];
+            
+            // Solo procesar cada imagen una vez
+            if (processed.has(imageUrl)) {
+                // Copiar clase del spread que ya procesamos
+                const spreadNum = page.id.match(/spread-(\d+)/)?.[1];
+                if (spreadNum) {
+                    const sibling = document.querySelector(`#spread-${spreadNum}-left, #spread-${spreadNum}-right`);
+                    if (sibling && sibling !== page) {
+                        if (sibling.classList.contains('--wide')) page.classList.add('--wide');
+                        if (sibling.classList.contains('--tall')) page.classList.add('--tall');
+                    }
+                }
+                return;
+            }
+            processed.add(imageUrl);
+            
+            // Cargar imagen para detectar dimensiones
+            const img = new Image();
+            img.onload = function() {
+                const imgAspect = this.width / this.height;
+                // Aspect ratio del spread: 2 páginas = viewport width / height
+                const spreadAspect = (window.innerWidth) / window.innerHeight;
+                
+                // Buscar ambas páginas del spread
+                const spreadNum = page.id.match(/spread-(\d+)/)?.[1];
+                if (!spreadNum) return;
+                
+                const leftPage = document.getElementById(`spread-${spreadNum}-left`);
+                const rightPage = document.getElementById(`spread-${spreadNum}-right`);
+                
+                if (imgAspect > spreadAspect) {
+                    // Imagen panorámica: usar alto como base
+                    leftPage?.classList.add('--wide');
+                    rightPage?.classList.add('--wide');
+                } else {
+                    // Imagen más vertical: usar ancho como base
+                    leftPage?.classList.add('--tall');
+                    rightPage?.classList.add('--tall');
+                }
+            };
+            img.src = imageUrl;
+        });
+    };
+    
+    // Ejecutar detección
+    detectImageAspectRatios();
+    
+    // Re-detectar en resize (por si cambia el aspect ratio del viewport)
+    window.addEventListener('resize', detectImageAspectRatios);
+
+    // =======================================
     // AUTO HOVER EN ESQUINA (SIMULA HOVER REAL)
     // =======================================
     const autoCornerState = {
