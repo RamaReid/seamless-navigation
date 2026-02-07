@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Loader } from '@/components/Loader';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { HeroSection } from '@/components/HeroSection';
+import { HeroRevista } from '@/components/HeroRevista';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
 
@@ -23,9 +23,20 @@ const Index = () => {
 
   const handleLoaderComplete = () => {
     setLoading(false);
-    // Secuencia de reveal
-    setTimeout(() => setHeroVisible(true), 300);
-    setTimeout(() => setHeaderVisible(true), 800);
+    // Secuencia de reveal (BEAT timing from original)
+    const BEAT = 465;
+    
+    // Show header first
+    setTimeout(() => setHeaderVisible(true), BEAT * 3);
+    
+    // Then show hero and hide header briefly
+    setTimeout(() => {
+      setHeaderVisible(false);
+      setHeroVisible(true);
+    }, BEAT * 8);
+    
+    // Show header again with nav items
+    setTimeout(() => setHeaderVisible(true), BEAT * 10);
   };
 
   useEffect(() => {
@@ -33,12 +44,38 @@ const Index = () => {
       document.body.classList.add('sequence-only');
     } else {
       document.body.classList.remove('sequence-only');
-      document.body.classList.add('hero-visible', 'header-visible');
+      if (heroVisible) {
+        document.body.classList.add('hero-visible');
+      }
+      if (headerVisible) {
+        document.body.classList.add('header-visible');
+      }
     }
     
     return () => {
       document.body.classList.remove('sequence-only', 'hero-visible', 'header-visible');
     };
+  }, [loading, heroVisible, headerVisible]);
+
+  // Intersection observer for scene cards
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const cards = entry.target.querySelectorAll('.scene-card');
+            cards.forEach((card, index) => {
+              setTimeout(() => card.classList.add('is-visible'), index * 250);
+            });
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: '0px 0px -15% 0px' }
+    );
+
+    document.querySelectorAll('[data-scene]').forEach((scene) => observer.observe(scene));
+
+    return () => observer.disconnect();
   }, [loading]);
 
   return (
@@ -60,16 +97,7 @@ const Index = () => {
         
         <Header visible={headerVisible} />
 
-        <HeroSection visible={heroVisible}>
-          <div className="text-center p-8">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 animate-fadeInUp">
-              GD Arquitectura
-            </h1>
-            <p className="text-xl md:text-2xl text-foreground animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-              Diseño y Construcción
-            </p>
-          </div>
-        </HeroSection>
+        <HeroRevista visible={heroVisible} />
 
         <main id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">
           {/* Bajada Hero */}

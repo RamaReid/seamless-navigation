@@ -82,12 +82,21 @@
   
   html {
     scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
   }
   
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
+    overflow-y: auto;
     margin: 0;
     padding: 0;
   }
@@ -130,42 +139,42 @@ body.hero-visible #plano-bg {
 }
 
 /* ======================================================
-   ANIMATIONS
+   LOADER MASK ANIMATIONS
 ====================================================== */
 
 @keyframes revealX {
-  from { transform: translateX(-100%); }
+  from { transform: translateX(-210px); }
   to { transform: translateX(0); }
 }
 
 @keyframes revealY {
-  from { transform: translateY(-100%); }
+  from { transform: translateY(-170px); }
   to { transform: translateY(0); }
 }
 
 @keyframes revealLeftToRight {
-  from { transform: translateX(-100%); }
+  from { transform: translateX(-210px); }
   to { transform: translateX(0); }
 }
 
 @keyframes revealRightToLeft {
-  from { transform: translateX(100%); }
+  from { transform: translateX(210px); }
   to { transform: translateX(0); }
 }
 
 @keyframes revealTopToBottom {
-  from { transform: translateY(-100%); }
+  from { transform: translateY(-170px); }
   to { transform: translateY(0); }
 }
 
 @keyframes revealBottomToTop {
-  from { transform: translateY(100%); }
+  from { transform: translateY(170px); }
   to { transform: translateY(0); }
 }
 
-@keyframes drawLine {
-  to { stroke-dashoffset: 0; }
-}
+/* ======================================================
+   LOGO ANIMATIONS (LIFT / DROP / BOUNCE)
+====================================================== */
 
 @keyframes lift {
   0% { transform: scale(1); }
@@ -183,6 +192,10 @@ body.hero-visible #plano-bg {
   35% { transform: scale(1.03); }
   65% { transform: scale(0.995); }
   100% { transform: scale(1.00); }
+}
+
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
 }
 
 @keyframes fadeIn {
@@ -216,15 +229,25 @@ body.hero-visible #plano-bg {
    LOADER STROKES
 ====================================================== */
 
+.loader-container .str0,
+.loader-container .str1,
+.loader-container .str2,
+.loader-container .str3,
+.loader-container .str4,
+.loader-container .str5 {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
 .loader-container .str0 {
   stroke: hsl(300 1% 77%);
   stroke-width: 1.5;
   stroke-dasharray: 5 3 1 3;
-  fill: none;
 }
 
 .loader-container .str1 {
-  stroke: hsl(0 0% 0%);
+  stroke: hsl(300 1% 77%);
   stroke-width: 1.5;
   fill: none;
 }
@@ -232,25 +255,37 @@ body.hero-visible #plano-bg {
 .loader-container .str2 {
   stroke: hsl(300 1% 77%);
   stroke-width: 0.75;
-  fill: none;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: drawLine 20s ease-out forwards;
+  animation-delay: 2.62s;
 }
 
 .loader-container .str3 {
   stroke: hsl(360 100% 50%);
-  stroke-width: 0.9;
-  fill: none;
+  stroke-width: 0.75;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: -2000;
+  animation: drawLine 1.5s ease-in-out forwards;
+  animation-delay: 2.62s;
 }
 
 .loader-container .str4 {
   stroke: hsl(360 100% 50%);
   stroke-width: 1;
-  fill: none;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: -2000;
+  animation: drawLine 1.5s ease-in-out forwards;
+  animation-delay: 2.86s;
 }
 
 .loader-container .str5 {
   stroke: hsl(229 66% 48%);
   stroke-width: 1;
-  fill: none;
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+  animation: drawLine 1.3s ease-in-out forwards;
+  animation-delay: 3.3s;
 }
 
 /* ======================================================
@@ -290,6 +325,195 @@ body.hero-visible #plano-bg {
 }
 
 /* ======================================================
+   HERO REVISTA / FLIP-BOOK
+====================================================== */
+
+.hero-revista-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  box-sizing: border-box;
+  z-index: 30;
+}
+
+.hero-revista-shell {
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 19, 32, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+/* PageFlip styles */
+.flip-book {
+  width: 100%;
+  height: 100%;
+  box-shadow: none;
+  overflow: hidden;
+  position: relative;
+}
+
+.flip-book .page {
+  background-color: #fdfdfd;
+  border: 1px solid #c2c2c2;
+  text-align: center;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: auto;
+  height: 100%;
+  position: relative;
+}
+
+.flip-book .page-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  transition: transform 280ms ease, opacity 280ms ease;
+  will-change: transform, opacity;
+}
+
+.flip-book .page.spread .page-content {
+  background-repeat: no-repeat;
+  background-size: 200% auto;
+}
+
+.flip-book .page:hover .page-content {
+  transform: scale(1.01);
+}
+
+/* ======================================================
+   SCENE CARDS
+====================================================== */
+
+.scene-card {
+  display: block;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(15px) scale(0.99);
+  transition: opacity 1.5s ease, transform 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.scene-card.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.scene-card.square img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+}
+
+.scene-card.wide {
+  aspect-ratio: 2.56 / 1;
+  width: calc(100% + 80px);
+  margin: 0 -40px;
+}
+
+.scene-card.wide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.scene-card img {
+  transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scene-card:hover img {
+  transform: scale(1.08);
+}
+
+/* ======================================================
+   HERO HINTS
+====================================================== */
+
+.hero-hint {
+  position: absolute;
+  z-index: 35;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.hero-hint.is-visible {
+  opacity: 0.9;
+}
+
+.hero-scroll-hint {
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 0);
+}
+
+.hero-scroll-mouse {
+  display: block;
+  width: 12px;
+  height: 44px;
+  border-radius: 999px;
+  position: relative;
+  box-sizing: border-box;
+  background: transparent;
+  border: 2px solid rgba(210, 218, 228, 0.75);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.hero-scroll-mouse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(200, 208, 218, 0.85) 0px,
+      rgba(200, 208, 218, 0.85) 2px,
+      rgba(160, 168, 178, 0) 4px,
+      rgba(160, 168, 178, 0) 10px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(245, 248, 252, 0.12),
+      rgba(0, 0, 0, 0.12)
+    );
+  background-size: 100% 16px, 100% 100%;
+  background-repeat: repeat, no-repeat;
+  animation: heroScrollWheel 1.6s ease-in-out infinite;
+}
+
+@keyframes heroScrollWheel {
+  0% {
+    opacity: 0.35;
+    background-position: 0 0;
+  }
+  60% {
+    opacity: 1;
+    background-position: 0 24px;
+  }
+  100% {
+    opacity: 0.35;
+    background-position: 0 0;
+  }
+}
+
+/* ======================================================
    UTILITIES
 ====================================================== */
 
@@ -320,5 +544,16 @@ body.hero-visible #plano-bg {
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+
+@media (max-width: 768px) {
+  .scene-card.wide {
+    width: calc(100% + 40px);
+    margin: 0 -20px;
   }
 }

@@ -1,77 +1,131 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 interface LoaderProps {
   onComplete?: () => void;
-  minDuration?: number;
+  minCycles?: number;
 }
 
-export const Loader: React.FC<LoaderProps> = ({ onComplete, minDuration = 3500 }) => {
-  const [phase, setPhase] = useState<'loading' | 'lift' | 'drop' | 'bounce' | 'complete'>('loading');
+export const Loader: React.FC<LoaderProps> = ({ onComplete, minCycles = 2 }) => {
+  const [phase, setPhase] = useState<'loading' | 'lift' | 'drop' | 'bounce' | 'reveal' | 'complete'>('loading');
   const [visible, setVisible] = useState(true);
+  const [cycleCount, setCycleCount] = useState(0);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const loaderContainerRef = useRef<HTMLDivElement>(null);
 
+  // Track when last stroke animation ends (signals a cycle completion)
+  const handleStrokeAnimationEnd = useCallback((e: AnimationEvent) => {
+    const target = e.target as Element;
+    if (target.classList.contains('str5')) {
+      setCycleCount(prev => prev + 1);
+    }
+  }, []);
+
+  // Start intro sequence when enough cycles complete
   useEffect(() => {
-    const timeline = [
-      { phase: 'lift' as const, delay: 2800 },
-      { phase: 'drop' as const, delay: 2000 },
-      { phase: 'bounce' as const, delay: 550 },
-      { phase: 'complete' as const, delay: 400 },
-    ];
+    if (cycleCount >= minCycles && phase === 'loading') {
+      setPhase('lift');
+    }
+  }, [cycleCount, minCycles, phase]);
 
-    let timeoutId: NodeJS.Timeout;
-    let currentDelay = 0;
+  // Handle phase transitions
+  useEffect(() => {
+    if (phase === 'loading') return;
 
-    timeline.forEach(({ phase: nextPhase, delay }) => {
-      currentDelay += delay;
-      timeoutId = setTimeout(() => {
-        setPhase(nextPhase);
-        if (nextPhase === 'complete') {
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    const handleAnimationEnd = (e: AnimationEvent) => {
+      if (e.target !== svg) return;
+
+      if (e.animationName === 'lift') {
+        setPhase('drop');
+      } else if (e.animationName === 'drop') {
+        setPhase('bounce');
+      } else if (e.animationName === 'bounce') {
+        setPhase('reveal');
+        // Start radial reveal and fade out
+        setTimeout(() => {
+          setPhase('complete');
           setTimeout(() => {
             setVisible(false);
             onComplete?.();
-          }, 800);
-        }
-      }, currentDelay);
-    });
+          }, 600);
+        }, 100);
+      }
+    };
 
-    return () => clearTimeout(timeoutId);
-  }, [onComplete]);
+    svg.addEventListener('animationend', handleAnimationEnd as EventListener);
+    return () => svg.removeEventListener('animationend', handleAnimationEnd as EventListener);
+  }, [phase, onComplete]);
+
+  // Listen for stroke animation ends
+  useEffect(() => {
+    const container = loaderContainerRef.current;
+    if (!container) return;
+
+    container.addEventListener('animationend', handleStrokeAnimationEnd as EventListener);
+    return () => container.removeEventListener('animationend', handleStrokeAnimationEnd as EventListener);
+  }, [handleStrokeAnimationEnd]);
 
   if (!visible) return null;
+
+  const getPhaseClass = () => {
+    switch (phase) {
+      case 'lift':
+        return 'animate-[lift_2s_cubic-bezier(0.22,0.6,0.2,1)_forwards]';
+      case 'drop':
+        return 'animate-[drop_0.55s_cubic-bezier(0,0,0.2,1)_forwards]';
+      case 'bounce':
+        return 'animate-[bounce_0.4s_cubic-bezier(0.25,0.5,0.5,1)_forwards]';
+      default:
+        return '';
+    }
+  };
 
   return (
     <div 
       id="intro-layer"
+      ref={containerRef}
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center pointer-events-none transition-opacity duration-800",
-        phase === 'complete' && "opacity-0"
+        "fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
       )}
     >
-      {/* Background overlay */}
+      {/* Background overlay with radial mask */}
       <div 
         id="background-overlay"
         className={cn(
-          "absolute inset-0 bg-gd-cover transition-opacity duration-1000",
-          phase !== 'loading' && "opacity-0"
+          "absolute inset-0 bg-gd-cover z-[1] transition-opacity duration-[6000ms]",
+          phase === 'reveal' || phase === 'complete' ? "opacity-0" : "opacity-100"
         )}
       />
       
       {/* Loader Stage */}
-      <div id="loader-stage" className="relative z-10">
+      <div id="loader-stage" className="absolute inset-0 flex items-center justify-center z-[3]">
         <div 
-          className={cn(
-            "loader-container",
-            phase === 'lift' && "animate-[lift_2s_cubic-bezier(0.22,0.6,0.2,1)_forwards]",
-            phase === 'drop' && "animate-[drop_0.55s_cubic-bezier(0,0,0.2,1)_forwards]",
-            phase === 'bounce' && "animate-[bounce_0.4s_cubic-bezier(0.25,0.5,0.5,1)_forwards]"
-          )}
+          ref={loaderContainerRef}
+          className="loader-container"
           style={{ 
-            width: 'var(--gd-logo-width, 280px)', 
-            maxWidth: '90vw',
-            transformOrigin: '50% 100%'
+            width: 'var(--gd-logo-width, 300px)', 
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
         >
-          <svg viewBox="0 0 210 170" className="w-full h-auto">
+          <svg 
+            ref={svgRef}
+            viewBox="0 0 210 170" 
+            className={cn(
+              "w-full h-auto block",
+              getPhaseClass(),
+              phase === 'reveal' || phase === 'complete' ? 'opacity-0 transition-opacity duration-600' : ''
+            )}
+            style={{ 
+              transformOrigin: '50% 70%',
+              maxWidth: '90vw'
+            }}
+          >
             <defs>
               <mask id="maskX" maskUnits="userSpaceOnUse">
                 <rect x="0" y="0" width="210" height="170" fill="black"/>
@@ -110,7 +164,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, minDuration = 3500 }
             {/* Capa 2: Vertical punteada */}
             <line className="str0" x1="106.6195" y1="15.5714" x2="106.6195" y2="154.9187" mask="url(#maskY)" />
             
-            {/* Capa 3: Marco negro */}
+            {/* Capa 3: Marco */}
             <line className="str1" x1="22.3182" y1="51.9211" x2="185.0042" y2="51.9211" mask="url(#maskTop)" />
             <line className="str1" x1="185.0042" y1="118.5687" x2="22.3182" y2="118.5687" mask="url(#maskBottom)" />
             <line className="str1" x1="40.4825" y1="30.2342" x2="40.4825" y2="137.8011" mask="url(#maskLeft)" />
@@ -119,7 +173,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, minDuration = 3500 }
             {/* Capa 4: Trazo gris */}
             <path className="str2" d="M40.2984 91.3929l-24.5814 -24.5814m24.739 16.8603l-20.4766 -20.4767m21.2644 13.8587l-13.4553 -13.4554m14.7903 6.6471l-19.4185 -19.154m22.7901 13.4333l-19.6266 -19.2516m24.0593 15.393l-16.1737 -16.174m20.284 12.3788l-24.2662 -24.2662m28.029 21.4377l-20.5351 -20.535m25.4782 18.2299l-18.6113 -18.6114m27.0674 18.8737l-24.7692 -24.7694m32.4902 24.6118l-17.1474 -17.1475m24.8685 17.4627l-24.8965 -24.8965m32.6177 24.7388l-30.4333 -30.4334m38.548 30.1971l-20.8176 -20.8178m23.9743 16.4346l-21.1986 -22.3254m21.2069 13.3015l-10.1705 -10.1706m10.6916 4.1006l-11.125 -11.125m10.5904 112.855l-15.7602 -15.7602m9.8488 17.7272l-18.4335 -18.4332m-7.2483 0.1575l31.3568 31.3569m-39.3064 -32.1251l21.4234 22.1206m-69.6592 -61.4654l58.0721 58.072m3 10.2484l-57.6968 -57.6967m40.844 47.4351l-35.4694 -35.4691m4.0871 11.9924l24.4343 24.4343m-26.4029 -17.7365l19.2316 19.2314m58.2132 -113.3956l-8.0492 -8.0492"/>
             
-            {/* Capa 5: G interior y exterior */}
+            {/* Capa 5: G interior y exterior (rojo) */}
             <polyline className="str3" points="106.6195,82.9488 104.2629,80.3041 106.6195,85.245 101.6786,80.3041 106.6195,87.4096 99.541,80.3041 106.6195,89.7911 97.1325,80.3041 104.4452,90.0939 94.9097,80.3041 102.3762,90.0939 92.5865,80.3041 100.2251,90.0939 90.4141,80.3041 97.8299,90.0939 88.0403,80.3041 95.3396,90.0939 85.9997,80.3041 93.284,90.0939 83.4942,80.3041 90.9876,90.0939 81.3534,80.3041 88.7379,90.0939 78.9481,80.3041 86.4567,90.0939 76.7517,80.3041 84.1918,90.0939 74.4018,80.3041 83.2476,91.2387 73.0841,81.1464 83.2476,93.696 73.084,83.5326 83.2476,95.7476 73.0841,85.6456 82.0756,96.9055 73.0841,88.0787 79.7167,96.9592 73.0841,90.0939 77.4185,96.9592 73.0841,92.6248 75.1865,96.9592 73.084,94.8639 73.7147,96.9592"/>
             
             <path className="str4" d="M55.1067 114.5553l15.9655 15.8777 -10.3657 -14.9084 14.5875 14.9402 -8.3474 -12.8934 12.9635 12.9193 -7.6697 -12.1716 12.1902 12.1902 -7.7936 -12.3396 12.3397 12.3396 -7.644 -12.1902 12.1902 12.1902 -7.6441 -12.1902 12.1901 12.1902 -7.7934 -12.3397 12.3395 12.3395 -7.7934 -12.3395 11.673 11.673 -6.9775 -11.5234 6.9774 6.9773 -2.4313 -6.9774 2.4314 2.4312m0.0083 -81.762l-5.8022 -5.802 5.7939 10.2798 -7.9219 -8.1888 7.9219 12.7349 -12.1828 -12.419 12.2885 17.3717 -16.048 -16.557 10.336 15.0903 -14.5139 -14.7504 9.9679 14.7504 -13.8837 -14.1987 9.3376 14.1987 -13.3322 -13.3322 8.786 13.3322 -13.3281 -13.3322 8.782 13.3322 -13.1882 -13.1881 8.642 13.1881 -12.6847 -12.6846 8.1386 12.6846 -11.8866 -11.8866 7.3405 11.8866 -10.8377 -10.8375 7.2147 11.7608 -10.4912 -10.4913 6.9937 11.5399 -10.0717 -10.0718 6.8737 11.4199 -9.7688 -9.7687 6.9236 11.3233 -9.6468 -9.5005 6.8591 11.4052 -9.4183 -9.4181 6.9461 11.4922 -9.3456 -9.3456 7.0924 11.6385 -9.3344 -9.3345 7.3006 11.8469 -9.3847 -9.3847 7.5779 12.1239 -9.5008 -9.5008 7.936 12.4823 -9.6922 -9.6924 8.3954 12.9416 -9.976 -9.976 8.9873 13.5336 -10.3793 -10.3794 9.6104 14.1566 -10.7959 -10.7961 10.817 15.3632 -11.7714 -11.7713 12.3486 16.8946 -13.0365 -13.0365 18.1694 22.1865 -18.5404 -18.0114 23.489 27.1108 -23.4657 -22.5412 38.4752 43.0213 -37.9152 -37.9151 31.9672 36.5131 -30.5652 -30.5651 23.4369 27.9829 -20.2772 -20.277"/>
