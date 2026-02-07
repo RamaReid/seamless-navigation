@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
+
     // =======================================
     // AVISAR AL HOME: INTERACCIONES DEL HERO
     // Enviar mensaje al padre en cada pointerdown dentro del hero
@@ -92,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
         window.parent.postMessage(
             { type: "HERO_SCROLL_INTENT" },
             "*"
-        );
+        );  
     };
 
     // Rueda de mouse
@@ -100,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Touch (mobile)
     document.addEventListener("touchmove", notifyScrollIntent, { passive: true });
-
+    
     // ===============================
     // CONTENEDOR
     // ===============================
@@ -210,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     // Evita que PageFlip reutilice el frame anterior
+
 
     // ===============================
     // RESIZE
