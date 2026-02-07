@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Loader } from '@/components/Loader';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -16,29 +16,56 @@ import cedahauseLiving from '@/assets/img/cedahause/cedahause-living.png';
 import jonohauseBano from '@/assets/img/jonohause/jonohause-bano.png';
 import donahauseQuincho from '@/assets/img/donahause/donahause-quincho.png';
 
+// Timing constant from original home.js
+const BEAT = 465;
+
 const Index = () => {
   const [loading, setLoading] = useState(true);
-  const [headerVisible, setHeaderVisible] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
 
-  const handleLoaderComplete = () => {
-    setLoading(false);
-    // Secuencia de reveal (BEAT timing from original)
-    const BEAT = 465;
-    
-    // Show header first
-    setTimeout(() => setHeaderVisible(true), BEAT * 3);
-    
-    // Then show hero and hide header briefly
+  // Run sequence after intro completes (matching home.js introComplete listener)
+  const runSequence = useCallback(() => {
+    // Show header first (BEAT * 3)
     setTimeout(() => {
-      setHeaderVisible(false);
-      setHeroVisible(true);
-    }, BEAT * 8);
-    
-    // Show header again with nav items
-    setTimeout(() => setHeaderVisible(true), BEAT * 10);
-  };
+      document.body.classList.add('header-visible');
+    }, BEAT * 3);
 
+    // Hide header briefly, show hero (BEAT * 8)
+    setTimeout(() => {
+      document.body.classList.remove('header-visible');
+      document.body.classList.add('hero-visible');
+      setHeroVisible(true);
+      window.dispatchEvent(new Event('heroVisible'));
+    }, BEAT * 8);
+
+    // Show header again with nav items (BEAT * 10)
+    const navItems = document.querySelectorAll('.nav-list li');
+    navItems.forEach((li, i) => {
+      setTimeout(() => {
+        (li as HTMLElement).style.opacity = '1';
+        (li as HTMLElement).style.transform = 'translateY(0)';
+      }, (BEAT * 10) + (i * 100));
+    });
+  }, []);
+
+  const handleLoaderComplete = useCallback(() => {
+    setLoading(false);
+    // Listen for introComplete to start sequence
+    runSequence();
+  }, [runSequence]);
+
+  // Listen for introComplete event (matching original flow)
+  useEffect(() => {
+    const handleIntroComplete = () => {
+      if (!loading) return;
+      // Intro already completed via Loader onComplete
+    };
+
+    window.addEventListener('introComplete', handleIntroComplete);
+    return () => window.removeEventListener('introComplete', handleIntroComplete);
+  }, [loading]);
+
+  // Manage body classes
   useEffect(() => {
     if (loading) {
       document.body.classList.add('sequence-only');
@@ -47,26 +74,15 @@ const Index = () => {
       document.body.classList.remove('sequence-only');
     }
     
-    // Update body classes based on state (matching original home.css behavior)
-    if (heroVisible) {
-      document.body.classList.add('hero-visible');
-    } else {
-      document.body.classList.remove('hero-visible');
-    }
-    
-    if (headerVisible) {
-      document.body.classList.add('header-visible');
-    } else {
-      document.body.classList.remove('header-visible');
-    }
-    
     return () => {
       document.body.classList.remove('sequence-only', 'hero-visible', 'header-visible');
     };
-  }, [loading, heroVisible, headerVisible]);
+  }, [loading]);
 
-  // Intersection observer for scene cards
+  // Intersection observer for scene cards (matching original home.js)
   useEffect(() => {
+    if (loading) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -86,6 +102,34 @@ const Index = () => {
     return () => observer.disconnect();
   }, [loading]);
 
+  // Parallax for plano-bg (matching original home.js)
+  useEffect(() => {
+    let scrollUnlocked = false;
+
+    const handleMessage = (event: MessageEvent) => {
+      const type = event?.data?.type;
+      if (typeof type === 'string' && type.includes('HERO')) {
+        scrollUnlocked = true;
+      }
+    };
+
+    const handleScroll = () => {
+      const planoBg = document.getElementById('plano-bg');
+      if (planoBg && scrollUnlocked) {
+        const offset = window.pageYOffset * 0.1;
+        planoBg.style.transform = `translateY(${offset}px) scale(1.03)`;
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Plano de fondo con imagen FondoCasaM */}
@@ -103,7 +147,7 @@ const Index = () => {
       <div id="app-layer" className="relative z-30">
         <div id="inicio" />
         
-        <Header visible={headerVisible} />
+        <Header visible={true} />
 
         <HeroRevista visible={heroVisible} />
 
