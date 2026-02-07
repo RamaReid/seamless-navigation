@@ -7,6 +7,7 @@ import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene'
 import { SceneCard } from '@/components/SceneCard';
 
 // Imágenes originales del proyecto
+import fondoCasaM from '@/assets/img/FondoCasaM.png';
 import magahauseTerrazaVida from '@/assets/img/magahause/magahause-terraza-vida.png';
 import gadehausePiletaPortal from '@/assets/img/gadehause/gadehause-pileta-portal.png';
 import gadehauseCocina from '@/assets/img/gadehause/gadehause-cocina-panoramica.png';
@@ -42,11 +43,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Plano de fondo */}
+      {/* Plano de fondo con imagen FondoCasaM */}
       <div 
         id="plano-bg"
         style={{
-          backgroundImage: 'linear-gradient(135deg, hsl(226 38% 8%) 0%, hsl(226 38% 15%) 100%)'
+          backgroundImage: `url(${fondoCasaM})`
         }}
       />
 

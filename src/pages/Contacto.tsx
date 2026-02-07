@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import fondoCasaM from '@/assets/img/FondoCasaM.png';
 
 const Contacto = () => {
   const [headerVisible, setHeaderVisible] = useState(false);
@@ -30,11 +31,11 @@ const Contacto = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Plano de fondo */}
+      {/* Plano de fondo con imagen FondoCasaM */}
       <div 
         id="plano-bg"
         style={{
-          backgroundImage: 'linear-gradient(135deg, hsl(226 38% 8%) 0%, hsl(226 38% 15%) 100%)'
+          backgroundImage: `url(${fondoCasaM})`
         }}
       />
 
