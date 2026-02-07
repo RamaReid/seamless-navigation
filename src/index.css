@@ -552,6 +552,44 @@ body.hero-visible #plano-bg {
   }
 }
 
+/* Flip hints for revista */
+.hero-flip-hint-left,
+.hero-flip-hint-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 35;
+  font-size: 48px;
+  color: hsl(var(--gd-grey));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.hero-flip-hint-left {
+  left: 32px;
+}
+
+.hero-flip-hint-right {
+  right: 32px;
+}
+
+.hero-flip-hint-left.is-visible,
+.hero-flip-hint-right.is-visible {
+  opacity: 0.7;
+}
+
+.flip-arrow {
+  display: block;
+  animation: flipArrowPulse 2s ease-in-out infinite;
+}
+
+@keyframes flipArrowPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
 /* ======================================================
    UTILITIES
 ====================================================== */
