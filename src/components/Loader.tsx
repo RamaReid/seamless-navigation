@@ -1,14 +1,12 @@
 /**
  * Loader.tsx - Sistema de arranque completo con gate de 3 condiciones
  * 
- * Implementa:
- * 1. Loader loop (conteo de ciclos + stop post-loop)
- * 2. Gate de arranque (cold start y navegación interna/skip)
- * 3. Intro coreografiada (lift → drop → bounce)
- * 4. Radial reveal (máscara SVG)
- * 5. Handoff a Home interactivo
- * 
- * @see PRD: MIGRACIÓN GDWeb a React (Parte 1)
+ * CORRECCIONES APLICADAS:
+ * - Ciclos contados por animationend de str5 (NO por timer)
+ * - Post-loop solo cuando GateReady es true
+ * - Radial reveal → header/hero en <=250ms
+ * - Tipografía Times New Roman
+ * - Hovers originales preservados
  */
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
@@ -16,22 +14,20 @@ import { cn } from '@/lib/utils';
 
 interface LoaderProps {
   onComplete?: () => void;
-  isNavSkip?: boolean; // true si viene de navegación interna
+  isNavSkip?: boolean;
 }
 
 // ========================================
 // CONFIGURACIÓN DE TIEMPOS
 // ========================================
-const STR5_DELAY = 3300; // 3.3s delay para str5
-const STR5_DURATION = 1300; // 1.3s duración de str5
-const CYCLE_DURATION = STR5_DELAY + STR5_DURATION; // ~4.6s por ciclo
-const RADIAL_REVEAL_DURATION = 6000; // 6s para radial reveal
+const RADIAL_REVEAL_DURATION = 4500; // 4.5s para radial reveal
 const GATE_TIMEOUT_MS = 14000; // 14s timeout de seguridad
+const POST_REVEAL_MAX_DELAY = 250; // máximo 250ms post-reveal
 
 const COLD_START_CYCLES = 2;
 const NAV_SKIP_CYCLES = 1;
 
-type Phase = 'loading' | 'lift' | 'drop' | 'bounce' | 'reveal' | 'complete';
+type Phase = 'loading' | 'post-loop' | 'lift' | 'drop' | 'bounce' | 'reveal' | 'complete';
 
 export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false }) => {
   // ========================================
@@ -40,6 +36,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
   const [phase, setPhase] = useState<Phase>('loading');
   const [visible, setVisible] = useState(true);
   const [revealRadius, setRevealRadius] = useState(0);
+  const [loopKey, setLoopKey] = useState(0); // Key para reiniciar animaciones
   
   // Gate conditions
   const [loaderCycles, setLoaderCycles] = useState(0);
@@ -51,26 +48,40 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
   
   // Refs
   const svgRef = useRef<SVGSVGElement>(null);
-  const cycleCountRef = useRef(0);
   const animationFrameRef = useRef<number>();
   const gateReadyFiredRef = useRef(false);
   const layoutStableFrames = useRef(0);
   const lastLayoutSize = useRef<{ width: number; height: number } | null>(null);
+  const revealStartTimeRef = useRef<number>(0);
 
   // ========================================
-  // 1. CONTADOR DE CICLOS DEL LOADER
+  // 1. CONTADOR DE CICLOS POR ANIMATIONEND DE STR5
   // ========================================
   useEffect(() => {
     if (phase !== 'loading') return;
 
-    const cycleTimer = setInterval(() => {
-      cycleCountRef.current += 1;
-      setLoaderCycles(cycleCountRef.current);
-      console.log(`[Loader] Cycle: ${cycleCountRef.current}/${requiredCycles}`);
-    }, CYCLE_DURATION);
+    const svg = svgRef.current;
+    if (!svg) return;
 
-    return () => clearInterval(cycleTimer);
-  }, [phase, requiredCycles]);
+    const handleStr5End = (e: AnimationEvent) => {
+      // Solo contar cuando termina la animación drawLine de str5
+      const target = e.target as SVGElement;
+      if (target.classList.contains('str5') && e.animationName === 'drawLine') {
+        const newCount = loaderCycles + 1;
+        setLoaderCycles(newCount);
+        console.log(`[Loader] Cycle complete: ${newCount}/${requiredCycles}`);
+        
+        // Reiniciar el loop si no hemos alcanzado los ciclos requeridos Y gate no está listo
+        if (newCount < requiredCycles || (!assetsReady || !revistaReady)) {
+          // Forzar reinicio de animaciones incrementando la key
+          setLoopKey(prev => prev + 1);
+        }
+      }
+    };
+
+    svg.addEventListener('animationend', handleStr5End as EventListener);
+    return () => svg.removeEventListener('animationend', handleStr5End as EventListener);
+  }, [phase, loaderCycles, requiredCycles, assetsReady, revistaReady]);
 
   // ========================================
   // 2. ASSETS READY (Fuentes + Layout estable)
@@ -80,10 +91,10 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
 
     const checkAssetsReady = async () => {
       try {
-        // Esperar a que las fuentes estén listas
+        // Esperar a que las fuentes estén listas (Times New Roman es de sistema, debería ser instantáneo)
         if ('fonts' in document) {
           await document.fonts.ready;
-          console.log('[Loader] Fonts loaded');
+          console.log('[Loader] Fonts loaded (Times New Roman)');
         }
 
         // Verificar layout estable (2 frames consecutivos sin cambios)
@@ -120,11 +131,11 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
         // Pequeño delay antes de verificar layout
         setTimeout(() => {
           requestAnimationFrame(checkLayoutStability);
-        }, 200);
+        }, 100);
 
       } catch (error) {
         console.error('[Loader] Error checking assets:', error);
-        setTimeout(() => setAssetsReady(true), 2000);
+        setTimeout(() => setAssetsReady(true), 1500);
       }
     };
 
@@ -151,16 +162,15 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
     const checkIframeFallback = () => {
       const iframe = document.getElementById('hero-iframe') as HTMLIFrameElement;
       if (iframe && !revistaReady) {
-        if (iframe.contentWindow) {
-          // El iframe está cargado
-          console.log('[Loader] Revista ready via iframe load');
+        if (iframe.contentWindow && iframe.contentDocument?.body?.innerHTML) {
+          console.log('[Loader] Revista ready via iframe content check');
           setRevistaReady(true);
         }
       }
     };
 
-    // Verificar cada segundo
-    const fallbackInterval = setInterval(checkIframeFallback, 1000);
+    // Verificar cada 500ms
+    const fallbackInterval = setInterval(checkIframeFallback, 500);
 
     return () => {
       window.removeEventListener('message', handleMessage);
@@ -177,11 +187,11 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
     const timeoutId = setTimeout(() => {
       if (!gateReadyFiredRef.current) {
         const reasons: string[] = [];
-        if (loaderCycles < requiredCycles) reasons.push('cycles');
+        if (loaderCycles < requiredCycles) reasons.push(`cycles (${loaderCycles}/${requiredCycles})`);
         if (!assetsReady) reasons.push('assets');
         if (!revistaReady) reasons.push('revista');
         
-        console.warn(`[Loader] ⚠ Timeout: ${reasons.join(', ')} not ready - forcing gate`);
+        console.warn(`[Loader] ⚠ Timeout after ${GATE_TIMEOUT_MS}ms: ${reasons.join(', ')} not ready - forcing gate`);
         setTimedOut(true);
       }
     }, GATE_TIMEOUT_MS);
@@ -201,13 +211,20 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
 
     if (allReady) {
       gateReadyFiredRef.current = true;
-      console.log('[Loader] ✓ Gate READY - Starting intro sequence');
-      console.log(`  - Cycles: ${loaderCycles}/${requiredCycles} ✓`);
+      console.log('[Loader] ✓ GateReady = true');
+      console.log(`  - Cycles: ${loaderCycles}/${requiredCycles} ${cyclesOk ? '✓' : '✗'}`);
       console.log(`  - Assets: ${assetsReady ? '✓' : '✗'}`);
       console.log(`  - Revista: ${revistaReady ? '✓' : '✗'}`);
       console.log(`  - Timed out: ${timedOut ? 'yes (forced)' : 'no'}`);
       
-      setPhase('lift');
+      // Entrar a post-loop (logo estático) solo cuando GateReady es true
+      setPhase('post-loop');
+      
+      // Iniciar intro inmediatamente después de post-loop
+      setTimeout(() => {
+        console.log('[Loader] Starting intro sequence (lift)');
+        setPhase('lift');
+      }, 100);
     }
   }, [phase, loaderCycles, assetsReady, revistaReady, timedOut, requiredCycles]);
 
@@ -215,7 +232,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
   // TRANSICIONES DE FASE (lift → drop → bounce → reveal)
   // ========================================
   useEffect(() => {
-    if (phase === 'loading') return;
+    if (phase === 'loading' || phase === 'post-loop') return;
 
     const svg = svgRef.current;
     if (!svg) return;
@@ -242,13 +259,16 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
   useEffect(() => {
     if (phase !== 'reveal') return;
 
+    revealStartTimeRef.current = performance.now();
+    console.log(`[Loader] RevealStart timestamp: ${revealStartTimeRef.current.toFixed(0)}ms`);
+
     const svg = svgRef.current;
     if (svg) {
-      svg.style.transition = "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
+      svg.style.transition = "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
       svg.style.opacity = "0";
     }
 
-    // Dispatch introComplete event
+    // Dispatch introComplete event INMEDIATAMENTE
     window.dispatchEvent(new Event("introComplete"));
     document.body.classList.remove("sequence-only");
 
@@ -264,15 +284,18 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
       if (t < 1) {
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
-        // Complete
+        // Complete - transición rápida al final
+        const revealEndTime = performance.now();
+        console.log(`[Loader] RevealComplete timestamp: ${revealEndTime.toFixed(0)}ms`);
+        console.log(`[Loader] Reveal duration: ${(revealEndTime - revealStartTimeRef.current).toFixed(0)}ms`);
+        
+        // Completar en <= POST_REVEAL_MAX_DELAY
         setTimeout(() => {
           setPhase('complete');
-          setTimeout(() => {
-            setVisible(false);
-            console.log('[Loader] ✓ Sequence complete - Home ready');
-            onComplete?.();
-          }, 500);
-        }, 500);
+          setVisible(false);
+          console.log(`[Loader] ✓ Sequence complete - Home ready (post-reveal delay: ${POST_REVEAL_MAX_DELAY}ms)`);
+          onComplete?.();
+        }, POST_REVEAL_MAX_DELAY);
       }
     };
 
@@ -312,12 +335,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
       id="intro-layer"
       className="fixed inset-0 z-[100] pointer-events-none"
     >
-      {/* 
-        CAPA DE COBERTURA con SVG Mask
-        La máscara SVG crea un "agujero" que crece desde el centro.
-        - Rect blanco = visible (overlay)
-        - Circle negro = agujero transparente (revela el contenido)
-      */}
+      {/* CAPA DE COBERTURA con SVG Mask */}
       <svg
         className="absolute inset-0 w-full h-full z-[2]"
         style={{ pointerEvents: 'none' }}
@@ -338,7 +356,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
           mask="url(#revealMask)"
           style={{
             opacity: phase === 'complete' ? 0 : 1,
-            transition: phase === 'complete' ? 'opacity 0.5s ease' : 'none',
+            transition: phase === 'complete' ? 'opacity 0.3s ease' : 'none',
           }}
         />
       </svg>
@@ -359,6 +377,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
           }}
         >
           <svg 
+            key={loopKey} // Key para reiniciar animaciones del loop
             ref={svgRef}
             viewBox="0 0 210 170" 
             className={cn(
@@ -422,7 +441,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
             
             <path className="str4" d="M55.1067 114.5553l15.9655 15.8777 -10.3657 -14.9084 14.5875 14.9402 -8.3474 -12.8934 12.9635 12.9193 -7.6697 -12.1716 12.1902 12.1902 -7.7936 -12.3396 12.3397 12.3396 -7.644 -12.1902 12.1902 12.1902 -7.6441 -12.1902 12.1901 12.1902 -7.7934 -12.3397 12.3395 12.3395 -7.7934 -12.3395 11.673 11.673 -6.9775 -11.5234 6.9774 6.9773 -2.4313 -6.9774 2.4314 2.4312m0.0083 -81.762l-5.8022 -5.802 5.7939 10.2798 -7.9219 -8.1888 7.9219 12.7349 -12.1828 -12.419 12.2885 17.3717 -16.048 -16.557 10.336 15.0903 -14.5139 -14.7504 9.9679 14.7504 -13.8837 -14.1987 9.3376 14.1987 -13.3322 -13.3322 8.786 13.3322 -13.3281 -13.3322 8.782 13.3322 -13.1882 -13.1881 8.642 13.1881 -12.6847 -12.6846 8.1386 12.6846 -11.8866 -11.8866 7.3405 11.8866 -10.8377 -10.8375 7.2147 11.7608 -10.4912 -10.4913 6.9937 11.5399 -10.0717 -10.0718 6.8737 11.4199 -9.7688 -9.7687 6.9236 11.3233 -9.6468 -9.5005 6.8591 11.4052 -9.4183 -9.4181 6.9461 11.4922 -9.3456 -9.3456 7.0924 11.6385 -9.3344 -9.3345 7.3006 11.8469 -9.3847 -9.3847 7.5779 12.1239 -9.5008 -9.5008 7.936 12.4823 -9.6922 -9.6924 8.3954 12.9416 -9.976 -9.976 8.9873 13.5336 -10.3793 -10.3794 9.6104 14.1566 -10.7959 -10.7961 10.817 15.3632 -11.7714 -11.7713 12.3486 16.8946 -13.0365 -13.0365 18.1694 22.1865 -18.5404 -18.0114 23.489 27.1108 -23.4657 -22.5412 38.4752 43.0213 -37.9152 -37.9151 31.9672 36.5131 -30.5652 -30.5651 23.4369 27.9829 -20.2772 -20.277"/>
             
-            {/* Capa 6: D azul */}
+            {/* Capa 6: D azul - TRAZO FINAL (animationend cuenta ciclo) */}
             <path className="str5" d="M108.2842 119.0335l-2.2381 -2.9343 5.8936 3.0836 -5.6208 -6.6608 11.0576 6.5115 -11.0576 -11.0577 15.7532 11.207 -15.7532 -15.7531 20.2993 15.7531 -20.2993 -20.2993 24.6961 20.15 -24.8465 -24.8465 29.542 24.9958 -29.2693 -29.2692 33.2134 28.6672 -28.6744 -28.6742 33.3777 28.8314 -28.8387 -28.8386 32.684 28.1379 -28.1448 -28.145 31.6337 27.0877 -27.0947 -27.0948 30.2656 25.7195 -25.7266 -25.7265 28.6077 24.0615 -24.0687 -24.0687 26.6804 22.1342 -22.1413 -22.1413 24.4975 19.9515 -23.0574 -23.0575 25.1664 20.6202 -25.1664 -25.1664 27.0306 22.4846 -52.3113 -52.3114 53.9277 49.3815 -49.3839 -49.3837 50.7416 46.1954 -46.1988 -46.1988 47.278 42.7317 -42.736 -42.736 43.5009 38.9549 -38.9596 -38.9596 39.3497 34.8036 -34.8088 -34.8088 34.7115 30.1653 -30.1683 -30.1684 29.3408 24.7946 -24.1128 -24.1126 21.7898 17.2437 -15.197 -15.197m-43.0371 25.1548l-4.0927 -4.5901 8.6317 4.5831 -8.6317 -8.6318 13.1707 8.6246 -13.1707 -13.1707 17.7098 13.1636 -17.7935 -17.7934 22.3325 17.7864 -22.2488 -22.2489 26.7878 22.2418 -26.7878 -26.788 31.327 26.7808 -27.8181 -27.8179 29.8268 25.2807"/>
           </svg>
         </div>
