@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
@@ -183,38 +182,33 @@ const CHAPTERS = [
   },
 ];
 
-const NAV_MOMENTS = [
-  { href: '#hola', label: 'llegar' },
-  { href: '#cafe', label: 'respirar' },
-  { href: '#mesa', label: 'compartir' },
-  { href: '#habitar', label: 'habitar' },
-  { href: '#portal', label: 'cruzar' },
-  { href: '#agua', label: 'refrescar' },
-  { href: '#sueno', label: 'dormir' },
-  { href: '#brasas', label: 'encender' },
-  { href: '#hogar', label: 'pertenecer' },
-];
-
 const Momentos = () => {
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const [heroVisible, setHeroVisible] = useState(false);
   const [collageReady, setCollageReady] = useState(false);
   const collageRef = useRef<HTMLDivElement>(null);
 
+  // Escuchar transitionComplete del TransitionShell
   useEffect(() => {
-    document.body.classList.add('project-index', 'sequence-only');
-    
-    // Sequence timing
-    setTimeout(() => setHeroVisible(true), 100);
-    setTimeout(() => setHeaderVisible(true), 400);
-    setTimeout(() => {
-      document.body.classList.remove('sequence-only');
+    const handleTransitionComplete = () => {
       document.body.classList.add('hero-visible', 'header-visible');
-    }, 800);
-    setTimeout(() => setCollageReady(true), 1500);
+      setTimeout(() => setCollageReady(true), 500);
+    };
+
+    // Check if already visible (direct navigation)
+    if (document.body.classList.contains('header-visible')) {
+      setCollageReady(true);
+    }
+
+    window.addEventListener('transitionComplete', handleTransitionComplete);
+    
+    // Also trigger on mount after a brief delay (for non-transition loads)
+    const mountTimeout = setTimeout(() => {
+      document.body.classList.add('hero-visible', 'header-visible');
+      setTimeout(() => setCollageReady(true), 300);
+    }, 100);
 
     return () => {
-      document.body.classList.remove('project-index', 'sequence-only', 'hero-visible', 'header-visible');
+      window.removeEventListener('transitionComplete', handleTransitionComplete);
+      clearTimeout(mountTimeout);
     };
   }, []);
 
@@ -249,27 +243,18 @@ const Momentos = () => {
 
       {/* App Layer */}
       <div id="app-layer" className="relative z-30">
-        <Header visible={headerVisible} />
-
-        {/* Projects Navigation */}
-        <nav className="projects-nav" aria-label="Capítulos">
-          {NAV_MOMENTS.map((item) => (
-            <a key={item.href} href={item.href}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
+        <Header />
 
         {/* Hero Collage */}
         <section
           id="hero-revista-section"
-          className={`hero-revista-section hero-board transition-all duration-[2500ms] ease-out ${heroVisible ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+          className="hero-revista-section hero-board"
           aria-label="Hero Proyectos"
         >
           <div className="hero-revista-shell hero-board-shell" id="hero-revista-shell">
             <div
               ref={collageRef}
-              className={`hero-collage ${heroVisible ? 'is-visible' : ''} ${collageReady ? 'is-ready' : ''}`}
+              className={`hero-collage ${collageReady ? 'is-visible is-ready' : ''}`}
               aria-label="Collage de capítulos"
             >
               {COLLAGE_PHOTOS.map((photo, idx) => (
