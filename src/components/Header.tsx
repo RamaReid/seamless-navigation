@@ -193,9 +193,8 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
 
       {/* Projects Navigation - contextual por ruta */}
       <ProjectsNav 
-        isOpen={projectsNavOpen}
+        isProjectsMode={projectsNavOpen || isProyectoPage}
         onClose={() => setProjectsNavOpen(false)}
-        forceVisible={isProyectoPage}
       />
     </>
   );

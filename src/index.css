@@ -1364,59 +1364,6 @@ body.project-index.hero-visible #plano-bg {
   }
 }
 
-/* Projects Navigation */
-.projects-nav {
-  position: fixed;
-  top: 112px;
-  left: 50%;
-  transform: translate(-50%, -8px);
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 10px 18px;
-  background: rgba(247, 244, 236, 0.86);
-  border: 1px solid rgba(26, 26, 26, 0.12);
-  border-radius: 999px;
-  backdrop-filter: blur(6px);
-  z-index: 85;
-  max-width: min(92vw, 1200px);
-  overflow-x: auto;
-  scrollbar-width: none;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.projects-nav::-webkit-scrollbar {
-  display: none;
-}
-
-.projects-nav a {
-  font-size: 0.68rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: #1a1a1a;
-  opacity: 0.45;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  white-space: nowrap;
-}
-
-.projects-nav a:hover {
-  opacity: 0.85;
-  transform: translateY(-2px);
-}
-
-.projects-nav a.is-active {
-  opacity: 1;
-  transform: translateY(-2px);
-}
-
-body.header-visible .projects-nav {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translate(-50%, 0);
-}
 
 /* Projects Main */
 .projects-main {
@@ -1714,7 +1661,9 @@ body.lightbox-open {
 }
 
 /* ======================================================
-   PROJECTS NAV - Mini-menú de navegación (proyectos.css)
+   PROJECTS NAV - Mini-menú de navegación (original proyectos.css)
+   - Un SOLO menú con toggle .is-projects
+   - Dos grupos: .projects-nav-moments y .projects-nav-projects
 ====================================================== */
 
 .projects-nav {
@@ -1725,11 +1674,9 @@ body.lightbox-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  padding: 12px 24px;
+  padding: 10px 22px;
   background: hsl(226 38% 8% / 0.92);
-  border: 1px solid hsl(0 0% 100% / 0.18);
+  border: 1px solid hsl(0 0% 100% / 0.15);
   border-radius: 999px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -1747,60 +1694,53 @@ body.lightbox-open {
   display: none;
 }
 
-.projects-nav.is-visible {
+/* Visibilidad controlada por body.header-visible */
+body.header-visible .projects-nav {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
   transform: translate(-50%, 0);
 }
 
-/* Tabs para alternar Momentos/Proyectos */
-.projects-nav-tabs {
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  background: hsl(226 38% 12% / 0.6);
-  border-radius: 999px;
-  margin-right: 16px;
-}
-
-.projects-nav-tab {
-  padding: 6px 14px;
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: hsl(0 0% 100% / 0.5);
-  background: transparent;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.projects-nav-tab:hover {
-  color: hsl(0 0% 100% / 0.8);
-}
-
-.projects-nav-tab.is-active {
-  background: hsl(229 66% 48% / 0.3);
-  color: hsl(0 0% 100%);
-}
-
-/* Lista de items (momentos o casas) */
-.projects-nav-list {
+/* Contenedor del grupo (moments + projects) */
+.projects-nav-group {
   display: flex;
   align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
+  gap: 16px;
+  white-space: nowrap;
 }
 
+/* Lista de Momentos (anchors) - visible por defecto */
+.projects-nav-moments {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Lista de Proyectos (links) - oculta por defecto */
+.projects-nav-projects {
+  display: none;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Toggle: cuando tiene .is-projects, oculta moments y muestra projects */
+.projects-nav.is-projects .projects-nav-moments {
+  display: none;
+}
+
+.projects-nav.is-projects .projects-nav-projects {
+  display: flex;
+}
+
+/* Items del nav (tanto anchors como links) */
 .projects-nav-item {
-  font-size: 0.78rem;
-  letter-spacing: 0.22em;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
   text-transform: none;
   text-decoration: none;
-  color: hsl(0 0% 100% / 0.72);
-  opacity: 0.75;
+  color: hsl(0 0% 100% / 0.68);
   transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
   white-space: nowrap;
   cursor: pointer;
@@ -1810,13 +1750,11 @@ body.lightbox-open {
 }
 
 .projects-nav-item:hover {
-  opacity: 1;
-  transform: translateY(-2px);
   color: hsl(0 0% 100%);
+  transform: translateY(-2px);
 }
 
 .projects-nav-item.is-active {
-  opacity: 1;
   color: hsl(229 66% 68%);
 }
 
@@ -2012,17 +1950,20 @@ body.lightbox-open {
 
   .projects-nav {
     top: 100px;
-    padding: 10px 16px;
-    gap: 6px 12px;
+    padding: 8px 16px;
   }
 
-  .projects-nav-tabs {
-    margin-right: 10px;
-    margin-bottom: 8px;
+  .projects-nav-group {
+    gap: 10px;
+  }
+
+  .projects-nav-moments,
+  .projects-nav-projects {
+    gap: 10px;
   }
 
   .projects-nav-item {
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
   }
 }

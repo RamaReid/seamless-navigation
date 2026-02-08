@@ -2,8 +2,8 @@
  * UXHints - Hints de UX fuera del iframe
  * 
  * - Hint "pasar página" en el vértice inferior derecho del hero revista
- * - Hint "scroll" sutil, persistente por sessionStorage
- * - Ambos se ocultan al primer input correspondiente
+ * - Hint "scroll" sutil en la parte inferior central
+ * - SIEMPRE VISIBLES (con atenuación permitida, pero NO desaparecen)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -18,49 +18,45 @@ export const UXHints: React.FC<UXHintsProps> = ({
   showPageHint = true, 
   showScrollHint = true 
 }) => {
-  const [pageHintVisible, setPageHintVisible] = useState(false);
-  const [scrollHintVisible, setScrollHintVisible] = useState(false);
+  const [pageHintDimmed, setPageHintDimmed] = useState(false);
+  const [scrollHintDimmed, setScrollHintDimmed] = useState(false);
+  const [hintsReady, setHintsReady] = useState(false);
 
-  // Check if hints have been shown before
+  // Show hints after intro completes
   useEffect(() => {
-    const pageHintShown = sessionStorage.getItem('gd_page_hint_shown') === '1';
-    const scrollHintShown = sessionStorage.getItem('gd_scroll_hint_shown') === '1';
+    const handleTransitionComplete = () => {
+      // Delay showing hints until after reveal
+      setTimeout(() => setHintsReady(true), 1500);
+    };
 
-    if (showPageHint && !pageHintShown) {
-      // Delay showing page hint until after intro
-      const timeout = setTimeout(() => setPageHintVisible(true), 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [showPageHint]);
-
-  useEffect(() => {
-    const scrollHintShown = sessionStorage.getItem('gd_scroll_hint_shown') === '1';
+    window.addEventListener('transitionComplete', handleTransitionComplete);
     
-    if (showScrollHint && !scrollHintShown) {
-      // Show scroll hint after a delay
-      const timeout = setTimeout(() => setScrollHintVisible(true), 4000);
-      return () => clearTimeout(timeout);
+    // If already past intro (e.g., nav skip)
+    if (document.body.classList.contains('hero-visible')) {
+      setTimeout(() => setHintsReady(true), 500);
     }
-  }, [showScrollHint]);
 
-  // Listen for hero interactions to hide page hint
+    return () => {
+      window.removeEventListener('transitionComplete', handleTransitionComplete);
+    };
+  }, []);
+
+  // Listen for hero interactions to DIM (not hide) page hint
   useEffect(() => {
-    if (!pageHintVisible) return;
+    if (!showPageHint) return;
 
     const handleHeroInteraction = (event: Event) => {
       const customEvent = event as CustomEvent;
       const type = customEvent?.detail?.type;
       if (type === 'HERO_PAGE_FLIP' || type === 'HERO_INTERACTION') {
-        setPageHintVisible(false);
-        sessionStorage.setItem('gd_page_hint_shown', '1');
+        setPageHintDimmed(true);
       }
     };
 
     const handleMessage = (event: MessageEvent) => {
       const type = event?.data?.type;
       if (type === 'HERO_PAGE_FLIP' || type === 'HERO_INTERACTION') {
-        setPageHintVisible(false);
-        sessionStorage.setItem('gd_page_hint_shown', '1');
+        setPageHintDimmed(true);
       }
     };
 
@@ -71,59 +67,68 @@ export const UXHints: React.FC<UXHintsProps> = ({
       window.removeEventListener('heroInteraction', handleHeroInteraction);
       window.removeEventListener('message', handleMessage);
     };
-  }, [pageHintVisible]);
+  }, [showPageHint]);
 
-  // Listen for scroll to hide scroll hint
+  // Listen for scroll to DIM (not hide) scroll hint
   useEffect(() => {
-    if (!scrollHintVisible) return;
+    if (!showScrollHint) return;
 
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrollHintVisible(false);
-        sessionStorage.setItem('gd_scroll_hint_shown', '1');
+      if (window.scrollY > 80) {
+        setScrollHintDimmed(true);
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [scrollHintVisible]);
+  }, [showScrollHint]);
+
+  if (!hintsReady) return null;
 
   return (
     <>
-      {/* Hint "pasar página" - bottom-right del hero */}
-      {pageHintVisible && (
+      {/* Hint "pasar página" - bottom-right del hero (SIEMPRE VISIBLE) */}
+      {showPageHint && (
         <div 
           className={cn(
             "ux-hint ux-hint-page",
-            "fixed bottom-[15vh] right-[60px] z-[50]",
+            "fixed z-[50]",
             "pointer-events-none select-none",
             "transition-all duration-700 ease-out",
-            pageHintVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+            pageHintDimmed ? "opacity-30" : "opacity-80"
           )}
+          style={{
+            bottom: '15vh',
+            right: '50px',
+          }}
           aria-hidden="true"
         >
-          <div className="ux-hint-content flex items-center gap-2 text-white/60 text-sm">
-            <span className="ux-hint-text">pasar página</span>
-            <span className="ux-hint-icon animate-pulse">→</span>
+          <div className="ux-hint-content flex items-center gap-2 text-white text-sm">
+            <span className="ux-hint-text" style={{ fontFamily: '"Times New Roman", Times, serif', letterSpacing: '0.1em' }}>
+              pasar página
+            </span>
+            <span className="ux-hint-icon animate-pulse text-lg">→</span>
           </div>
         </div>
       )}
 
-      {/* Hint "scroll" - bottom-center */}
-      {scrollHintVisible && (
+      {/* Hint "scroll" - bottom-center (SIEMPRE VISIBLE) */}
+      {showScrollHint && (
         <div 
           className={cn(
             "ux-hint ux-hint-scroll",
             "fixed bottom-8 left-1/2 -translate-x-1/2 z-[50]",
             "pointer-events-none select-none",
             "transition-all duration-700 ease-out",
-            scrollHintVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            scrollHintDimmed ? "opacity-20" : "opacity-60"
           )}
           aria-hidden="true"
         >
-          <div className="ux-hint-content flex flex-col items-center gap-1 text-white/50 text-xs">
-            <span className="ux-hint-icon animate-bounce">↓</span>
-            <span className="ux-hint-text tracking-widest">scroll</span>
+          <div className="ux-hint-content flex flex-col items-center gap-1 text-white text-xs">
+            <span className="ux-hint-icon animate-bounce text-lg">↓</span>
+            <span className="ux-hint-text tracking-widest" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
+              scroll
+            </span>
           </div>
         </div>
       )}

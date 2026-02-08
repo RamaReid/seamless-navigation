@@ -16,42 +16,27 @@ import cedahauseLiving from '@/assets/img/cedahause/cedahause-living.png';
 import jonohauseBano from '@/assets/img/jonohause/jonohause-bano.png';
 import donahauseQuincho from '@/assets/img/donahause/donahause-quincho.png';
 
-// Timing constant from original home.js
-const BEAT = 465;
-
 const Index = () => {
-  // Run sequence after transition completes (from TransitionShell)
-  const runSequence = useCallback(() => {
-    // Show header first (BEAT * 3)
-    setTimeout(() => {
-      document.body.classList.add('header-visible');
-    }, BEAT * 3);
-
-    // Hide header briefly, show hero (BEAT * 8)
-    setTimeout(() => {
-      document.body.classList.remove('header-visible');
-      document.body.classList.add('hero-visible');
-      window.dispatchEvent(new Event('heroVisible'));
-    }, BEAT * 8);
-
-    // Show header again with nav items (BEAT * 10)
-    setTimeout(() => {
-      document.body.classList.add('header-visible');
-    }, BEAT * 10);
+  // Handle transition complete - header visible IMMEDIATELY (no delays)
+  const handleTransitionComplete = useCallback(() => {
+    // Header visible immediately (<=100ms from transitionComplete)
+    document.body.classList.add('header-visible');
+    
+    // Hero visible immediately after header
+    document.body.classList.add('hero-visible');
+    window.dispatchEvent(new Event('heroVisible'));
+    
+    console.log('[Index] transitionComplete → header-visible + hero-visible (immediate)');
   }, []);
 
   // Listen for transitionComplete event from TransitionShell
   useEffect(() => {
-    const handleTransitionComplete = () => {
-      runSequence();
-    };
-
     window.addEventListener('transitionComplete', handleTransitionComplete);
 
     return () => {
       window.removeEventListener('transitionComplete', handleTransitionComplete);
     };
-  }, [runSequence]);
+  }, [handleTransitionComplete]);
 
   // Intersection observer for scene cards
   useEffect(() => {
