@@ -1,0 +1,837 @@
+/* ======================================================
+   1. ESTRUCTURA Y BLOQUEO
+====================================================== */
+body { 
+  overflow-x: hidden; 
+  overflow-y: auto; 
+  color: var(--gd-grey); 
+  background: var(--gd-background); 
+  margin: 0; 
+}
+
+body.sequence-only { 
+  height: 100%; 
+  overflow: hidden; 
+}
+
+#app-layer { 
+  position: relative; 
+  z-index: 30;
+}
+
+/* ======================================================
+   2. EL PLANO (Nítido -> Blur)
+====================================================== */
+#plano-bg {
+  position: fixed; 
+  inset: 0; 
+  z-index: 0; 
+  pointer-events: none;
+  background-image: url("../img/FondoCasaM.png");
+  background-position: center; 
+  background-repeat: no-repeat; 
+  background-size: cover;
+  filter: blur(0px);
+  transition: filter 3s ease, transform 3s ease;
+  will-change: filter, transform;
+}
+
+body.hero-visible #plano-bg { 
+  filter: blur(3px); 
+  transform: scale(1.03); 
+}
+/* ======================================================
+   3. HEADER (Arquitectura y Firma)
+====================================================== */
+.gd-header {
+  position: fixed; 
+  top: 5px; 
+  left: 40px; 
+  right: 40px; 
+  z-index: 40;
+  transform: translateY(-130%); 
+  opacity: 0;
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease;
+}
+
+body.header-visible .gd-header { 
+  transform: translateY(0); 
+  opacity: 1; 
+  pointer-events: auto; 
+}
+
+.brand { 
+  display: flex; 
+  align-items: center; 
+  gap: 14px; 
+}
+
+.brand-link { 
+  display: flex; 
+  align-items: center; 
+  text-decoration: none; 
+}
+
+.brand-logo { 
+  width: 100px; 
+  height: auto; 
+  display: block; 
+}
+
+/* Estilos técnicos del Logo (Restaurados) */
+.gd-header .brand-logo .logoL0 { 
+  stroke: var(--gd-grey); 
+  stroke-width: 1.5; 
+  stroke-dasharray: 5 3 1 3; 
+  fill: none; 
+}
+
+.gd-header .brand-logo .logoL1, .logoL2 { 
+  stroke: var(--gd-grey); 
+  stroke-width: 0.75; 
+  fill: none; 
+}
+
+.gd-header .brand-logo .logoL3 { 
+  stroke: var(--gd-red); 
+  stroke-width: 0.9; 
+  fill: none; 
+}
+
+.gd-header .brand-logo .logoL4 { 
+  stroke: var(--gd-red); 
+  stroke-width: 1; 
+  fill: none; 
+}
+
+.gd-header .brand-logo .logoL5 { 
+  stroke: var(--gd-blue); 
+  stroke-width: 1; 
+  fill: none; 
+}
+
+.brand-tagline { 
+  font-size: 1rem; 
+  letter-spacing: 0.08em; 
+  text-transform: uppercase; 
+  color: var(--gd-grey); 
+  white-space: nowrap; 
+}
+
+body.header-visible .gd-header {
+    pointer-events: auto !important;
+}
+
+/* 2. HOVER DEL LOGO (No estaba en tu archivo) */
+.brand-link:hover .brand-logo {
+    filter: brightness(1.3);
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+}
+
+/* NAVEGACIÓN (Restaurada) */
+.navbar {
+  max-width: 1375px; margin: 40px auto 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 35px 0 15px; background: rgba(15, 19, 32, 0.5);
+  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 9999px;
+}
+
+.nav-area { 
+  display: flex; 
+  align-items: center; 
+}
+
+.nav-list { 
+  list-style: none; 
+  display: flex; 
+  gap: 28px; 
+  margin: 0; 
+  padding: 0; 
+}
+
+.nav-list a {
+  font-size: 1rem; 
+  letter-spacing: 0.1em; 
+  text-transform: uppercase;
+  color: var(--gd-grey); 
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.nav-list a::after {
+  content: "";
+  position: absolute; 
+  left: 0; 
+  bottom: -6px; 
+  width: 100%; 
+  height: 1px;
+  background: rgba(255, 255, 255, 0.7); 
+  transform: scaleX(0); 
+  transition: transform 0.2s ease;
+}
+
+.nav-list a:hover { 
+  transform: scale(1.1);
+  color: #ffffff;
+}
+
+.nav-list a:hover::after { 
+  transform: scaleX(1); 
+}
+
+.nav-toggle { 
+  display: none; 
+  width: 36px; 
+  height: 36px; 
+  background: none; 
+  border: 0; 
+  cursor: pointer; 
+  flex-direction: column; 
+  justify-content: center; 
+  gap: 6px; 
+}
+
+.nav-toggle span { 
+  display: block; 
+  height: 2px; 
+  width: 100%; 
+  background: white; 
+}
+
+/* ======================================================
+   HOUSE PROJECTS MINI NAV
+====================================================== */
+
+.house-projects-nav {
+  position: fixed;
+  top: 112px;
+  left: 50%;
+  transform: translate(-50%, -8px);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 18px;
+  background: rgba(15, 19, 32, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 85;
+  max-width: min(92vw, 1200px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+body.header-visible .house-projects-nav {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+.house-projects-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.house-projects-nav a {
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  text-transform: none;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.82);
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+.house-projects-nav a:hover,
+.house-projects-nav a.is-active {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* ======================================================
+   4. HERO — REVISTA
+====================================================== */
+.hero-revista-section {
+  position: relative; 
+  width: 100%; 
+  height: 100vh;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  padding: 25px; 
+  box-sizing: border-box; 
+  z-index: 30;
+  opacity: 0; 
+  visibility: hidden; 
+  transition: opacity 2.5s ease-out;
+}
+
+.hero-revista-shell {
+   width: 100%; 
+   height: 100%; 
+   background: rgba(15, 19, 32, 0.55); 
+   border: 1px solid rgba(255, 255, 255, 0.22); 
+   overflow: hidden; 
+}
+
+body.hero-visible .hero-revista-section { 
+  opacity: 1; 
+  visibility: visible; 
+}
+
+/* ======================================================
+   HOUSE HERO CAROUSEL
+====================================================== */
+
+.house-hero-carousel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
+}
+
+.house-hero-control {
+  position: absolute;
+  top: 68%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(15, 19, 32, 0.55);
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: 0.12em;
+  text-transform: none;
+  font-size: 0.68rem;
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+  opacity: 0.7;
+}
+
+.house-hero-control:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.04);
+  background: rgba(15, 19, 32, 0.75);
+}
+
+.house-hero-prev {
+  left: 22px;
+  transform: translateY(-50%);
+}
+
+.house-hero-next {
+  right: 22px;
+  transform: translateY(-50%);
+}
+
+.house-hero-arrow {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.house-hero-label {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ======================================================
+   5. HOME BOARD (Espacios de Diseño)
+====================================================== */
+
+#home-board { 
+  width: 100%; 
+  max-width: 1375px; 
+  margin: 0 auto; 
+  padding: 0 40px; 
+  box-sizing: border-box; 
+}
+
+.scene { 
+  max-width: 1375px; 
+  margin: 0 auto; 
+  padding: 30px 0; 
+  position: relative; 
+}
+
+.scene-intro { 
+  padding-bottom: 20px; 
+}
+
+.scene-divider { 
+  padding-bottom: 10px; 
+}
+
+.scene-title { 
+  font-size: 40px; 
+  font-weight: 700; 
+  text-align: center; 
+  color: white; 
+  margin: 0 auto 20px; 
+}
+
+.scene-subtitle { 
+  font-size: 26px; 
+  font-weight: 700; 
+  text-align: center; 
+  color: var(--gd-grey); 
+  margin: 0 auto 12px; 
+}
+
+.scene-text { 
+  font-size: 26px; 
+  line-height: 1.4; 
+  text-align: center; 
+  max-width: 1375px; 
+  margin: 0 auto; 
+}
+
+.scene-moments, .scene-details { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 48px; 
+  margin-top: 30px; 
+}
+
+.scene-card {
+  display: block; 
+  width: 100%; 
+  border-radius: 6px; 
+  overflow: hidden; 
+  opacity: 0;
+  transform: translateY(15px) scale(0.99);
+  transition: opacity 1.5s ease, transform 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.scene-card.is-visible { 
+  opacity: 1; 
+  transform: translateY(0) scale(1); 
+}
+
+.scene-card.square img { 
+  width: 100%; 
+  aspect-ratio: 1/1; 
+  object-fit: cover; 
+}
+
+.scene-card.wide {
+  aspect-ratio: 2.56 / 1;
+  width: calc(100% + 80px);
+  margin: 0 -40px;
+}
+
+.scene-card.wide img { 
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;
+  display: block; 
+}
+
+.scene-card img { 
+  transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1); 
+}
+
+.scene-card:hover img { 
+  transform: scale(1.08); 
+}
+
+/* ======================================================
+   6. FOOTER (Versión Consolidada y Espaciada)
+====================================================== */
+#gd-footer { 
+  width: 100%; 
+  padding: 50px 0;
+  position: relative;
+  z-index: 100;   
+}
+
+.footer-icons { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 140px; /* SEPARACIÓN GENEROSA: De 100px a 140px */
+}
+
+.footer-icons .icon-link {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: auto;
+}
+
+.footer-icons .icon-link img { 
+  width: 40px; 
+  height: auto; 
+  display: block;
+}
+
+/* El icono central (Gmail) un poco más grande para equilibrio visual */
+.footer-icons .icon-link:nth-child(3) img { 
+  width: 45px; 
+}
+
+/* Efecto Hover: Salto elegante */
+.footer-icons .icon-link:hover {
+  transform: translateY(-12px) scale(1.2);
+  transition: all 0.5s ease;
+}
+
+/* ======================================================
+   7. RESPONSIVE
+====================================================== */
+
+@media (max-width: 1024px) { 
+  .brand-tagline { display: none; } 
+}
+
+@media (max-width: 768px) {
+  .gd-header { 
+    left: 20px; right: 20px; 
+  }
+
+  .nav-toggle { 
+    display: flex; 
+  }
+
+  .nav-area {
+    position: fixed; 
+    top: 100px; 
+    left: 20px; 
+    right: 20px; 
+    background: rgba(15, 19, 32, 0.95); 
+    padding: 20px; 
+    border-radius: 20px; 
+    display: none; 
+  }
+
+  body.nav-open .nav-area { 
+    display: flex; 
+  }
+
+  .nav-list { 
+    flex-direction: column; 
+    gap: 20px; 
+  }
+
+  .scene-moments, .scene-details { 
+    grid-template-columns: 1fr; 
+    gap: 30px; 
+  }
+
+  .scene-title { 
+    font-size: 32px; 
+  }
+
+  .scene-text, .scene-subtitle { 
+    font-size: 20px; 
+  }
+
+  .scene-card.wide {
+    width: calc(100% + 40px);
+    margin: 0 -20px;
+  }
+
+  .footer-icons { 
+    gap: 30px;
+  }
+
+  .house-projects-nav {
+    top: 100px;
+    padding: 8px 14px;
+  }
+
+  .house-hero-control {
+    top: auto;
+    bottom: 22px;
+    transform: translateY(0);
+    font-size: 0.6rem;
+  }
+
+  .house-hero-prev {
+    left: 16px;
+    transform: translateY(0);
+  }
+
+  .house-hero-next {
+    right: 16px;
+    transform: translateY(0);
+  }
+}
+
+/* ======================================================
+   HERO HINTS
+====================================================== */
+.hero-hint {
+  position: absolute;
+  z-index: 35;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.hero-hint.is-visible {
+  opacity: 0.9;
+}
+
+.hero-scroll-hint {
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 0);
+}
+
+.revista-scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 35;
+}
+
+.revista-scroll-hint.is-visible {
+  opacity: 0.9;
+}
+
+.hero-scroll-mouse {
+  display: block;
+  width: 12px;
+  height: 44px;
+  border-radius: 999px;
+  position: relative;
+  box-sizing: border-box;
+  background: transparent;
+  border: 2px solid rgba(210, 218, 228, 0.75);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.hero-scroll-mouse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(200, 208, 218, 0.85) 0px,
+      rgba(200, 208, 218, 0.85) 2px,
+      rgba(160, 168, 178, 0) 4px,
+      rgba(160, 168, 178, 0) 10px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(245, 248, 252, 0.12),
+      rgba(0, 0, 0, 0.12)
+    );
+  background-size: 100% 16px, 100% 100%;
+  background-repeat: repeat, no-repeat;
+  animation: heroScrollWheel 1.6s ease-in-out infinite;
+}
+
+@keyframes heroScrollWheel {
+  0% {
+    opacity: 0.35;
+    background-position: 0 0;
+  }
+  60% {
+    opacity: 1;
+    background-position: 0 24px;
+  }
+  100% {
+    opacity: 0.35;
+    background-position: 0 0;
+  }
+}
+
+
+.hero-hover-hint {
+  right: 18%;
+  top: 64%;
+  width: 34px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  animation: heroArrowMove 1.4s ease-in-out infinite;
+}
+
+.hero-hover-hint::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
+  border-right: 2px solid rgba(255, 255, 255, 0.6);
+  transform: rotate(45deg);
+}
+
+@keyframes heroArrowMove {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-hover-hint {
+    right: 12%;
+    top: 70%;
+  }
+
+  .hero-scroll-hint {
+    bottom: 18px;
+  }
+}
+
+/* ======================================================
+   7. LIGHTBOX (Casas)
+====================================================== */
+
+body.lightbox-open {
+  overflow: hidden;
+}
+
+.scene-details .scene-card {
+  cursor: pointer;
+}
+
+.gd-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(8, 10, 16, 0.78);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.gd-lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gd-lightbox-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: min(92vw, 1400px);
+  max-height: 86vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gd-lightbox-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45);
+  transform: scale(0.98);
+  transition: transform 0.35s ease;
+}
+
+.gd-lightbox.is-open .gd-lightbox-image {
+  transform: scale(1);
+}
+
+.gd-lightbox-close,
+.gd-lightbox-nav {
+  position: absolute;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(15, 19, 32, 0.7);
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.gd-lightbox-close {
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  font-size: 20px;
+}
+
+.gd-lightbox-nav {
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
+  transform: translateY(-50%);
+}
+
+.gd-lightbox-prev { left: 18px; }
+.gd-lightbox-next { right: 18px; }
+
+.gd-lightbox-close:hover,
+.gd-lightbox-nav:hover {
+  transform: translateY(-50%) scale(1.05);
+  background: rgba(15, 19, 32, 0.9);
+}
+
+.gd-lightbox-close:hover {
+  transform: scale(1.05);
+}
+
+.gd-lightbox-counter {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 900px) {
+  .gd-lightbox {
+    padding: 12px;
+  }
+
+  .gd-lightbox-close {
+    top: 12px;
+    right: 12px;
+  }
+
+  .gd-lightbox-prev { left: 10px; }
+  .gd-lightbox-next { right: 10px; }
+
+  .gd-lightbox-counter {
+    right: 12px;
+    bottom: 12px;
+    letter-spacing: 0.12em;
+  }
+}
