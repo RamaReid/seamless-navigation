@@ -1,18 +1,31 @@
 // Inicialización de PageFlip (versión estable + fix de ghosting)
+// AUTO-CORNER EVENT-DRIVEN: Solo insinúa esquina ante intención real
 document.addEventListener('DOMContentLoaded', function () {
 
     // =======================================
-    // AUTO HOVER EN ESQUINA (SIMULA HOVER REAL)
+    // AUTO CORNER — EVENT DRIVEN (MENOS ROBÓTICO)
+    // Solo activa cuando el mouse está cerca de la esquina
+    // Se desactiva tras primer flip/interacción real
     // =======================================
     const autoCornerState = {
         active: false,
         rafId: null,
         lastRect: null,
-        container: null
+        container: null,
+        hasInteracted: false, // Se pone true tras primer flip/click
+        hintTimeout: null,
+        mouseNearCorner: false
     };
 
+    // Distancia en px para considerar "cerca de la esquina"
+    const CORNER_THRESHOLD = 120;
+    const HINT_DURATION = 4000; // 4s de hint inicial máximo
+
     const dispatchCornerMove = (time) => {
-        if (!autoCornerState.active) return;
+        if (!autoCornerState.active || autoCornerState.hasInteracted) {
+            stopAutoCorner();
+            return;
+        }
         if (!autoCornerState.container) {
             autoCornerState.container = document.getElementById('mi-revista');
             if (!autoCornerState.container) return;
@@ -24,10 +37,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const rect = autoCornerState.lastRect;
         const t = time / 1000;
-        const wobble = Math.sin(t * 2.2) * 18;
-        const wobbleY = Math.cos(t * 1.6) * 12;
-        const x = rect.right - 60 - wobble;
-        const y = rect.top + 28 + wobbleY;
+        // Movimiento más sutil
+        const wobble = Math.sin(t * 1.5) * 12;
+        const wobbleY = Math.cos(t * 1.2) * 8;
+        const x = rect.right - 50 - wobble;
+        const y = rect.top + 35 + wobbleY;
 
         const moveEvent = new MouseEvent('mousemove', {
             bubbles: true,
@@ -40,10 +54,15 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const startAutoCorner = () => {
-        if (autoCornerState.active) return;
+        if (autoCornerState.active || autoCornerState.hasInteracted) return;
         autoCornerState.active = true;
         autoCornerState.lastRect = null;
         autoCornerState.rafId = requestAnimationFrame(dispatchCornerMove);
+        
+        // Auto-stop después de HINT_DURATION
+        autoCornerState.hintTimeout = setTimeout(() => {
+            stopAutoCorner();
+        }, HINT_DURATION);
     };
 
     const stopAutoCorner = () => {
@@ -53,18 +72,48 @@ document.addEventListener('DOMContentLoaded', function () {
             cancelAnimationFrame(autoCornerState.rafId);
             autoCornerState.rafId = null;
         }
+        if (autoCornerState.hintTimeout) {
+            clearTimeout(autoCornerState.hintTimeout);
+            autoCornerState.hintTimeout = null;
+        }
         const container = document.getElementById('mi-revista');
-        if (autoCornerState.container) {
-            const rect = autoCornerState.container.getBoundingClientRect();
+        if (container) {
+            const rect = container.getBoundingClientRect();
             const leaveEvent = new MouseEvent('mouseleave', {
                 bubbles: true,
                 clientX: rect.left - 10,
                 clientY: rect.top - 10
             });
-            autoCornerState.container.dispatchEvent(leaveEvent);
+            container.dispatchEvent(leaveEvent);
         }
     };
 
+    // Detectar si el mouse está cerca de la esquina inferior derecha
+    const checkMouseNearCorner = (e) => {
+        if (autoCornerState.hasInteracted) return;
+        
+        const container = document.getElementById('mi-revista');
+        if (!container) return;
+        
+        const rect = container.getBoundingClientRect();
+        const cornerX = rect.right;
+        const cornerY = rect.bottom;
+        
+        const distX = Math.abs(e.clientX - cornerX);
+        const distY = Math.abs(e.clientY - cornerY);
+        const distance = Math.sqrt(distX * distX + distY * distY);
+        
+        if (distance < CORNER_THRESHOLD && !autoCornerState.mouseNearCorner) {
+            autoCornerState.mouseNearCorner = true;
+            startAutoCorner();
+        } else if (distance >= CORNER_THRESHOLD * 1.5 && autoCornerState.mouseNearCorner) {
+            autoCornerState.mouseNearCorner = false;
+            stopAutoCorner();
+        }
+    };
+
+    // Escuchar movimiento del mouse para detectar intención
+    document.addEventListener('mousemove', checkMouseNearCorner, { passive: true });
 
     // =======================================
     // AVISAR AL HOME: INTERACCIONES DEL HERO
@@ -73,6 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // interactúe con la revista.
     // =======================================
     document.addEventListener("pointerdown", () => {
+        autoCornerState.hasInteracted = true;
         stopAutoCorner();
         window.parent.postMessage(
             { type: "HERO_INTERACTION" },
@@ -157,6 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.pageFlip = pageFlip;
 
     pageFlip.on('flip', () => {
+        autoCornerState.hasInteracted = true;
         stopAutoCorner();
         window.parent.postMessage(
             { type: "HERO_PAGE_FLIP" },
@@ -164,7 +215,13 @@ document.addEventListener('DOMContentLoaded', function () {
         );
     });
 
-    startAutoCorner();
+    // Solo iniciar hint si no ha habido interacción previa
+    // y con un delay para que no sea inmediato
+    setTimeout(() => {
+        if (!autoCornerState.hasInteracted) {
+            startAutoCorner();
+        }
+    }, 2000);
 
     console.log('PageFlip inicializado en #mi-revista', pageFlip);
 

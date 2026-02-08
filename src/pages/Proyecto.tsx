@@ -9,8 +9,6 @@ const Proyecto: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [project, setProject] = useState<Project | null>(null);
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const [heroVisible, setHeroVisible] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -28,24 +26,29 @@ const Proyecto: React.FC = () => {
 
     setProject(projectData);
     
-    // Reset states for new project
-    setHeroVisible(false);
-    setHeaderVisible(false);
-    
-    // Start sequence
-    document.body.classList.add('sequence-only');
-    
-    setTimeout(() => setHeroVisible(true), 100);
-    setTimeout(() => setHeaderVisible(true), 400);
-    setTimeout(() => {
-      document.body.classList.remove('sequence-only');
+    // Limpiar lightbox al cambiar de proyecto
+    setLightboxOpen(false);
+    setLightboxIndex(0);
+  }, [id, navigate]);
+
+  // Escuchar transitionComplete del TransitionShell
+  useEffect(() => {
+    const handleTransitionComplete = () => {
       document.body.classList.add('hero-visible', 'header-visible');
-    }, 800);
+    };
+
+    // Trigger on mount after a brief delay
+    const mountTimeout = setTimeout(() => {
+      document.body.classList.add('hero-visible', 'header-visible');
+    }, 100);
+
+    window.addEventListener('transitionComplete', handleTransitionComplete);
 
     return () => {
-      document.body.classList.remove('sequence-only', 'hero-visible', 'header-visible');
+      window.removeEventListener('transitionComplete', handleTransitionComplete);
+      clearTimeout(mountTimeout);
     };
-  }, [id, navigate]);
+  }, []);
 
   const { prev, next } = id ? getAdjacentProjects(id) : { prev: null, next: null };
 
@@ -95,12 +98,12 @@ const Proyecto: React.FC = () => {
 
       {/* App Layer */}
       <div id="app-layer" className="relative z-30">
-        <Header visible={headerVisible} />
+        <Header />
 
         {/* Hero Section */}
         <section
           id="hero-revista-section"
-          className={`hero-revista-section transition-all duration-[2500ms] ease-out ${heroVisible ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+          className="hero-revista-section"
           aria-label={`Hero ${project.name}`}
         >
           <div className="hero-revista-shell" id="hero-revista-shell">

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Loader } from '@/components/Loader';
+import React, { useEffect, useCallback } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { HeroRevista } from '@/components/HeroRevista';
+import { UXHints } from '@/components/UXHints';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
 
@@ -20,22 +20,7 @@ import donahauseQuincho from '@/assets/img/donahause/donahause-quincho.png';
 const BEAT = 465;
 
 const Index = () => {
-  const [loading, setLoading] = useState(true);
-  const [heroVisible, setHeroVisible] = useState(false);
-  const [isNavSkip, setIsNavSkip] = useState(false);
-
-  // Check if coming from internal navigation (skip intro)
-  useEffect(() => {
-    const isNavTransition = sessionStorage.getItem('gd_nav_transition') === '1';
-    if (isNavTransition) {
-      sessionStorage.removeItem('gd_nav_transition');
-      setIsNavSkip(true);
-      // En nav/skip, aún mostramos el loader pero con menos ciclos requeridos
-      // El loader manejará esto internamente con la prop isNavSkip
-    }
-  }, []);
-
-  // Run sequence after intro completes
+  // Run sequence after transition completes (from TransitionShell)
   const runSequence = useCallback(() => {
     // Show header first (BEAT * 3)
     setTimeout(() => {
@@ -46,7 +31,6 @@ const Index = () => {
     setTimeout(() => {
       document.body.classList.remove('header-visible');
       document.body.classList.add('hero-visible');
-      setHeroVisible(true);
       window.dispatchEvent(new Event('heroVisible'));
     }, BEAT * 8);
 
@@ -56,29 +40,21 @@ const Index = () => {
     }, BEAT * 10);
   }, []);
 
-  const handleLoaderComplete = useCallback(() => {
-    setLoading(false);
-    runSequence();
-  }, [runSequence]);
-
-  // Manage body classes
+  // Listen for transitionComplete event from TransitionShell
   useEffect(() => {
-    if (loading) {
-      document.body.classList.add('sequence-only');
-      document.body.classList.remove('hero-visible', 'header-visible');
-    } else {
-      document.body.classList.remove('sequence-only');
-    }
-    
-    return () => {
-      document.body.classList.remove('sequence-only', 'hero-visible', 'header-visible');
+    const handleTransitionComplete = () => {
+      runSequence();
     };
-  }, [loading]);
+
+    window.addEventListener('transitionComplete', handleTransitionComplete);
+
+    return () => {
+      window.removeEventListener('transitionComplete', handleTransitionComplete);
+    };
+  }, [runSequence]);
 
   // Intersection observer for scene cards
   useEffect(() => {
-    if (loading) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -96,7 +72,7 @@ const Index = () => {
     document.querySelectorAll('[data-scene]').forEach((scene) => observer.observe(scene));
 
     return () => observer.disconnect();
-  }, [loading]);
+  }, []);
 
   // Parallax for plano-bg
   useEffect(() => {
@@ -133,16 +109,16 @@ const Index = () => {
         }}
       />
 
-      {/* Loader */}
-      {loading && <Loader onComplete={handleLoaderComplete} isNavSkip={isNavSkip} />}
-
       {/* App Layer */}
       <div id="app-layer" className="relative z-30">
         <div id="inicio" />
         
-        <Header visible={true} />
+        <Header />
 
-        <HeroRevista visible={heroVisible} />
+        <HeroRevista visible={true} />
+        
+        {/* UX Hints fuera del iframe */}
+        <UXHints showPageHint={true} showScrollHint={true} />
 
         <main id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">
           {/* Bajada Hero */}

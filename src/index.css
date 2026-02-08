@@ -1712,3 +1712,317 @@ body.lightbox-open {
     padding: 0 20px;
   }
 }
+
+/* ======================================================
+   PROJECTS NAV - Mini-menú de navegación (proyectos.css)
+====================================================== */
+
+.projects-nav {
+  position: fixed;
+  top: 112px;
+  left: 50%;
+  transform: translate(-50%, -8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 12px 24px;
+  background: hsl(226 38% 8% / 0.92);
+  border: 1px solid hsl(0 0% 100% / 0.18);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 85;
+  max-width: min(94vw, 1280px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+}
+
+.projects-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.projects-nav.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+/* Tabs para alternar Momentos/Proyectos */
+.projects-nav-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: hsl(226 38% 12% / 0.6);
+  border-radius: 999px;
+  margin-right: 16px;
+}
+
+.projects-nav-tab {
+  padding: 6px 14px;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: hsl(0 0% 100% / 0.5);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.projects-nav-tab:hover {
+  color: hsl(0 0% 100% / 0.8);
+}
+
+.projects-nav-tab.is-active {
+  background: hsl(229 66% 48% / 0.3);
+  color: hsl(0 0% 100%);
+}
+
+/* Lista de items (momentos o casas) */
+.projects-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.projects-nav-item {
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: none;
+  text-decoration: none;
+  color: hsl(0 0% 100% / 0.72);
+  opacity: 0.75;
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.projects-nav-item:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  color: hsl(0 0% 100%);
+}
+
+.projects-nav-item.is-active {
+  opacity: 1;
+  color: hsl(229 66% 68%);
+}
+
+/* Nav toggle button en header (para /momentos) */
+.nav-toggle-btn {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: hsl(300 1% 77%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.nav-toggle-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 1px;
+  background: hsl(0 0% 100% / 0.7);
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+
+.nav-toggle-btn:hover {
+  transform: scale(1.1);
+  color: #ffffff;
+}
+
+.nav-toggle-btn:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-toggle-btn.is-active {
+  color: hsl(229 66% 68%);
+}
+
+.nav-toggle-btn.is-active::after {
+  transform: scaleX(1);
+  background: hsl(229 66% 68%);
+}
+
+/* ======================================================
+   UX HINTS
+====================================================== */
+
+.ux-hint {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+}
+
+.ux-hint-page {
+  animation: hintPulse 2s ease-in-out infinite;
+}
+
+.ux-hint-scroll {
+  animation: hintBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes hintBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-6px); }
+}
+
+/* ======================================================
+   LIGHTBOX
+====================================================== */
+
+.gd-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: hsl(226 38% 6% / 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.4s ease, visibility 0.4s;
+}
+
+.gd-lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.gd-lightbox-inner {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gd-lightbox-image {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.gd-lightbox-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  background: hsl(0 0% 100% / 0.1);
+  border: 1px solid hsl(0 0% 100% / 0.2);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.gd-lightbox-close:hover {
+  background: hsl(0 0% 100% / 0.2);
+  transform: scale(1.1);
+}
+
+.gd-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  background: hsl(0 0% 100% / 0.1);
+  border: 1px solid hsl(0 0% 100% / 0.2);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.gd-lightbox-nav:hover {
+  background: hsl(0 0% 100% / 0.2);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.gd-lightbox-prev {
+  left: -70px;
+}
+
+.gd-lightbox-next {
+  right: -70px;
+}
+
+body.lightbox-open {
+  overflow: hidden;
+}
+
+/* Responsive lightbox */
+@media (max-width: 768px) {
+  .gd-lightbox-close {
+    top: 20px;
+    right: 20px;
+  }
+
+  .gd-lightbox-nav {
+    width: 40px;
+    height: 40px;
+  }
+
+  .gd-lightbox-prev {
+    left: 10px;
+  }
+
+  .gd-lightbox-next {
+    right: 10px;
+  }
+
+  .projects-nav {
+    top: 100px;
+    padding: 10px 16px;
+    gap: 6px 12px;
+  }
+
+  .projects-nav-tabs {
+    margin-right: 10px;
+    margin-bottom: 8px;
+  }
+
+  .projects-nav-item {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+  }
+}

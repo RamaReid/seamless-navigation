@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { GDLogo } from './GDLogo';
+import { ProjectsNav } from './ProjectsNav';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
@@ -14,13 +15,28 @@ const HERO_IDLE_MS = 6000;
 export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [projectsNavOpen, setProjectsNavOpen] = useState(false);
   const heroTimerRef = useRef<number | null>(null);
 
+  // Determinar contexto de ruta
+  const isMomentosPage = location.pathname === '/momentos';
+  const isProyectoPage = location.pathname.startsWith('/proyectos/');
+  
+  // En /momentos el ítem "Momentos" se muestra como "Proyectos" y hace toggle del mini-menú
   const navItems = [
-    { path: '/momentos', label: 'Momentos' },
-    { path: '/estudio', label: 'Estudio' },
-    { path: '/contacto', label: 'Contacto' },
+    { 
+      path: '/momentos', 
+      label: isMomentosPage ? 'Proyectos' : 'Momentos',
+      isToggle: isMomentosPage // En /momentos es toggle, no link
+    },
+    { path: '/estudio', label: 'Estudio', isToggle: false },
+    { path: '/contacto', label: 'Contacto', isToggle: false },
   ];
+
+  // Close projects nav on route change
+  useEffect(() => {
+    setProjectsNavOpen(false);
+  }, [location.pathname]);
 
   // Clear hero timer helper
   const clearHeroTimer = useCallback(() => {
@@ -91,66 +107,97 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [clearHeroTimer]);
 
+  const handleNavClick = (item: typeof navItems[0], e: React.MouseEvent) => {
+    if (item.isToggle) {
+      e.preventDefault();
+      setProjectsNavOpen(!projectsNavOpen);
+    } else {
+      // Mark nav transition for skip intro behavior
+      sessionStorage.setItem('gd_nav_transition', '1');
+    }
+  };
+
   return (
-    <header 
-      className="gd-header"
-      role="banner"
-    >
-      <nav className="navbar" role="navigation">
-        {/* Brand */}
-        <div className="brand">
-          <Link 
-            to="/" 
-            className="brand-link"
-            aria-label="Ir al inicio"
+    <>
+      <header 
+        className="gd-header"
+        role="banner"
+      >
+        <nav className="navbar" role="navigation">
+          {/* Brand */}
+          <div className="brand">
+            <Link 
+              to="/" 
+              className="brand-link"
+              aria-label="Ir al inicio"
+              onClick={() => {
+                sessionStorage.setItem('gd_nav_transition', '1');
+                setProjectsNavOpen(false);
+              }}
+            >
+              <GDLogo className="brand-logo" />
+            </Link>
+            <span className="brand-tagline">
+              Arquitectura, Diseño y Construcción
+            </span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="nav-area">
+            <ul className="nav-list">
+              {navItems.map((item) => (
+                <li key={item.path}>
+                  {item.isToggle ? (
+                    <button
+                      className={cn(
+                        "nav-toggle-btn",
+                        projectsNavOpen && "is-active"
+                      )}
+                      onClick={(e) => handleNavClick(item, e)}
+                      aria-expanded={projectsNavOpen}
+                      aria-controls="projects-nav"
+                    >
+                      {item.label}
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      className={cn(
+                        location.pathname === item.path && "active"
+                      )}
+                      onClick={(e) => handleNavClick(item, e)}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="nav-toggle"
+            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
             onClick={() => {
-              // Mark nav transition for skip intro behavior
-              sessionStorage.setItem('gd_nav_transition', '1');
+              setMobileMenuOpen(!mobileMenuOpen);
+              document.body.classList.toggle('nav-open', !mobileMenuOpen);
             }}
           >
-            <GDLogo className="brand-logo" />
-          </Link>
-          <span className="brand-tagline">
-            Arquitectura, Diseño y Construcción
-          </span>
-        </div>
+            <span />
+            <span />
+            <span />
+          </button>
+        </nav>
+      </header>
 
-        {/* Desktop Navigation */}
-        <div className="nav-area">
-          <ul className="nav-list">
-            {navItems.map((item) => (
-              <li key={item.path}>
-                <Link
-                  to={item.path}
-                  className={cn(
-                    location.pathname === item.path && "active"
-                  )}
-                  onClick={() => {
-                    sessionStorage.setItem('gd_nav_transition', '1');
-                  }}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Mobile Menu Toggle */}
-        <button 
-          className="nav-toggle"
-          aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-          onClick={() => {
-            setMobileMenuOpen(!mobileMenuOpen);
-            document.body.classList.toggle('nav-open', !mobileMenuOpen);
-          }}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-      </nav>
-    </header>
+      {/* Projects Navigation - contextual por ruta */}
+      <ProjectsNav 
+        isOpen={projectsNavOpen}
+        onClose={() => setProjectsNavOpen(false)}
+        forceVisible={isProyectoPage}
+      />
+    </>
   );
 };
 
