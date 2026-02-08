@@ -168,6 +168,49 @@ document.addEventListener('DOMContentLoaded', function () {
 
     console.log('PageFlip inicializado en #mi-revista', pageFlip);
 
+    // =======================================
+    // NOTIFICAR AL PADRE: REVISTA READY
+    // Enviar postMessage cuando PageFlip esté completamente inicializado
+    // y el primer frame esté estable (2 frames consecutivos)
+    // =======================================
+    let revistaReadySent = false;
+    let stableFrameCount = 0;
+    let lastContainerRect = null;
+
+    const checkRevistaStability = () => {
+        if (revistaReadySent) return;
+
+        const rect = container.getBoundingClientRect();
+        const currentSize = { width: rect.width, height: rect.height };
+
+        if (lastContainerRect) {
+            const sameSize = 
+                Math.abs(lastContainerRect.width - currentSize.width) < 1 &&
+                Math.abs(lastContainerRect.height - currentSize.height) < 1;
+
+            if (sameSize && currentSize.width > 0 && currentSize.height > 0) {
+                stableFrameCount++;
+            } else {
+                stableFrameCount = 0;
+            }
+        }
+
+        lastContainerRect = currentSize;
+
+        if (stableFrameCount >= 2) {
+            revistaReadySent = true;
+            console.log('[Revista] Sending REVISTA_READY to parent');
+            window.parent.postMessage({ type: "REVISTA_READY" }, "*");
+        } else {
+            requestAnimationFrame(checkRevistaStability);
+        }
+    };
+
+    // Iniciar verificación de estabilidad después de un pequeño delay
+    setTimeout(() => {
+        requestAnimationFrame(checkRevistaStability);
+    }, 100);
+
     // ===============================
     // MAPA DE PÁGINAS (DEBUG)
     // ===============================

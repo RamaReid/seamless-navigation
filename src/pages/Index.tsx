@@ -22,16 +22,16 @@ const BEAT = 465;
 const Index = () => {
   const [loading, setLoading] = useState(true);
   const [heroVisible, setHeroVisible] = useState(false);
+  const [isNavSkip, setIsNavSkip] = useState(false);
 
   // Check if coming from internal navigation (skip intro)
   useEffect(() => {
     const isNavTransition = sessionStorage.getItem('gd_nav_transition') === '1';
     if (isNavTransition) {
       sessionStorage.removeItem('gd_nav_transition');
-      setLoading(false);
-      setHeroVisible(true);
-      document.body.classList.add('header-visible', 'hero-visible');
-      document.body.classList.remove('sequence-only');
+      setIsNavSkip(true);
+      // En nav/skip, aún mostramos el loader pero con menos ciclos requeridos
+      // El loader manejará esto internamente con la prop isNavSkip
     }
   }, []);
 
@@ -134,7 +134,7 @@ const Index = () => {
       />
 
       {/* Loader */}
-      {loading && <Loader onComplete={handleLoaderComplete} />}
+      {loading && <Loader onComplete={handleLoaderComplete} isNavSkip={isNavSkip} />}
 
       {/* App Layer */}
       <div id="app-layer" className="relative z-30">
