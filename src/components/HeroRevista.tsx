@@ -16,16 +16,23 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
   const isMobile = useIsMobile();
   const shellRef = useRef<HTMLDivElement>(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [revistaReady, setRevistaReady] = useState(false);
 
   // Handle messages from the revista iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const type = event?.data?.type;
-      if (typeof type !== 'string' || !type.includes('HERO')) return;
+      if (typeof type !== 'string') return;
       
       // Re-dispatch to parent for header-on-scroll behavior
       if (type === 'HERO_INTERACTION' || type === 'HERO_PAGE_FLIP' || type === 'HERO_SCROLL_INTENT') {
         window.dispatchEvent(new CustomEvent('heroInteraction', { detail: { type } }));
+      }
+      
+      // Revista ready signal from iframe
+      if (type === 'REVISTA_READY') {
+        console.log('[HeroRevista] Received REVISTA_READY from iframe');
+        setRevistaReady(true);
       }
     };
 
@@ -34,6 +41,7 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
   }, []);
 
   const handleIframeLoad = useCallback(() => {
+    console.log('[HeroRevista] Iframe loaded');
     setIframeLoaded(true);
   }, []);
 
