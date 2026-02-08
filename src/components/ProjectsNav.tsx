@@ -1,18 +1,22 @@
 /**
  * ProjectsNav - Mini-menú de navegación de proyectos
  * 
+ * DOM 1:1 con el original (proyectos.css):
+ * - Un SOLO menú con clase .projects-nav
+ * - Dos grupos internos: .projects-nav-moments y .projects-nav-projects
+ * - Toggle mediante clase .is-projects (no tabs separados)
+ * 
  * Comportamiento por ruta:
  * - En /momentos: toggle mediante click en "Proyectos" del header
- * - En /proyectos/:id: siempre visible
- * - Estructura/estilo equivalente al original proyectos.css
+ * - En /proyectos/:id: siempre visible y en modo projects
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { projects } from '@/data/projects';
 
-// Capítulos/Momentos para navegación por anclas
+// Capítulos/Momentos para navegación por anclas (exacto del original)
 const CHAPTERS = [
   { href: '#hola', label: 'llegar' },
   { href: '#cafe', label: 'respirar' },
@@ -26,32 +30,25 @@ const CHAPTERS = [
 ];
 
 interface ProjectsNavProps {
-  isOpen?: boolean;
+  isProjectsMode?: boolean; // Toggle para mostrar proyectos vs momentos
   onClose?: () => void;
-  forceVisible?: boolean; // Para páginas de proyectos individuales
 }
 
 export const ProjectsNav: React.FC<ProjectsNavProps> = ({ 
-  isOpen = false, 
+  isProjectsMode = false, 
   onClose,
-  forceVisible = false 
 }) => {
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
-  const [activeTab, setActiveTab] = useState<'moments' | 'projects'>('projects');
   
   const isProyectoPage = location.pathname.startsWith('/proyectos/');
   const isMomentosPage = location.pathname === '/momentos';
   
-  // En páginas de proyecto siempre mostrar tab de proyectos
-  useEffect(() => {
-    if (isProyectoPage) {
-      setActiveTab('projects');
-    }
-  }, [isProyectoPage]);
-
-  // Determinar si debe ser visible
-  const shouldBeVisible = forceVisible || isProyectoPage || (isMomentosPage && isOpen);
+  // Determinar si debe ser visible (solo en /momentos o /proyectos/:id)
+  const shouldBeVisible = isProyectoPage || isMomentosPage;
+  
+  // En páginas de proyecto siempre está en modo projects
+  const showProjects = isProyectoPage || isProjectsMode;
 
   const handleNavClick = () => {
     sessionStorage.setItem('gd_nav_transition', '1');
@@ -64,39 +61,21 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
-    onClose?.();
   };
+
+  if (!shouldBeVisible) return null;
 
   return (
     <nav 
       className={cn(
         "projects-nav",
-        shouldBeVisible && "is-visible",
-        activeTab === 'projects' && "is-projects"
+        showProjects && "is-projects"
       )}
       aria-label="Navegación de proyectos"
     >
-      {/* Tabs solo visibles en /momentos */}
-      {isMomentosPage && (
-        <div className="projects-nav-tabs">
-          <button
-            className={cn("projects-nav-tab", activeTab === 'moments' && "is-active")}
-            onClick={() => setActiveTab('moments')}
-          >
-            Momentos
-          </button>
-          <button
-            className={cn("projects-nav-tab", activeTab === 'projects' && "is-active")}
-            onClick={() => setActiveTab('projects')}
-          >
-            Proyectos
-          </button>
-        </div>
-      )}
-
-      {/* Lista de Capítulos/Momentos (solo en tab moments y en /momentos) */}
-      {isMomentosPage && activeTab === 'moments' && (
-        <div className="projects-nav-list projects-nav-moments">
+      <div className="projects-nav-group">
+        {/* Lista de Capítulos/Momentos (anchors) */}
+        <div className="projects-nav-moments">
           {CHAPTERS.map((chapter) => (
             <a
               key={chapter.href}
@@ -108,11 +87,9 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
             </a>
           ))}
         </div>
-      )}
 
-      {/* Lista de Proyectos/Casas */}
-      {(activeTab === 'projects' || isProyectoPage) && (
-        <div className="projects-nav-list projects-nav-houses">
+        {/* Lista de Proyectos/Casas (links) */}
+        <div className="projects-nav-projects">
           {projects.map((project) => (
             <Link
               key={project.id}
@@ -127,7 +104,7 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
             </Link>
           ))}
         </div>
-      )}
+      </div>
     </nav>
   );
 };

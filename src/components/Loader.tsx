@@ -10,6 +10,7 @@
  */
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 interface LoaderProps {
@@ -30,6 +31,13 @@ const NAV_SKIP_CYCLES = 1;
 type Phase = 'loading' | 'post-loop' | 'lift' | 'drop' | 'bounce' | 'reveal' | 'complete';
 
 export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false }) => {
+  const location = useLocation();
+  
+  // ========================================
+  // ROUTE-AWARE GATE: revistaReady only required on Home
+  // ========================================
+  const isHomePage = location.pathname === '/';
+  
   // ========================================
   // ESTADO
   // ========================================
@@ -41,7 +49,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
   // Gate conditions
   const [loaderCycles, setLoaderCycles] = useState(0);
   const [assetsReady, setAssetsReady] = useState(false);
-  const [revistaReady, setRevistaReady] = useState(false);
+  const [revistaReady, setRevistaReady] = useState(!isHomePage); // TRUE by default on non-home routes
   const [timedOut, setTimedOut] = useState(false);
   
   const requiredCycles = isNavSkip ? NAV_SKIP_CYCLES : COLD_START_CYCLES;
@@ -143,10 +151,11 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
   }, [assetsReady, phase]);
 
   // ========================================
-  // 3. REVISTA READY (postMessage desde iframe)
+  // 3. REVISTA READY (postMessage desde iframe) - SOLO EN HOME
   // ========================================
   useEffect(() => {
-    if (revistaReady || phase !== 'loading') return;
+    // Skip on non-home routes (revistaReady is already true)
+    if (!isHomePage || revistaReady || phase !== 'loading') return;
 
     const handleMessage = (event: MessageEvent) => {
       const type = event?.data?.type;
@@ -176,7 +185,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
       window.removeEventListener('message', handleMessage);
       clearInterval(fallbackInterval);
     };
-  }, [revistaReady, phase]);
+  }, [isHomePage, revistaReady, phase]);
 
   // ========================================
   // TIMEOUT DE SEGURIDAD
@@ -212,9 +221,10 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
     if (allReady) {
       gateReadyFiredRef.current = true;
       console.log('[Loader] ✓ GateReady = true');
+      console.log(`  - Route: ${location.pathname} (isHome: ${isHomePage})`);
       console.log(`  - Cycles: ${loaderCycles}/${requiredCycles} ${cyclesOk ? '✓' : '✗'}`);
       console.log(`  - Assets: ${assetsReady ? '✓' : '✗'}`);
-      console.log(`  - Revista: ${revistaReady ? '✓' : '✗'}`);
+      console.log(`  - Revista: ${revistaReady ? '✓' : (isHomePage ? '✗' : 'N/A (non-home)')}`);
       console.log(`  - Timed out: ${timedOut ? 'yes (forced)' : 'no'}`);
       
       // Entrar a post-loop (logo estático) solo cuando GateReady es true
