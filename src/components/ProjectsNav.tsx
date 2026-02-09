@@ -63,6 +63,9 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
     }
   };
 
+  const formatChapterLabel = (label: string) => label.toUpperCase();
+  const formatProjectLabel = (label: string) => label.replace(/\s+/g, '').toUpperCase();
+
   if (!shouldBeVisible) return null;
 
   return (
@@ -83,7 +86,7 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
               onClick={(e) => handleAnchorClick(e, chapter.href)}
               className="projects-nav-item"
             >
-              {chapter.label}
+              {formatChapterLabel(chapter.label)}
             </a>
           ))}
         </div>
@@ -100,7 +103,7 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
               )}
               onClick={handleNavClick}
             >
-              {project.name}
+              {formatProjectLabel(project.name)}
             </Link>
           ))}
         </div>

@@ -2,7 +2,6 @@ import React, { useEffect, useCallback } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { HeroRevista } from '@/components/HeroRevista';
-import { UXHints } from '@/components/UXHints';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
 
@@ -101,9 +100,6 @@ const Index = () => {
         <Header />
 
         <HeroRevista visible={true} />
-        
-        {/* UX Hints fuera del iframe */}
-        <UXHints showPageHint={true} showScrollHint={true} />
 
         <main id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">
           {/* Bajada Hero */}

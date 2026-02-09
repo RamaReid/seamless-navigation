@@ -600,6 +600,123 @@ body.hero-visible .hero-revista-section {
   visibility: visible;
 }
 
+.home-scroll-cue {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  --cue-beat: 1.2s;  /* 50 BPM */
+  --cue-bar: 4.8s;   /* 4 beats */
+  --cue-beat-third: 0.4s;
+  width: 220px;
+  height: 96px;
+  z-index: 52;
+  pointer-events: none;
+  opacity: 0;
+  animation: scrollCueFadeIn 0.5s ease forwards;
+}
+
+.home-scroll-cue__glow {
+  position: absolute;
+  inset: auto 20px 12px 20px;
+  height: 34px;
+  background: radial-gradient(ellipse at center, hsl(0 0% 100% / 0.28), hsl(0 0% 100% / 0));
+  filter: blur(8px);
+  animation: scrollCueGlow var(--cue-bar) ease-in-out infinite;
+}
+
+.home-scroll-cue__chevrons {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.home-scroll-cue__chevrons span {
+  width: 16px;
+  height: 14px;
+  border-right: 2px solid hsl(0 0% 100% / 0.86);
+  border-bottom: 2px solid hsl(0 0% 100% / 0.86);
+  transform: rotate(45deg);
+  opacity: 0;
+  animation: scrollCueDrop var(--cue-beat) ease-in-out infinite;
+}
+
+.home-scroll-cue__chevrons span:nth-child(2) {
+  animation-delay: var(--cue-beat-third);
+}
+
+.home-scroll-cue__chevrons span:nth-child(3) {
+  animation-delay: calc(var(--cue-beat-third) * 2);
+}
+
+.home-scroll-cue__peek {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, hsl(0 0% 100% / 0), hsl(0 0% 100% / 0.75), hsl(0 0% 100% / 0));
+  animation: scrollCuePeek calc(var(--cue-beat) * 2) ease-in-out infinite;
+}
+
+@keyframes scrollCueFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes scrollCueGlow {
+  0%, 100% {
+    opacity: 0.32;
+    transform: scaleX(0.9);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes scrollCueDrop {
+  0% {
+    opacity: 0;
+    transform: rotate(45deg) translateY(-10px) scale(0.82);
+  }
+  28% {
+    opacity: 1;
+    transform: rotate(45deg) translateY(-2px) scale(1);
+  }
+  58% {
+    opacity: 0.65;
+    transform: rotate(45deg) translateY(4px) scale(0.96);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(45deg) translateY(12px) scale(0.86);
+  }
+}
+
+@keyframes scrollCuePeek {
+  0%, 100% {
+    opacity: 0.42;
+    width: 116px;
+  }
+  50% {
+    opacity: 0.9;
+    width: 150px;
+  }
+}
+
 .hero-revista-shell {
   width: 100%;
   height: 100%;
@@ -1706,7 +1823,8 @@ body.header-visible .projects-nav {
 .projects-nav-group {
   display: flex;
   align-items: center;
-  gap: 16px;
+  /* Gap doubled from 16px to 32px as requested */
+  gap: 32px;
   white-space: nowrap;
 }
 
@@ -1714,14 +1832,16 @@ body.header-visible .projects-nav {
 .projects-nav-moments {
   display: flex;
   align-items: center;
-  gap: 16px;
+  /* Gap doubled from 16px to 32px */
+  gap: 32px;
 }
 
 /* Lista de Proyectos (links) - oculta por defecto */
 .projects-nav-projects {
   display: none;
   align-items: center;
-  gap: 16px;
+  /* Gap doubled from 16px to 32px */
+  gap: 32px;
 }
 
 /* Toggle: cuando tiene .is-projects, oculta moments y muestra projects */
@@ -1737,7 +1857,8 @@ body.header-visible .projects-nav {
 .projects-nav-item {
   font-family: "Times New Roman", Times, serif;
   font-size: 0.72rem;
-  letter-spacing: 0.2em;
+  /* Increased letter-spacing by ~1/3 (0.2em -> 0.267em) */
+  letter-spacing: 0.267em;
   text-transform: none;
   text-decoration: none;
   color: hsl(0 0% 100% / 0.68);
@@ -1954,12 +2075,13 @@ body.lightbox-open {
   }
 
   .projects-nav-group {
-    gap: 10px;
+    /* mobile: double gap from 10px to 20px */
+    gap: 20px;
   }
 
   .projects-nav-moments,
   .projects-nav-projects {
-    gap: 10px;
+    gap: 20px;
   }
 
   .projects-nav-item {

@@ -185,30 +185,68 @@ const CHAPTERS = [
 const Momentos = () => {
   const [collageReady, setCollageReady] = useState(false);
   const collageRef = useRef<HTMLDivElement>(null);
+  const didRevealRef = useRef(false);
 
-  // Escuchar transitionComplete del TransitionShell
+  // Modo visual específico de Momentos
   useEffect(() => {
-    const handleTransitionComplete = () => {
-      document.body.classList.add('hero-visible', 'header-visible');
-      setTimeout(() => setCollageReady(true), 500);
+    document.body.classList.add('project-index');
+
+    return () => {
+      document.body.classList.remove('project-index');
+    };
+  }, []);
+
+  // Timings de entrada de Hero + Header + Collage
+  useEffect(() => {
+    const timeouts: number[] = [];
+    const hasActiveLoader = !!document.getElementById('intro-layer');
+
+    const queueTimeout = (fn: () => void, ms: number) => {
+      const id = window.setTimeout(fn, ms);
+      timeouts.push(id);
     };
 
-    // Check if already visible (direct navigation)
-    if (document.body.classList.contains('header-visible')) {
-      setCollageReady(true);
+    const revealMomentos = () => {
+      if (didRevealRef.current) return;
+      didRevealRef.current = true;
+
+      document.body.classList.add('hero-visible');
+
+      // Header entra después del hero para recuperar la secuencia visual
+      queueTimeout(() => {
+        document.body.classList.add('header-visible');
+      }, 120);
+
+      // Collage cae después de header + hero
+      queueTimeout(() => {
+        setCollageReady(true);
+      }, 560);
+    };
+
+    const handleTransitionComplete = () => {
+      revealMomentos();
+    };
+
+    setCollageReady(false);
+    didRevealRef.current = false;
+
+    // Evita que se vea contenido antes del final del reveal en navegación interna
+    if (hasActiveLoader) {
+      document.body.classList.remove('hero-visible', 'header-visible');
     }
 
     window.addEventListener('transitionComplete', handleTransitionComplete);
-    
-    // Also trigger on mount after a brief delay (for non-transition loads)
-    const mountTimeout = setTimeout(() => {
-      document.body.classList.add('hero-visible', 'header-visible');
-      setTimeout(() => setCollageReady(true), 300);
-    }, 100);
+
+    // Fallback para entrada directa sin transición activa
+    if (!hasActiveLoader) {
+      queueTimeout(() => {
+        revealMomentos();
+      }, 140);
+    }
 
     return () => {
       window.removeEventListener('transitionComplete', handleTransitionComplete);
-      clearTimeout(mountTimeout);
+      timeouts.forEach((id) => clearTimeout(id));
     };
   }, []);
 

@@ -21,9 +21,10 @@ interface LoaderProps {
 // ========================================
 // CONFIGURACIÓN DE TIEMPOS
 // ========================================
-const RADIAL_REVEAL_DURATION = 4500; // 4.5s para radial reveal
+const RADIAL_REVEAL_DURATION = 6000; // 6s para radial reveal (+1/3)
 const GATE_TIMEOUT_MS = 14000; // 14s timeout de seguridad
 const POST_REVEAL_MAX_DELAY = 250; // máximo 250ms post-reveal
+const HEADER_REVEAL_LEAD_MS = 2000; // adelantar header durante reveal
 
 const COLD_START_CYCLES = 2;
 const NAV_SKIP_CYCLES = 1;
@@ -232,11 +233,18 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
       
       // Iniciar intro inmediatamente después de post-loop
       setTimeout(() => {
+        // En navegacion interna, saltar lift/drop/bounce y pasar directo a reveal
+        if (isNavSkip) {
+          console.log('[Loader] Nav transition detected: skipping lift/drop/bounce');
+          setPhase('reveal');
+          return;
+        }
+
         console.log('[Loader] Starting intro sequence (lift)');
         setPhase('lift');
       }, 100);
     }
-  }, [phase, loaderCycles, assetsReady, revistaReady, timedOut, requiredCycles]);
+  }, [phase, loaderCycles, assetsReady, revistaReady, timedOut, requiredCycles, isNavSkip]);
 
   // ========================================
   // TRANSICIONES DE FASE (lift → drop → bounce → reveal)
@@ -282,6 +290,14 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
     window.dispatchEvent(new Event("introComplete"));
     document.body.classList.remove("sequence-only");
 
+    // Adelantar aparición del header solo en Home
+    const headerRevealTimeout = isHomePage
+      ? window.setTimeout(() => {
+          document.body.classList.add('header-visible');
+          console.log(`[Loader] Header reveal trigger at ${HEADER_REVEAL_LEAD_MS}ms from reveal start`);
+        }, HEADER_REVEAL_LEAD_MS)
+      : null;
+
     // Calculate max radius (diagonal de la pantalla)
     const maxRadius = Math.hypot(window.innerWidth, window.innerHeight);
     const startTime = performance.now();
@@ -312,11 +328,14 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
     animationFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
+      if (headerRevealTimeout) {
+        clearTimeout(headerRevealTimeout);
+      }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [phase, onComplete]);
+  }, [phase, onComplete, isHomePage]);
 
   // ========================================
   // RENDER
