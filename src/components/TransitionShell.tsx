@@ -2,7 +2,7 @@
  * TransitionShell - Layout wrapper que aplica el Loader a TODAS las rutas internas
  * 
  * Protocolo de transición universal:
- * - Antes de navegar: sessionStorage.gd_nav_transition = "1"
+ * - Cambio de pathname => transición interna con loader
  * - Loader + radial reveal + reset
  * - Al entrar al destino: scrollTo(0,0), limpiar clases, recalcular header
  */
@@ -18,7 +18,10 @@ interface TransitionShellProps {
 export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) => {
   const location = useLocation();
   const [isTransitioning, setIsTransitioning] = useState(true); // Start with loader
-  const [isNavSkip, setIsNavSkip] = useState(false);
+  // Canon:
+  // - cold start on "/" => FULL_HOME_INTRO
+  // - any other case => NAV_INTRO
+  const [isNavSkip, setIsNavSkip] = useState(location.pathname !== '/');
   const [showScrollCue, setShowScrollCue] = useState(false);
   const hasInitialized = useRef(false);
   const previousPath = useRef<string | null>(null);
@@ -28,33 +31,22 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
   useEffect(() => {
     if (!hasInitialized.current) {
       hasInitialized.current = true;
-      const isNavTransition = sessionStorage.getItem('gd_nav_transition') === '1';
-      
-      if (isNavTransition) {
-        sessionStorage.removeItem('gd_nav_transition');
-        setIsNavSkip(true);
-      }
-      
+      document.body.classList.remove('hero-visible', 'header-visible', 'sequence-only');
+      setShowScrollCue(false);
       previousPath.current = location.pathname;
       // Loader is already shown (isTransitioning = true)
       return;
     }
 
-    // Subsequent navigation
+    // Subsequent navigation (always transition on route change)
     if (previousPath.current !== location.pathname) {
-      const isNavTransition = sessionStorage.getItem('gd_nav_transition') === '1';
-      
-      if (isNavTransition) {
-        sessionStorage.removeItem('gd_nav_transition');
-        
-        // Reset for transition
-        window.scrollTo(0, 0);
-        document.body.classList.remove('hero-visible', 'header-visible', 'sequence-only');
-        
-        setIsNavSkip(true);
-        setIsTransitioning(true);
-      }
-      
+      // Reset for transition
+      window.scrollTo(0, 0);
+      document.body.classList.remove('hero-visible', 'header-visible', 'sequence-only');
+      setShowScrollCue(false);
+
+      setIsNavSkip(true);
+      setIsTransitioning(true);
       previousPath.current = location.pathname;
     }
   }, [location.pathname]);

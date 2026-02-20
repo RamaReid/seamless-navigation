@@ -120,15 +120,6 @@ export function useIntroSequence(options: UseIntroSequenceOptions = {}) {
     };
   }, []);
 
-  // Check for nav transition flag
-  useEffect(() => {
-    const navTransition = sessionStorage.getItem('gd_nav_transition') === '1';
-    if (navTransition) {
-      sessionStorage.removeItem('gd_nav_transition');
-      setState(prev => ({ ...prev, skipIntro: true }));
-    }
-  }, []);
-
   return {
     state,
     svgRef,

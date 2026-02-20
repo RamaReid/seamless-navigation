@@ -111,9 +111,6 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
     if (item.isToggle) {
       e.preventDefault();
       setProjectsNavOpen(!projectsNavOpen);
-    } else {
-      // Mark nav transition for skip intro behavior
-      sessionStorage.setItem('gd_nav_transition', '1');
     }
   };
 
@@ -131,7 +128,6 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
               className="brand-link"
               aria-label="Ir al inicio"
               onClick={() => {
-                sessionStorage.setItem('gd_nav_transition', '1');
                 setProjectsNavOpen(false);
               }}
             >

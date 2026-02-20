@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Link } from 'react-router-dom';
 
 interface HeroRevistaProps {
   visible?: boolean;
@@ -75,9 +76,9 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
           <div id="hero-carousel" className="carousel w-full h-full overflow-x-auto overflow-y-hidden">
             <div className="carousel-track flex gap-4 h-full px-4 snap-x snap-mandatory scroll-smooth">
               {slides.map((slide, idx) => (
-                <a
+                <Link
                   key={idx}
-                  href={slide.href}
+                  to={slide.href}
                   className="slide flex-shrink-0 w-[85vw] h-full rounded-lg snap-center block"
                   style={{
                     backgroundImage: `url(${slide.img})`,

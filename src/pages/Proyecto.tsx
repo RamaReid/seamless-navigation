@@ -122,7 +122,6 @@ const Proyecto: React.FC = () => {
               <Link
                 to={`/proyectos/${prev.id}`}
                 className="house-hero-control house-hero-prev"
-                onClick={() => sessionStorage.setItem('gd_nav_transition', '1')}
               >
                 <span className="house-hero-arrow">←</span>
                 <span className="house-hero-label">{prev.name}</span>
@@ -132,7 +131,6 @@ const Proyecto: React.FC = () => {
               <Link
                 to={`/proyectos/${next.id}`}
                 className="house-hero-control house-hero-next"
-                onClick={() => sessionStorage.setItem('gd_nav_transition', '1')}
               >
                 <span className="house-hero-label">{next.name}</span>
                 <span className="house-hero-arrow">→</span>

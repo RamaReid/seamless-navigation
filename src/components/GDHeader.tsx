@@ -8,7 +8,6 @@ interface GDHeaderProps {
 
 const GDHeader: React.FC<GDHeaderProps> = ({ onLogoClick }) => {
   const handleLogoClick = () => {
-    sessionStorage.setItem('gd_nav_transition', '1');
     onLogoClick?.();
   };
 

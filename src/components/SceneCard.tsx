@@ -26,9 +26,6 @@ export const SceneCard: React.FC<SceneCardProps> = ({
         variant === 'square' && "square",
         className
       )}
-      onClick={() => {
-        sessionStorage.setItem('gd_nav_transition', '1');
-      }}
     >
       <img
         src={image}

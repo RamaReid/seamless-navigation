@@ -51,7 +51,6 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
   const showProjects = isProyectoPage || isProjectsMode;
 
   const handleNavClick = () => {
-    sessionStorage.setItem('gd_nav_transition', '1');
     onClose?.();
   };
 

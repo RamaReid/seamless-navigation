@@ -37,6 +37,14 @@ const Index = () => {
     };
   }, [handleTransitionComplete]);
 
+  // Fallback: if no active loader exists, apply the same final state immediately.
+  useEffect(() => {
+    const hasActiveLoader = !!document.getElementById('intro-layer');
+    if (!hasActiveLoader) {
+      handleTransitionComplete();
+    }
+  }, [handleTransitionComplete]);
+
   // Intersection observer for scene cards
   useEffect(() => {
     const observer = new IntersectionObserver(
