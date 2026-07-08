@@ -230,6 +230,7 @@ export const useGateReady = (options: UseGateReadyOptions = {}) => {
   // LOGS DE DEBUG
   // ========================================
   useEffect(() => {
+    console.log("[GateReady]", {
       cycles: `${state.loaderCycles}/${requiredCycles}`,
       assetsReady: state.assetsReady,
       revistaReady: state.revistaReady,
