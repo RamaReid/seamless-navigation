@@ -4,12 +4,12 @@ import { Footer } from '@/components/Footer';
 import { HeroSection } from '@/components/HeroSection';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
-import fondoCasaM from '@/assets/img/FondoCasaM.png';
+import fondoCasaM from '@/assets/img/FondoCasaM.webp';
 
-import livingScola from '@/assets/img/cedahause/cedahause-living.png';
-import gadehauseCocina from '@/assets/img/gadehause/gadehause-cocina-panoramica.png';
-import markhauseComedor from '@/assets/img/markhause/markhause-comedor.png';
-import cedahauseHero from '@/assets/img/cedahause/cedahause-exterior-hero-oeste.png';
+import livingScola from '@/assets/img/cedahause/cedahause-living.webp';
+import gadehauseCocina from '@/assets/img/gadehause/gadehause-cocina-panoramica.webp';
+import markhauseComedor from '@/assets/img/markhause/markhause-comedor.webp';
+import cedahauseHero from '@/assets/img/cedahause/cedahause-exterior-hero-oeste.webp';
 
 const Estudio = () => {
   const [headerVisible, setHeaderVisible] = useState(false);

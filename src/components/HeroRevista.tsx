@@ -47,16 +47,16 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
   // Mobile carousel fallback (matching original revista.html mobile carousel)
   if (isMobile) {
     const slides = [
-      { href: '/proyectos/magahause', img: '/img/magahause/magahause-exterior-sur-entrada-hero.png' },
-      { href: '/proyectos/donahause', img: '/img/donahause/donahause-hero2.png' },
-      { href: '/proyectos/gadehause', img: '/img/gadehause/gadehause-exterior-hero-sur.png' },
-      { href: '/proyectos/jobehause', img: '/img/jobehause/jobehause-exterior-frente-hero.png' },
-      { href: '/proyectos/jomahause', img: '/img/jomahause/jomahause-exterior-hero.png' },
-      { href: '/proyectos/jonohause', img: '/img/jonohause/jonohause-exterior-hero.png' },
-      { href: '/proyectos/cedahause', img: '/img/cedahause/cedahause-exterior-hero-este.png' },
-      { href: '/proyectos/markhause', img: '/img/markhause/markhause-exterior-hero.png' },
-      { href: '/proyectos/scohause', img: '/img/scohause/scohause-exterior-hero.png' },
-      { href: '/proyectos/vidahause', img: '/img/vidahause/vidahause-exterior-hero.png' },
+      { href: '/proyectos/magahause', img: '/img/magahause/magahause-exterior-sur-entrada-hero.webp' },
+      { href: '/proyectos/donahause', img: '/img/donahause/donahause-hero2.webp' },
+      { href: '/proyectos/gadehause', img: '/img/gadehause/gadehause-exterior-hero-sur.webp' },
+      { href: '/proyectos/jobehause', img: '/img/jobehause/jobehause-exterior-frente-hero.webp' },
+      { href: '/proyectos/jomahause', img: '/img/jomahause/jomahause-exterior-hero.webp' },
+      { href: '/proyectos/jonohause', img: '/img/jonohause/jonohause-exterior-hero.webp' },
+      { href: '/proyectos/cedahause', img: '/img/cedahause/cedahause-exterior-hero-este.webp' },
+      { href: '/proyectos/markhause', img: '/img/markhause/markhause-exterior-hero.webp' },
+      { href: '/proyectos/scohause', img: '/img/scohause/scohause-exterior-hero.webp' },
+      { href: '/proyectos/vidahause', img: '/img/vidahause/vidahause-exterior-hero.webp' },
     ];
 
     return (
