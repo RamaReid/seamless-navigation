@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { getProjectById, getAdjacentProjects, Project } from '@/data/projects';
-import fondoCasaM from '@/assets/img/FondoCasaM.png';
+import fondoCasaM from '@/assets/img/FondoCasaM.webp';
 
 const Proyecto: React.FC = () => {
   const { id } = useParams<{ id: string }>();

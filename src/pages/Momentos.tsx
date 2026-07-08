@@ -3,65 +3,65 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
-import fondoCasaM from '@/assets/img/FondoCasaM.png';
+import fondoCasaM from '@/assets/img/FondoCasaM.webp';
 
 // Hero Collage Images
-import jobeEntrada from '@/assets/img/jobehause/jobehause-exterior-entrada.png';
-import cedaCocina from '@/assets/img/cedahause/cedahause-cocina.png';
-import gadeComedor from '@/assets/img/gadehause/gadehause-comedor.png';
-import markLiving from '@/assets/img/markhause/markhause-living.png';
-import scoGaleria from '@/assets/img/scohause/scohause-galeria-panoramica.png';
-import cedaBanoDucha from '@/assets/img/cedahause/cedahause-bano-ducha.png';
-import jonoDormitorio from '@/assets/img/jonohause/jonohause-dormitorio.png';
-import scoQuincho from '@/assets/img/scohause/scohause-quincho.png';
-import markExterior from '@/assets/img/markhause/markhause-exterior-hero.png';
-import jomaCocina from '@/assets/img/jomahause/jomahause-cocina.png';
-import cedaComedor from '@/assets/img/cedahause/cedahause-comedor.png';
-import markDormitorio from '@/assets/img/markhause/markhause-dormitorio.png';
+import jobeEntrada from '@/assets/img/jobehause/jobehause-exterior-entrada.webp';
+import cedaCocina from '@/assets/img/cedahause/cedahause-cocina.webp';
+import gadeComedor from '@/assets/img/gadehause/gadehause-comedor.webp';
+import markLiving from '@/assets/img/markhause/markhause-living.webp';
+import scoGaleria from '@/assets/img/scohause/scohause-galeria-panoramica.webp';
+import cedaBanoDucha from '@/assets/img/cedahause/cedahause-bano-ducha.webp';
+import jonoDormitorio from '@/assets/img/jonohause/jonohause-dormitorio.webp';
+import scoQuincho from '@/assets/img/scohause/scohause-quincho.webp';
+import markExterior from '@/assets/img/markhause/markhause-exterior-hero.webp';
+import jomaCocina from '@/assets/img/jomahause/jomahause-cocina.webp';
+import cedaComedor from '@/assets/img/cedahause/cedahause-comedor.webp';
+import markDormitorio from '@/assets/img/markhause/markhause-dormitorio.webp';
 
 // Chapter images - Llegar
-import cedaExteriorEntrada from '@/assets/img/cedahause/cedahause-exterior-entrada.png';
-import magaEntrada from '@/assets/img/magahause/magahause-entrada.png';
-import gadeExteriorEntrada from '@/assets/img/gadehause/gadehause-exterior-entrada.png';
+import cedaExteriorEntrada from '@/assets/img/cedahause/cedahause-exterior-entrada.webp';
+import magaEntrada from '@/assets/img/magahause/magahause-entrada.webp';
+import gadeExteriorEntrada from '@/assets/img/gadehause/gadehause-exterior-entrada.webp';
 
 // Chapter images - Respirar
-import gadeCocina from '@/assets/img/gadehause/gadehause-cocina.png';
-import jomaCocinaComedor from '@/assets/img/jomahause/jomahause-cocina-comedor.png';
-import vidaCocina from '@/assets/img/vidahause/vidahause-cocina.png';
+import gadeCocina from '@/assets/img/gadehause/gadehause-cocina.webp';
+import jomaCocinaComedor from '@/assets/img/jomahause/jomahause-cocina-comedor.webp';
+import vidaCocina from '@/assets/img/vidahause/vidahause-cocina.webp';
 
 // Chapter images - Compartir
-import donaComedorLiving from '@/assets/img/donahause/donahause-comedor-living.png';
-import markComedor from '@/assets/img/markhause/markhause-comedor.png';
-import jonoComedor from '@/assets/img/jonohause/jonohause-comedor.png';
+import donaComedorLiving from '@/assets/img/donahause/donahause-comedor-living.webp';
+import markComedor from '@/assets/img/markhause/markhause-comedor.webp';
+import jonoComedor from '@/assets/img/jonohause/jonohause-comedor.webp';
 
 // Chapter images - Habitar
-import cedaLiving from '@/assets/img/cedahause/cedahause-living.png';
-import scoLiving from '@/assets/img/scohause/scohause-living.png';
-import magaLiving from '@/assets/img/magahause/magahause-living.png';
+import cedaLiving from '@/assets/img/cedahause/cedahause-living.webp';
+import scoLiving from '@/assets/img/scohause/scohause-living.webp';
+import magaLiving from '@/assets/img/magahause/magahause-living.webp';
 
 // Chapter images - Cruzar
-import gadePiletaPortal from '@/assets/img/gadehause/gadehause-pileta-portal.png';
-import scoGaleriaRelacion from '@/assets/img/scohause/scohause-galeria-relacion.png';
-import vidaVistaSurPatio from '@/assets/img/vidahause/vidahause-vista-sur-patio.png';
+import gadePiletaPortal from '@/assets/img/gadehause/gadehause-pileta-portal.webp';
+import scoGaleriaRelacion from '@/assets/img/scohause/scohause-galeria-relacion.webp';
+import vidaVistaSurPatio from '@/assets/img/vidahause/vidahause-vista-sur-patio.webp';
 
 // Chapter images - Refrescar
-import cedaBanoBacha from '@/assets/img/cedahause/cedahause-bano-bacha.png';
-import gadeBanoPrincipal from '@/assets/img/gadehause/gadehause-bano-principal.png';
-import jomaBanoBanera from '@/assets/img/jomahause/jomahause-bano-banera.png';
+import cedaBanoBacha from '@/assets/img/cedahause/cedahause-bano-bacha.webp';
+import gadeBanoPrincipal from '@/assets/img/gadehause/gadehause-bano-principal.webp';
+import jomaBanoBanera from '@/assets/img/jomahause/jomahause-bano-banera.webp';
 
 // Chapter images - Dormir
-import gadeDormitorio from '@/assets/img/gadehause/gadehause-dormitorio.png';
-import magaDormitorio from '@/assets/img/magahause/magahause-dormitorio.png';
-import jonoDormitorio2 from '@/assets/img/jonohause/jonohause-dormitorio-2.png';
+import gadeDormitorio from '@/assets/img/gadehause/gadehause-dormitorio.webp';
+import magaDormitorio from '@/assets/img/magahause/magahause-dormitorio.webp';
+import jonoDormitorio2 from '@/assets/img/jonohause/jonohause-dormitorio-2.webp';
 
 // Chapter images - Encender
-import donaQuinchoB from '@/assets/img/donahause/donahause-quincho-b.png';
-import jomaQuincho from '@/assets/img/jomahause/jomahause-quincho.png';
+import donaQuinchoB from '@/assets/img/donahause/donahause-quincho-b.webp';
+import jomaQuincho from '@/assets/img/jomahause/jomahause-quincho.webp';
 import magaQuincho from '@/assets/img/magahause/magahause-quincho.jpeg';
 
 // Chapter images - Pertenecer
-import cedaExteriorOeste from '@/assets/img/cedahause/cedahause-exterior-hero-oeste.png';
-import magaExteriorOeste from '@/assets/img/magahause/magahause-exterior-oeste.png';
+import cedaExteriorOeste from '@/assets/img/cedahause/cedahause-exterior-hero-oeste.webp';
+import magaExteriorOeste from '@/assets/img/magahause/magahause-exterior-oeste.webp';
 
 // Collage photo data
 const COLLAGE_PHOTOS = [
