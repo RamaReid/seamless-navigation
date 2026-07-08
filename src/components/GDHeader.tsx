@@ -34,7 +34,6 @@ const GDHeader: React.FC<GDHeaderProps> = ({ onLogoClick }) => {
           <ul className="nav-list">
             <li><Link to="/momentos">Momentos</Link></li>
             <li><Link to="/estudio">Estudio</Link></li>
-            <li><Link to="/contacto">Contacto</Link></li>
           </ul>
         </nav>
         

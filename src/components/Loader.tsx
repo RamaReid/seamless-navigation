@@ -78,7 +78,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
       if (target.classList.contains('str5') && e.animationName === 'drawLine') {
         const newCount = loaderCycles + 1;
         setLoaderCycles(newCount);
-        console.log(`[Loader] Cycle complete: ${newCount}/${requiredCycles}`);
         
         // Reiniciar el loop si no hemos alcanzado los ciclos requeridos Y gate no está listo
         if (newCount < requiredCycles || (!assetsReady || !revistaReady)) {
@@ -103,7 +102,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
         // Esperar a que las fuentes estén listas (Times New Roman es de sistema, debería ser instantáneo)
         if ('fonts' in document) {
           await document.fonts.ready;
-          console.log('[Loader] Fonts loaded (Times New Roman)');
         }
 
         // Verificar layout estable (2 frames consecutivos sin cambios)
@@ -130,7 +128,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
           lastLayoutSize.current = currentSize;
 
           if (layoutStableFrames.current >= 2) {
-            console.log('[Loader] Assets ready (layout stable)');
             setAssetsReady(true);
           } else if (phase === 'loading') {
             requestAnimationFrame(checkLayoutStability);
@@ -161,7 +158,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
     const handleMessage = (event: MessageEvent) => {
       const type = event?.data?.type;
       if (type === 'REVISTA_READY') {
-        console.log('[Loader] Revista ready via postMessage');
         setRevistaReady(true);
       }
     };
@@ -173,7 +169,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
       const iframe = document.getElementById('hero-iframe') as HTMLIFrameElement;
       if (iframe && !revistaReady) {
         if (iframe.contentWindow && iframe.contentDocument?.body?.innerHTML) {
-          console.log('[Loader] Revista ready via iframe content check');
           setRevistaReady(true);
         }
       }
@@ -221,12 +216,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
 
     if (allReady) {
       gateReadyFiredRef.current = true;
-      console.log('[Loader] ✓ GateReady = true');
-      console.log(`  - Route: ${location.pathname} (isHome: ${isHomePage})`);
-      console.log(`  - Cycles: ${loaderCycles}/${requiredCycles} ${cyclesOk ? '✓' : '✗'}`);
-      console.log(`  - Assets: ${assetsReady ? '✓' : '✗'}`);
-      console.log(`  - Revista: ${revistaReady ? '✓' : (isHomePage ? '✗' : 'N/A (non-home)')}`);
-      console.log(`  - Timed out: ${timedOut ? 'yes (forced)' : 'no'}`);
       
       // Entrar a post-loop (logo estático) solo cuando GateReady es true
       setPhase('post-loop');
@@ -235,12 +224,10 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
       setTimeout(() => {
         // En navegacion interna, saltar lift/drop/bounce y pasar directo a reveal
         if (isNavSkip) {
-          console.log('[Loader] Nav transition detected: skipping lift/drop/bounce');
           setPhase('reveal');
           return;
         }
 
-        console.log('[Loader] Starting intro sequence (lift)');
         setPhase('lift');
       }, 100);
     }
@@ -278,7 +265,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
     if (phase !== 'reveal') return;
 
     revealStartTimeRef.current = performance.now();
-    console.log(`[Loader] RevealStart timestamp: ${revealStartTimeRef.current.toFixed(0)}ms`);
 
     const svg = svgRef.current;
     if (svg) {
@@ -294,7 +280,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
     const headerRevealTimeout = isHomePage
       ? window.setTimeout(() => {
           document.body.classList.add('header-visible');
-          console.log(`[Loader] Header reveal trigger at ${HEADER_REVEAL_LEAD_MS}ms from reveal start`);
         }, HEADER_REVEAL_LEAD_MS)
       : null;
 
@@ -311,15 +296,11 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
         // Complete - transición rápida al final
-        const revealEndTime = performance.now();
-        console.log(`[Loader] RevealComplete timestamp: ${revealEndTime.toFixed(0)}ms`);
-        console.log(`[Loader] Reveal duration: ${(revealEndTime - revealStartTimeRef.current).toFixed(0)}ms`);
         
         // Completar en <= POST_REVEAL_MAX_DELAY
         setTimeout(() => {
           setPhase('complete');
           setVisible(false);
-          console.log(`[Loader] ✓ Sequence complete - Home ready (post-reveal delay: ${POST_REVEAL_MAX_DELAY}ms)`);
           onComplete?.();
         }, POST_REVEAL_MAX_DELAY);
       }

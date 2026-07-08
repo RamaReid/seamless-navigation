@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { HeroSection } from '@/components/HeroSection';
@@ -6,27 +6,47 @@ import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene'
 import { SceneCard } from '@/components/SceneCard';
 import fondoCasaM from '@/assets/img/FondoCasaM.png';
 
-// Imágenes del estudio (del original)
-import cedahauseLiving from '@/assets/img/cedahause/cedahause-living.png';
+import livingScola from '@/assets/img/cedahause/cedahause-living.png';
 import gadehauseCocina from '@/assets/img/gadehause/gadehause-cocina-panoramica.png';
 import markhauseComedor from '@/assets/img/markhause/markhause-comedor.png';
+import cedahauseHero from '@/assets/img/cedahause/cedahause-exterior-hero-oeste.png';
 
 const Estudio = () => {
   const [headerVisible, setHeaderVisible] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
 
-  useEffect(() => {
-    // Animación de entrada
-    setTimeout(() => setHeroVisible(true), 100);
-    setTimeout(() => setHeaderVisible(true), 400);
-    document.body.classList.add('hero-visible', 'header-visible');
-    
-    return () => {
-      document.body.classList.remove('hero-visible', 'header-visible');
-    };
+  const scrollToContact = useCallback(() => {
+    if (window.location.hash !== '#contacto') return;
+
+    window.setTimeout(() => {
+      document.getElementById('contacto')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 260);
   }, []);
 
-  // Intersection observer for scene cards
+  useEffect(() => {
+    const heroTimer = window.setTimeout(() => setHeroVisible(true), 100);
+    const headerTimer = window.setTimeout(() => setHeaderVisible(true), 400);
+    document.body.classList.add('hero-visible', 'header-visible');
+
+    const handleTransitionComplete = () => {
+      document.body.classList.add('hero-visible', 'header-visible');
+      scrollToContact();
+    };
+
+    window.addEventListener('transitionComplete', handleTransitionComplete);
+    scrollToContact();
+
+    return () => {
+      window.clearTimeout(heroTimer);
+      window.clearTimeout(headerTimer);
+      window.removeEventListener('transitionComplete', handleTransitionComplete);
+      document.body.classList.remove('hero-visible', 'header-visible');
+    };
+  }, [scrollToContact]);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -34,7 +54,7 @@ const Estudio = () => {
           if (entry.isIntersecting) {
             const cards = entry.target.querySelectorAll('.scene-card');
             cards.forEach((card, index) => {
-              setTimeout(() => card.classList.add('is-visible'), index * 250);
+              window.setTimeout(() => card.classList.add('is-visible'), index * 250);
             });
           }
         });
@@ -49,69 +69,60 @@ const Estudio = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Plano de fondo con imagen FondoCasaM */}
-      <div 
+      <div
         id="plano-bg"
         style={{
-          backgroundImage: `url(${fondoCasaM})`
+          backgroundImage: `url(${fondoCasaM})`,
         }}
       />
 
-      {/* App Layer */}
       <div id="app-layer" className="relative z-30">
         <Header visible={headerVisible} />
 
-        <HeroSection 
+        <HeroSection
           visible={heroVisible}
-          backgroundImage="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&h=1080&fit=crop"
+          backgroundImage={cedahauseHero}
         />
 
         <main id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">
-          {/* Título principal */}
           <Scene variant="intro">
             <SceneTitle>Estudio</SceneTitle>
           </Scene>
 
-          {/* Introducción */}
           <Scene variant="divider">
             <SceneSubtitle>
               Arquitectura que parte de la vida real.
             </SceneSubtitle>
             <SceneText>
-              Trabajamos desde la escucha y la observación. Cada proyecto nace de una forma de habitar 
-              y se transforma en un espacio claro, funcional y duradero.
+              Proyectamos, diseñamos y construimos casas desde la forma concreta de habitar: rutinas, vínculos, tiempos, deseos y límites que ordenan cada decisión.
             </SceneText>
           </Scene>
 
-          {/* Enfoque */}
           <Scene variant="divider">
-            <SceneSubtitle>Enfoque</SceneSubtitle>
+            <SceneSubtitle>Escucha</SceneSubtitle>
             <SceneText>
-              Ordenamos luz, escala y recorridos para que el espacio acompañe la vida cotidiana.
+              Antes de dibujar, buscamos entender cómo se vive. La casa empieza en una conversación: qué se repite, qué incomoda, qué se quiere cuidar y qué momentos necesitan lugar.
             </SceneText>
           </Scene>
 
-          {/* Proceso */}
           <Scene variant="divider">
-            <SceneSubtitle>Proceso</SceneSubtitle>
+            <SceneSubtitle>Proyecto</SceneSubtitle>
             <SceneText>
-              Relevamos, proyectamos, ajustamos y construimos con acompañamiento continuo.
+              Esa información se transforma en arquitectura: luz, escala, recorridos, orientación, materialidad y uso. La belleza aparece cuando el espacio responde con claridad.
             </SceneText>
           </Scene>
 
-          {/* Equipo */}
           <Scene variant="divider">
-            <SceneSubtitle>Equipo</SceneSubtitle>
+            <SceneSubtitle>Construcción</SceneSubtitle>
             <SceneText>
-              Un equipo compacto con mirada arquitectónica y técnica.
+              La obra no es una etapa separada del proyecto. Diseñar y construir forman una continuidad técnica, económica y humana para que la idea llegue entera a la vida cotidiana.
             </SceneText>
           </Scene>
 
-          {/* Galería de espacios */}
           <Scene variant="details">
             <SceneCard
               to="/proyectos/cedahause"
-              image={cedahauseLiving}
+              image={livingScola}
               alt="Interior contemporáneo"
             />
             <SceneCard
@@ -126,12 +137,25 @@ const Estudio = () => {
             />
           </Scene>
 
-          {/* Materialidad */}
           <Scene variant="divider">
-            <SceneSubtitle>Materialidad</SceneSubtitle>
+            <SceneSubtitle>Trayectoria</SceneSubtitle>
             <SceneText>
-              Elegimos materiales honestos, mantenimiento simple y buena performance.
+              Las obras destacadas muestran una parte del recorrido. La base completa de obras realizadas se incorporará como mapa y archivo visual cuando estén consolidados los datos reales.
             </SceneText>
+          </Scene>
+
+          <Scene variant="divider" className="scene-contact">
+            <div id="contacto" className="contact-anchor" />
+            <SceneSubtitle>Contacto</SceneSubtitle>
+            <SceneText>
+              Contanos tu historia, tu rutina o la idea que querés transformar en arquitectura.
+            </SceneText>
+            <div className="contact-actions" aria-label="Canales de contacto">
+              <a className="contact-link" href="mailto:rgarciareid@gmail.com">rgarciareid@gmail.com</a>
+              <a className="contact-link" href="https://wa.me/5492494626455" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            </div>
+            <SceneText className="contact-meta">Tandil, Buenos Aires</SceneText>
+            <SceneText className="contact-meta">Lun a Vie, 9 a 18</SceneText>
           </Scene>
 
           <Footer />

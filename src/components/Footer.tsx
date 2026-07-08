@@ -9,29 +9,29 @@ import logoRagarIcon from '@/assets/icons/LogoRagar.svg';
 
 export const Footer: React.FC = () => {
   const socialLinks = [
-    { 
-      href: "https://tumarca.com", 
+    {
+      href: "https://www.linkedin.com/in/ramareid/",
       label: "Desarrollador",
       icon: logoRagarIcon
     },
-    { 
-      href: "https://instagram.com/gdarquitectura", 
+    {
+      href: "https://www.instagram.com/ramareid/",
       label: "Instagram",
       icon: instagramIcon
     },
-    { 
-      href: "mailto:info@gd.com", 
+    {
+      href: "mailto:rgarciareid@gmail.com",
       label: "Email",
       icon: gmailIcon,
       larger: true
     },
-    { 
-      href: "https://facebook.com/gdarquitectura", 
+    {
+      href: "https://www.facebook.com/gdarqyconstruccion/",
       label: "Facebook",
       icon: facebookIcon
     },
-    { 
-      href: "https://wa.me/549XXXXXXXXXX", 
+    {
+      href: "https://wa.me/5492494626455",
       label: "WhatsApp",
       icon: whatsappIcon
     },
@@ -39,9 +39,9 @@ export const Footer: React.FC = () => {
 
   return (
     <footer id="gd-footer" className="w-full py-12 relative z-[100]">
-      <div 
+      <div
         className="footer-icons flex justify-center items-center gap-20 md:gap-36"
-        role="group" 
+        role="group"
         aria-label="Redes y contacto"
       >
         {socialLinks.map((link) => (
@@ -54,9 +54,9 @@ export const Footer: React.FC = () => {
             target={link.href.startsWith('http') ? "_blank" : undefined}
             rel={link.href.startsWith('http') ? "noopener noreferrer" : undefined}
           >
-            <img 
-              src={link.icon} 
-              alt="" 
+            <img
+              src={link.icon}
+              alt=""
               className={link.larger ? "w-11 h-auto" : "w-10 h-auto"}
             />
           </a>

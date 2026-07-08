@@ -1326,6 +1326,48 @@ body.header-visible .gd-header {
   color: hsl(300 1% 77%);
 }
 
+.gd-transition-2500 {
+  transition-duration: 2500ms;
+}
+
+.scene-contact {
+  padding-top: 50px;
+  position: relative;
+}
+
+.contact-anchor {
+  position: absolute;
+  top: -120px;
+}
+
+.contact-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 42px;
+  flex-wrap: wrap;
+  margin: 28px auto 18px;
+}
+
+.contact-link {
+  color: white;
+  font-size: 22px;
+  line-height: 1.2;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.72);
+  padding-bottom: 6px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.contact-link:hover {
+  color: hsl(300 1% 77%);
+  border-color: hsl(300 1% 77%);
+}
+
+.contact-meta {
+  color: hsl(300 1% 77%);
+  font-size: 20px;
+}
 .scene-moments,
 .scene-details {
   display: grid;
@@ -1763,6 +1805,21 @@ body.lightbox-open {
     font-size: 20px;
   }
 
+  .contact-actions {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .contact-link {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .contact-meta {
+    font-size: 17px;
+  }
   .scene-card.wide {
     width: calc(100% + 40px);
     margin: 0 -20px;

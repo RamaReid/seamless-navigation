@@ -228,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
             blank.className = 'page';
             blank.setAttribute('data-name', 'blank-inserted');
             last.parentNode.insertBefore(blank, last);
-            console.log('Se insertó página en blanco para paridad.');
         }
     })();
 
@@ -249,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Iniciar hint inmediatamente al abrir
     startAutoCorner();
 
-    console.log('PageFlip inicializado en #mi-revista', pageFlip);
 
     // =======================================
     // NOTIFICAR AL PADRE: REVISTA READY
@@ -282,7 +280,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (stableFrameCount >= 2) {
             revistaReadySent = true;
-            console.log('[Revista] Sending REVISTA_READY to parent');
             window.parent.postMessage({ type: "REVISTA_READY" }, "*");
         } else {
             requestAnimationFrame(checkRevistaStability);
@@ -303,7 +300,6 @@ document.addEventListener('DOMContentLoaded', function () {
         pages.forEach((p, i) => {
             map.push({ index: i, id: p.id || null, name: p.getAttribute('data-name') || null });
         });
-        console.log('Mapa de páginas:', map);
     })();
 
     // =====================================================

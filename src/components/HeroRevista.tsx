@@ -32,7 +32,6 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
       
       // Revista ready signal from iframe
       if (type === 'REVISTA_READY') {
-        console.log('[HeroRevista] Received REVISTA_READY from iframe');
         setRevistaReady(true);
       }
     };
@@ -42,7 +41,6 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
   }, []);
 
   const handleIframeLoad = useCallback(() => {
-    console.log('[HeroRevista] Iframe loaded');
     setIframeLoaded(true);
   }, []);
 
@@ -66,7 +64,7 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
         id="hero-revista-section"
         className={cn(
           "hero-revista-section",
-          "transition-all duration-[2500ms] ease-out",
+          "transition-all gd-transition-2500 ease-out",
           visible ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none",
           className
         )}
@@ -101,7 +99,7 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
       id="hero-revista-section"
       className={cn(
         "hero-revista-section",
-        "transition-all duration-[2500ms] ease-out",
+        "transition-all gd-transition-2500 ease-out",
         visible ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none",
         className
       )}

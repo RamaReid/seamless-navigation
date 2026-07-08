@@ -63,7 +63,6 @@ export const useGateReady = (options: UseGateReadyOptions = {}) => {
 
     const cycleTimer = setInterval(() => {
       cycleCountRef.current += 1;
-      console.log(`[Gate] Loader cycle: ${cycleCountRef.current}/${requiredCycles}`);
       setState(prev => ({ ...prev, loaderCycles: cycleCountRef.current }));
     }, CYCLE_DURATION);
 
@@ -81,7 +80,6 @@ export const useGateReady = (options: UseGateReadyOptions = {}) => {
         // Esperar a que las fuentes estén listas
         if ('fonts' in document) {
           await document.fonts.ready;
-          console.log('[Gate] Fonts loaded');
         }
 
         // Verificar layout estable (2 frames consecutivos sin cambios)
@@ -113,7 +111,6 @@ export const useGateReady = (options: UseGateReadyOptions = {}) => {
           lastLayoutSize.current = currentSize;
 
           if (layoutStableFrames.current >= 2) {
-            console.log('[Gate] Layout stable');
             setState(prev => ({ ...prev, assetsReady: true }));
           } else {
             requestAnimationFrame(checkLayoutStability);
@@ -146,7 +143,6 @@ export const useGateReady = (options: UseGateReadyOptions = {}) => {
     const handleMessage = (event: MessageEvent) => {
       const type = event?.data?.type;
       if (type === 'REVISTA_READY') {
-        console.log('[Gate] Revista ready via postMessage');
         setState(prev => ({ ...prev, revistaReady: true }));
       }
     };
@@ -161,12 +157,10 @@ export const useGateReady = (options: UseGateReadyOptions = {}) => {
         try {
           const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
           if (iframeDoc && iframeDoc.body && iframeDoc.body.innerHTML.length > 100) {
-            console.log('[Gate] Revista ready via fallback check');
             setState(prev => ({ ...prev, revistaReady: true }));
           }
         } catch {
           // Cross-origin, asumir que está listo después de timeout
-          console.log('[Gate] Revista assumed ready (cross-origin)');
           setState(prev => ({ ...prev, revistaReady: true }));
         }
       }
@@ -187,7 +181,6 @@ export const useGateReady = (options: UseGateReadyOptions = {}) => {
 
     if (allReady && !state.gateReady && !gateReadyFiredRef.current) {
       gateReadyFiredRef.current = true;
-      console.log('[Gate] ✓ All conditions met - Gate READY');
       setState(prev => ({ ...prev, gateReady: true }));
       onGateReady?.();
       
@@ -237,7 +230,6 @@ export const useGateReady = (options: UseGateReadyOptions = {}) => {
   // LOGS DE DEBUG
   // ========================================
   useEffect(() => {
-    console.log('[Gate] State:', {
       cycles: `${state.loaderCycles}/${requiredCycles}`,
       assetsReady: state.assetsReady,
       revistaReady: state.revistaReady,

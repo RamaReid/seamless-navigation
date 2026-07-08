@@ -19,7 +19,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       id="hero-revista-section"
       className={cn(
         "relative w-full h-screen flex items-center justify-center p-6 box-border z-30",
-        "transition-all duration-[2500ms] ease-out",
+        "transition-all gd-transition-2500 ease-out",
         visible ? "opacity-100 visible" : "opacity-0 invisible",
         className
       )}

@@ -30,7 +30,6 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
       isToggle: isMomentosPage // En /momentos es toggle, no link
     },
     { path: '/estudio', label: 'Estudio', isToggle: false },
-    { path: '/contacto', label: 'Contacto', isToggle: false },
   ];
 
   // Close projects nav on route change

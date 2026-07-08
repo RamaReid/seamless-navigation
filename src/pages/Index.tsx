@@ -25,7 +25,6 @@ const Index = () => {
     document.body.classList.add('hero-visible');
     window.dispatchEvent(new Event('heroVisible'));
     
-    console.log('[Index] transitionComplete → header-visible + hero-visible (immediate)');
   }, []);
 
   // Listen for transitionComplete event from TransitionShell
