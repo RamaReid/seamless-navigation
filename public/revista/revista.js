@@ -217,6 +217,120 @@ document.addEventListener('DOMContentLoaded', function () {
         mobileScrollSupport: false
     });
 
+    // Cada spread es una sola foto repartida en dos paginas.
+    // El encuadre se calcula contra el pliego completo, no contra cada pagina.
+    let spreadFitRun = 0;
+    const imageSizeCache = new Map();
+
+    const getBackgroundImageUrl = (element) => {
+        const backgroundImage = window.getComputedStyle(element).backgroundImage;
+        if (!backgroundImage || backgroundImage === 'none') return null;
+
+        const match = backgroundImage.match(/^url\(["']?(.*?)["']?\)$/);
+        return match ? match[1] : null;
+    };
+
+    const loadImageSize = (url) => {
+        if (imageSizeCache.has(url)) return imageSizeCache.get(url);
+
+        const imageSizePromise = new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => resolve({
+                width: image.naturalWidth,
+                height: image.naturalHeight
+            });
+            image.onerror = reject;
+            image.src = url;
+        });
+
+        imageSizeCache.set(url, imageSizePromise);
+        return imageSizePromise;
+    };
+
+    const getSpreadPairs = () => {
+        const spreads = new Map();
+
+        container.querySelectorAll('.page.spread').forEach((page) => {
+            const match = page.id.match(/^spread-(\d+)-(left|right)$/);
+            if (!match) return;
+
+            const spreadId = match[1];
+            const side = match[2];
+
+            if (!spreads.has(spreadId)) {
+                spreads.set(spreadId, {});
+            }
+
+            spreads.get(spreadId)[side] = page.querySelector('.page-content');
+        });
+
+        return Array.from(spreads.values()).filter((spread) => spread.left && spread.right);
+    };
+
+    const setDefaultSpreadFit = (leftContent, rightContent) => {
+        leftContent.style.backgroundSize = '200% auto';
+        rightContent.style.backgroundSize = '200% auto';
+        leftContent.style.backgroundPosition = 'left center';
+        rightContent.style.backgroundPosition = 'right center';
+    };
+
+    const getSpreadRatio = () => {
+        const rect = container.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+            return rect.width / rect.height;
+        }
+
+        return window.innerWidth / window.innerHeight;
+    };
+
+    const applySpreadFit = () => {
+        const runId = ++spreadFitRun;
+        const spreadRatio = getSpreadRatio();
+
+        getSpreadPairs().forEach(async ({ left, right }) => {
+            const imageUrl = getBackgroundImageUrl(left) || getBackgroundImageUrl(right);
+
+            if (!imageUrl) {
+                setDefaultSpreadFit(left, right);
+                return;
+            }
+
+            try {
+                const imageSize = await loadImageSize(imageUrl);
+
+                if (runId !== spreadFitRun) return;
+
+                const imageRatio = imageSize.width / imageSize.height;
+
+                if (!Number.isFinite(imageRatio) || imageRatio <= 0) {
+                    setDefaultSpreadFit(left, right);
+                    return;
+                }
+
+                if (imageRatio <= spreadRatio) {
+                    setDefaultSpreadFit(left, right);
+                    return;
+                }
+
+                const leftPosition = ((spreadRatio - imageRatio) / (spreadRatio - 2 * imageRatio)) * 100;
+                const rightPosition = 100 - leftPosition;
+
+                left.style.backgroundSize = 'auto 100%';
+                right.style.backgroundSize = 'auto 100%';
+                left.style.backgroundPosition = `${leftPosition}% center`;
+                right.style.backgroundPosition = `${rightPosition}% center`;
+            } catch (error) {
+                if (runId !== spreadFitRun) return;
+                console.error('Error al calcular el encuadre del spread:', error);
+                setDefaultSpreadFit(left, right);
+            }
+        });
+    };
+
+    const scheduleSpreadFit = () => {
+        requestAnimationFrame(applySpreadFit);
+    };
+
     // ===============================
     // ASEGURAR PÁGINAS PARES
     // ===============================
@@ -236,6 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ===============================
     pageFlip.loadFromHTML(container.querySelectorAll('.page'));
     window.pageFlip = pageFlip;
+    scheduleSpreadFit();
 
     pageFlip.on('flip', () => {
         registerUserInteraction();
@@ -351,6 +466,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (autoCornerState.active) {
                 autoCornerState.lastRect = null;
             }
+            scheduleSpreadFit();
         } catch (e) {
             console.error('Error al redimensionar PageFlip:', e);
         }
