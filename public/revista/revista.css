@@ -75,8 +75,7 @@ body {
    Aquí mapeamos cada spread al hero definitivo de su proyecto. */
 .page.spread .page-content {
     background-repeat: no-repeat;
-    background-size: cover;
-    padding: 0;
+    background-size: 200% auto; /* 200% width = image spans both pages */
 }
 
 #spread-1-left .page-content {

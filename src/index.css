@@ -794,7 +794,7 @@ body.hero-visible .hero-revista-section {
 /* Spread layout: single image covers two facing pages */
 .flip-book .page.spread .page-content {
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 200% auto;
   padding: 0;
 }
 
