@@ -1,44 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { getProjectById, getAdjacentProjects, Project } from '@/data/projects';
+import { getProjectById } from '@/data/projects';
+import { getProjectPageById } from '@/data/projectPages';
+import type { ProjectPageCard, ProjectPageScene } from '@/data/projectPages';
 import fondoCasaM from '@/assets/img/FondoCasaM.webp';
 
 const Proyecto: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [project, setProject] = useState<Project | null>(null);
+  const project = id ? getProjectById(id) : undefined;
+  const page = id ? getProjectPageById(id) : undefined;
+  const lightboxImages = page?.lightboxImages ?? [];
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
-    if (!id) {
+    if (!id || !project || !page) {
       navigate('/momentos');
       return;
     }
 
-    const projectData = getProjectById(id);
-    if (!projectData) {
-      navigate('/momentos');
-      return;
-    }
-
-    setProject(projectData);
-    
-    // Limpiar lightbox al cambiar de proyecto
     setLightboxOpen(false);
     setLightboxIndex(0);
-  }, [id, navigate]);
+    document.body.classList.remove('lightbox-open');
+  }, [id, navigate, page, project]);
 
-  // Escuchar transitionComplete del TransitionShell
   useEffect(() => {
     const handleTransitionComplete = () => {
       document.body.classList.add('hero-visible', 'header-visible');
     };
 
-    // Trigger on mount after a brief delay
-    const mountTimeout = setTimeout(() => {
+    const mountTimeout = window.setTimeout(() => {
       document.body.classList.add('hero-visible', 'header-visible');
     }, 100);
 
@@ -46,16 +40,47 @@ const Proyecto: React.FC = () => {
 
     return () => {
       window.removeEventListener('transitionComplete', handleTransitionComplete);
-      clearTimeout(mountTimeout);
+      window.clearTimeout(mountTimeout);
+      document.body.classList.remove('lightbox-open');
     };
   }, []);
 
-  const { prev, next } = id ? getAdjacentProjects(id) : { prev: null, next: null };
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!lightboxOpen || !lightboxImages.length) return;
+
+      if (event.key === 'Escape') {
+        closeLightbox();
+      }
+
+      if (event.key === 'ArrowLeft') {
+        setLightboxIndex((current) =>
+          current === 0 ? lightboxImages.length - 1 : current - 1,
+        );
+      }
+
+      if (event.key === 'ArrowRight') {
+        setLightboxIndex((current) =>
+          current === lightboxImages.length - 1 ? 0 : current + 1,
+        );
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxImages.length, lightboxOpen]);
 
   const openLightbox = (index: number) => {
+    if (!lightboxImages[index]) return;
+
     setLightboxIndex(index);
     setLightboxOpen(true);
     document.body.classList.add('lightbox-open');
+  };
+
+  const openLightboxBySrc = (src: string) => {
+    const index = lightboxImages.findIndex((image) => image.src === src);
+    openLightbox(index === -1 ? 0 : index);
   };
 
   const closeLightbox = () => {
@@ -64,125 +89,120 @@ const Proyecto: React.FC = () => {
   };
 
   const navigateLightbox = (direction: 'prev' | 'next') => {
-    if (!project) return;
-    const newIndex = direction === 'prev'
-      ? (lightboxIndex === 0 ? project.images.length - 1 : lightboxIndex - 1)
-      : (lightboxIndex === project.images.length - 1 ? 0 : lightboxIndex + 1);
-    setLightboxIndex(newIndex);
+    if (!lightboxImages.length) return;
+
+    setLightboxIndex((current) => {
+      if (direction === 'prev') {
+        return current === 0 ? lightboxImages.length - 1 : current - 1;
+      }
+
+      return current === lightboxImages.length - 1 ? 0 : current + 1;
+    });
   };
 
-  // Keyboard navigation for lightbox
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!lightboxOpen) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') navigateLightbox('prev');
-      if (e.key === 'ArrowRight') navigateLightbox('next');
-    };
+  const renderCard = (card: ProjectPageCard) => (
+    <div
+      key={card.src}
+      className={`scene-card ${card.variant} is-visible cursor-pointer`}
+      onClick={() => openLightboxBySrc(card.src)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => event.key === 'Enter' && openLightboxBySrc(card.src)}
+      aria-label={card.alt}
+    >
+      <img src={card.src} alt={card.alt} loading="lazy" draggable={false} />
+    </div>
+  );
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxOpen, lightboxIndex, project]);
+  const renderScene = (scene: ProjectPageScene) => {
+    const sectionClassName = `scene ${scene.className}`;
 
-  if (!project) {
+    if (scene.title) {
+      return (
+        <section
+          key={scene.dataScene}
+          className={sectionClassName}
+          data-scene={scene.dataScene}
+        >
+          <h1 className="scene-title">{scene.title}</h1>
+        </section>
+      );
+    }
+
+    if (scene.cards?.length) {
+      return (
+        <section
+          key={scene.dataScene}
+          className={sectionClassName}
+          data-scene={scene.dataScene}
+        >
+          {scene.cards.map(renderCard)}
+        </section>
+      );
+    }
+
+    return (
+      <section
+        key={scene.dataScene}
+        className={sectionClassName}
+        data-scene={scene.dataScene}
+      >
+        {scene.subtitle && <p className="scene-subtitle">{scene.subtitle}</p>}
+        {scene.text && <p className="scene-text">{scene.text}</p>}
+      </section>
+    );
+  };
+
+  if (!project || !page) {
     return null;
   }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Plano de fondo */}
-      <div
-        id="plano-bg"
-        style={{ backgroundImage: `url(${fondoCasaM})` }}
-      />
+      <div id="plano-bg" style={{ backgroundImage: `url(${fondoCasaM})` }} />
 
-      {/* App Layer */}
       <div id="app-layer" className="relative z-30">
         <Header />
 
-        {/* Hero Section */}
         <section
           id="hero-revista-section"
           className="hero-revista-section"
           aria-label={`Hero ${project.name}`}
         >
-          <div className="hero-revista-shell" id="hero-revista-shell">
+          <div className="hero-revista-shell hero-static" id="hero-revista-shell">
             <div
-              className="w-full h-full bg-cover bg-center cursor-pointer"
-              style={{ backgroundImage: `url(${project.heroImage})` }}
+              className="w-full h-full cursor-pointer"
+              style={{
+                backgroundImage: `url(${page.hero.src})`,
+                backgroundSize: page.hero.backgroundSize,
+                backgroundPosition: page.hero.backgroundPosition,
+                backgroundRepeat: page.hero.backgroundRepeat,
+              }}
               onClick={() => openLightbox(0)}
               role="button"
-              aria-label="Ver galería"
+              aria-label="Ver galeria"
             />
-          </div>
-
-          {/* Navigation Controls */}
-          <div className="house-hero-carousel">
-            {prev && (
-              <Link
-                to={`/proyectos/${prev.id}`}
-                className="house-hero-control house-hero-prev"
-              >
-                <span className="house-hero-arrow">←</span>
-                <span className="house-hero-label">{prev.name}</span>
-              </Link>
-            )}
-            {next && (
-              <Link
-                to={`/proyectos/${next.id}`}
-                className="house-hero-control house-hero-next"
-              >
-                <span className="house-hero-label">{next.name}</span>
-                <span className="house-hero-arrow">→</span>
-              </Link>
-            )}
           </div>
         </section>
 
-        {/* Gallery */}
         <main id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">
-          <section className="scene scene-intro">
-            <p className="scene-title">{project.name}</p>
-          </section>
-
-          <section className="scene scene-moments">
-            {project.images.slice(1).map((img, idx) => (
-              <div
-                key={idx}
-                className="scene-card is-visible cursor-pointer"
-                onClick={() => openLightbox(idx + 1)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && openLightbox(idx + 1)}
-              >
-                <img
-                  src={img.src}
-                  alt={img.alt}
-                  className="w-full aspect-square object-cover object-center rounded-md"
-                  loading="lazy"
-                  draggable={false}
-                />
-              </div>
-            ))}
-          </section>
-
+          {page.scenes.map(renderScene)}
           <Footer />
         </main>
       </div>
 
-      {/* Lightbox */}
       <div
         className={`gd-lightbox ${lightboxOpen ? 'is-open' : ''}`}
         onClick={closeLightbox}
         role="dialog"
         aria-modal="true"
-        aria-label="Galería de imágenes"
+        aria-label="Galeria de imagenes"
       >
-        <div className="gd-lightbox-inner" onClick={(e) => e.stopPropagation()}>
-          {project.images[lightboxIndex] && (
+        <div className="gd-lightbox-inner" onClick={(event) => event.stopPropagation()}>
+          {lightboxImages[lightboxIndex] && (
             <img
-              src={project.images[lightboxIndex].src}
-              alt={project.images[lightboxIndex].alt}
+              src={lightboxImages[lightboxIndex].src}
+              alt={lightboxImages[lightboxIndex].alt}
               className="gd-lightbox-image"
               style={{ objectFit: 'contain', maxWidth: '90vw', maxHeight: '90vh' }}
               draggable={false}
@@ -193,21 +213,21 @@ const Proyecto: React.FC = () => {
             onClick={closeLightbox}
             aria-label="Cerrar"
           >
-            ✕
+            x
           </button>
           <button
             className="gd-lightbox-nav gd-lightbox-prev"
             onClick={() => navigateLightbox('prev')}
             aria-label="Anterior"
           >
-            ←
+            &lt;
           </button>
           <button
             className="gd-lightbox-nav gd-lightbox-next"
             onClick={() => navigateLightbox('next')}
             aria-label="Siguiente"
           >
-            →
+            &gt;
           </button>
         </div>
       </div>
