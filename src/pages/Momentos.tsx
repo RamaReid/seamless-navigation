@@ -27,7 +27,7 @@ import gadeExteriorEntrada from '@/assets/img/gadehause/gadehause-exterior-entra
 // Chapter images - Respirar
 import gadeCocina from '@/assets/img/gadehause/gadehause-cocina.webp';
 import jomaCocinaComedor from '@/assets/img/jomahause/jomahause-cocina-comedor.webp';
-import vidaCocina from '@/assets/img/vidahause/vidahause-cocina.webp';
+import vidaCocina from '@/assets/img/vidahause/vidahause-cocina (3).webp';
 
 // Chapter images - Compartir
 import donaComedorLiving from '@/assets/img/donahause/donahause-comedor-living.webp';
@@ -62,6 +62,7 @@ import magaQuincho from '@/assets/img/magahause/magahause-quincho.jpeg';
 // Chapter images - Pertenecer
 import cedaExteriorOeste from '@/assets/img/cedahause/cedahause-exterior-hero-oeste.webp';
 import magaExteriorOeste from '@/assets/img/magahause/magahause-exterior-oeste.webp';
+import jobeExteriorNorte from '@/assets/img/jobehause/jobehause-exterior-norte (3).webp';
 
 // Collage photo data
 const COLLAGE_PHOTOS = [
@@ -172,12 +173,12 @@ const CHAPTERS = [
   {
     id: 'hogar',
     title: 'pertenecer',
-    subtitle: 'El espacio nace del vínculo.',
-    text: 'Cada proyecto parte de una vida real y crece con ella. La casa que perdura es la que sabe contener lo que más queremos, proteger la intimidad y celebrar la pertenencia.',
+    subtitle: 'El hogar se hace propio.',
+    text: 'Más allá del hormigón, el ladrillo o la madera, son las texturas, los colores y las formas las que terminan de escribir el espacio. La arquitectura cumple su fin cuando toda esa materia deja de ser escenografía para convertirse en tu lugar. Distintas sintaxis constructivas, la misma identidad de quien la habita.',
     images: [
       { img: cedaExteriorOeste, link: '/proyectos/cedahause', alt: 'hogar 01' },
       { img: magaExteriorOeste, link: '/proyectos/magahause', alt: 'hogar 02' },
-      { img: markExterior, link: '/proyectos/markhause', alt: 'hogar 03' },
+      { img: jobeExteriorNorte, link: '/proyectos/jobehause', alt: 'hogar 03' },
     ],
   },
 ];
