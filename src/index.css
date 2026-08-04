@@ -1534,14 +1534,14 @@ body.project-index.hero-visible #plano-bg {
 }
 
 .project-index #home-board .scene-title {
-  color: #1a1a1a;
+  color: #000000;
 }
 
 .project-index #home-board .scene-subtitle,
 .project-index #home-board .scene-text,
 .project-index .projects-main .scene-subtitle,
 .project-index .projects-main .scene-text {
-  color: #2b2b27;
+  color: #000000;
 }
 
 .projects-chapter {
