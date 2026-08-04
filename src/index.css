@@ -1559,6 +1559,42 @@ body.project-index.hero-visible #plano-bg {
   gap: 48px;
 }
 
+/* ======================================================
+   Momentos: dim and blur hero background for better text contrast
+====================================================== */
+
+/* Dim and slight blur to the plano background so text stands out */
+body.project-index #plano-bg {
+  filter: blur(2px) brightness(0.55) contrast(0.95) saturate(0.9);
+  transition: filter 200ms ease;
+}
+
+/* Overlay on hero/collage to ensure text legibility */
+.project-index .hero-revista-section {
+  position: relative;
+}
+.project-index .hero-revista-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45); /* adjust 0.35 - 0.60 if needed */
+  backdrop-filter: blur(1.5px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Force hero text to be above the overlay and readable */
+.project-index .hero-revista-section .scene-title,
+.project-index .hero-revista-section .scene-subtitle,
+.project-index .hero-revista-section .scene-text,
+.project-index .hero-photo-title {
+  position: relative;
+  z-index: 3;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+
 .projects-main .scene-card {
   transform: translateY(15px) scale(0.99);
   text-decoration: none;
