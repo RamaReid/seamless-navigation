@@ -1388,12 +1388,19 @@ body.project-index {
 }
 
 body.project-index #plano-bg {
-  filter: brightness(1) contrast(1) saturate(1);
+  /* increase perceived contrast: slight desaturate + raise contrast */
+  filter: grayscale(0.22) contrast(1.08) brightness(1.02) saturate(0.92);
+  /* Keep the background fixed to create a subtle parallax effect */
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  will-change: transform, filter;
 }
 
 body.project-index #plano-bg::after {
-  background: rgba(247, 244, 236, 0.18);
-  backdrop-filter: blur(0.2px);
+  /* stronger light overlay + slightly more blur to isolate foreground text */
+  background: rgba(255, 255, 255, 0.36);
+  backdrop-filter: blur(1px) saturate(0.95);
 }
 
 body.project-index.hero-visible #plano-bg {
@@ -1537,20 +1544,74 @@ body.project-index.hero-visible #plano-bg {
   color: #000000;
 }
 
+/* Momentos (non-hero): make all intro and chapter texts black */
 .project-index #home-board .scene-subtitle,
 .project-index #home-board .scene-text,
 .project-index .projects-main .scene-subtitle,
-.project-index .projects-main .scene-text {
+.project-index .projects-main .scene-text,
+.project-index .projects-chapter .scene-subtitle,
+.project-index .projects-chapter .scene-text {
   color: #000000;
 }
 
-.projects-chapter {
-  margin: 0 auto 90px;
-  scroll-margin-top: 140px;
+/* Ensure chapter text is fully opaque so color displays clearly */
+.projects-chapter-text {
+  opacity: 1;
 }
 
-.projects-chapter:last-of-type {
-  margin-bottom: 0;
+@media (max-width: 768px) {
+  .project-index .projects-chapter .scene-subtitle,
+  .project-index .projects-chapter .scene-text {
+    color: #000000;
+  }
+}
+
+/* Restore spacing that the removed translucent panel provided, without adding background or shadow */
+.project-index .projects-chapter .projects-chapter-text {
+  padding: 22px 24px;
+  max-width: 980px;
+  margin: 18px auto 0;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .project-index .projects-chapter .projects-chapter-text {
+    padding: 16px;
+    max-width: calc(100% - 48px);
+    margin-top: 12px;
+  }
+}
+
+/* === Unify Momentos content color (exclude header, footer and hero) === */
+/* Targets only page content containers so header/footer/hero are unaffected */
+.project-index #home-board,
+.project-index #home-board .scene-title,
+.project-index #home-board .scene-subtitle,
+.project-index #home-board .scene-text,
+.project-index .projects-main,
+.project-index .projects-main .scene-subtitle,
+.project-index .projects-main .scene-text,
+.project-index .projects-chapter .scene-subtitle,
+.project-index .projects-chapter .scene-text,
+.project-index .projects-chapter .projects-chapter-text {
+  color: #000000;
+}
+
+.project-index #home-board a,
+.project-index .projects-main a,
+.project-index .projects-chapter a {
+  color: inherit;
+}
+
+@media (max-width: 768px) {
+  .project-index #home-board .scene-subtitle,
+  .project-index #home-board .scene-text,
+  .project-index .projects-main .scene-subtitle,
+  .project-index .projects-main .scene-text {
+    color: #000000;
+  }
 }
 
 .chapter-triptych {
@@ -1558,6 +1619,25 @@ body.project-index.hero-visible #plano-bg {
   grid-template-columns: repeat(3, 1fr);
   gap: 48px;
 }
+
+/* Ensure anchored chapters appear below the fixed header */
+.project-index .projects-chapter {
+  scroll-margin-top: 180px; /* space for fixed header */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Highlight the chapter that was targeted via fragment (#id) with a subtle frame */
+.project-index .projects-chapter:target .projects-chapter-text {
+  border: 2px solid rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  border-radius: 10px;
+}
+
+/* Also support targeting the scene container directly */
+.project-index .scene:target {
+  scroll-margin-top: 180px;
+}
+
 
 .projects-main .scene-card {
   transform: translateY(15px) scale(0.99);
@@ -1579,7 +1659,11 @@ body.project-index.hero-visible #plano-bg {
 
 .projects-chapter-text {
   transition: opacity 0.35s ease;
-  opacity: 0.72;
+}
+
+/* Ensure chapter text in Momentos (body.project-index) is fully opaque */
+.project-index .projects-chapter-text {
+  opacity: 1;
 }
 
 .projects-chapter.is-active .projects-chapter-text {
