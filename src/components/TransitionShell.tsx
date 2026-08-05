@@ -31,7 +31,7 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
   useEffect(() => {
     if (!hasInitialized.current) {
       hasInitialized.current = true;
-      document.body.classList.remove('hero-visible', 'header-visible', 'sequence-only');
+      document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur', 'sequence-only');
       setShowScrollCue(false);
       previousPath.current = location.pathname;
       // Loader is already shown (isTransitioning = true)
@@ -42,7 +42,7 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
     if (previousPath.current !== location.pathname) {
       // Reset for transition
       window.scrollTo(0, 0);
-      document.body.classList.remove('hero-visible', 'header-visible', 'sequence-only');
+      document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur', 'sequence-only');
       setShowScrollCue(false);
 
       setIsNavSkip(true);

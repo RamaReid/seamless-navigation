@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { getProjectById } from '@/data/projects';
 import { getProjectPageById } from '@/data/projectPages';
+import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
 import type { ProjectPageCard, ProjectPageScene } from '@/data/projectPages';
 import fondoCasaM from '@/assets/img/FondoCasaM.webp';
 
@@ -16,6 +17,8 @@ const Proyecto: React.FC = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
+  useSceneCardReveal();
+
   useEffect(() => {
     if (!id || !project || !page) {
       navigate('/momentos');
@@ -26,24 +29,6 @@ const Proyecto: React.FC = () => {
     setLightboxIndex(0);
     document.body.classList.remove('lightbox-open');
   }, [id, navigate, page, project]);
-
-  useEffect(() => {
-    const handleTransitionComplete = () => {
-      document.body.classList.add('hero-visible', 'header-visible');
-    };
-
-    const mountTimeout = window.setTimeout(() => {
-      document.body.classList.add('hero-visible', 'header-visible');
-    }, 100);
-
-    window.addEventListener('transitionComplete', handleTransitionComplete);
-
-    return () => {
-      window.removeEventListener('transitionComplete', handleTransitionComplete);
-      window.clearTimeout(mountTimeout);
-      document.body.classList.remove('lightbox-open');
-    };
-  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -103,7 +88,7 @@ const Proyecto: React.FC = () => {
   const renderCard = (card: ProjectPageCard) => (
     <div
       key={card.src}
-      className={`scene-card ${card.variant} is-visible cursor-pointer`}
+      className={`scene-card ${card.variant} cursor-pointer`}
       onClick={() => openLightboxBySrc(card.src)}
       role="button"
       tabIndex={0}

@@ -4,6 +4,7 @@ import { Footer } from '@/components/Footer';
 import { HeroSection } from '@/components/HeroSection';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
+import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
 import fondoCasaM from '@/assets/img/FondoCasaM.webp';
 
 import livingScola from '@/assets/img/cedahause/cedahause-living.webp';
@@ -27,45 +28,20 @@ const Estudio = () => {
   }, []);
 
   useEffect(() => {
-    const heroTimer = window.setTimeout(() => setHeroVisible(true), 100);
-    const headerTimer = window.setTimeout(() => setHeaderVisible(true), 400);
-    document.body.classList.add('hero-visible', 'header-visible');
-
-    const handleTransitionComplete = () => {
-      document.body.classList.add('hero-visible', 'header-visible');
+    const handleHeroVisible = () => {
+      setHeroVisible(true);
       scrollToContact();
     };
 
-    window.addEventListener('transitionComplete', handleTransitionComplete);
-    scrollToContact();
+    window.addEventListener('heroVisible', handleHeroVisible);
 
     return () => {
-      window.clearTimeout(heroTimer);
-      window.clearTimeout(headerTimer);
-      window.removeEventListener('transitionComplete', handleTransitionComplete);
-      document.body.classList.remove('hero-visible', 'header-visible');
+      window.removeEventListener('heroVisible', handleHeroVisible);
+      document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur');
     };
   }, [scrollToContact]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const cards = entry.target.querySelectorAll('.scene-card');
-            cards.forEach((card, index) => {
-              window.setTimeout(() => card.classList.add('is-visible'), index * 250);
-            });
-          }
-        });
-      },
-      { threshold: 0.2, rootMargin: '0px 0px -15% 0px' }
-    );
-
-    document.querySelectorAll('[data-scene]').forEach((scene) => observer.observe(scene));
-
-    return () => observer.disconnect();
-  }, []);
+  useSceneCardReveal();
 
   return (
     <div className="min-h-screen bg-background">

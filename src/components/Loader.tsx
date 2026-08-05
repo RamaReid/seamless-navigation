@@ -21,10 +21,12 @@ interface LoaderProps {
 // ========================================
 // CONFIGURACIÓN DE TIEMPOS
 // ========================================
-const RADIAL_REVEAL_DURATION = 6000; // 6s para radial reveal (+1/3)
+const RADIAL_REVEAL_DURATION = 5000; // 5s para radial reveal
 const GATE_TIMEOUT_MS = 14000; // 14s timeout de seguridad
-const POST_REVEAL_MAX_DELAY = 250; // máximo 250ms post-reveal
-const HEADER_REVEAL_LEAD_MS = 2000; // adelantar header durante reveal
+const POST_REVEAL_MAX_DELAY = 0; // sin espera post-reveal
+const HEADER_REVEAL_MS = 1000;
+const BLUR_REVEAL_MS = 2000;
+const HERO_REVEAL_MS = 3000;
 
 const COLD_START_CYCLES = 2;
 const NAV_SKIP_CYCLES = 1;
@@ -103,6 +105,35 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
         if ('fonts' in document) {
           await document.fonts.ready;
         }
+
+        // Wait for the current route's images before starting the reveal.
+        const images = Array.from(document.querySelectorAll<HTMLImageElement>('#app-layer img:not([loading="lazy"])'));
+        await Promise.all(images.map((image) => {
+          if (image.complete && image.naturalWidth > 0) {
+            return image.decode?.().catch(() => undefined);
+          }
+
+          return new Promise<void>((resolve) => {
+            const finish = () => {
+              image.removeEventListener('load', finish);
+              image.removeEventListener('error', finish);
+              resolve();
+            };
+
+            image.addEventListener('load', finish, { once: true });
+            image.addEventListener('error', finish, { once: true });
+          });
+        }));
+
+        const backgroundUrls = Array.from(document.querySelectorAll<HTMLElement>('#hero-revista-section [style*="background-image"]'))
+          .map((element) => element.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1])
+          .filter((url): url is string => Boolean(url));
+        await Promise.all(backgroundUrls.map((url) => new Promise<void>((resolve) => {
+          const image = new Image();
+          image.onload = () => resolve();
+          image.onerror = () => resolve();
+          image.src = url;
+        })));
 
         // Verificar layout estable (2 frames consecutivos sin cambios)
         const checkLayoutStability = () => {
@@ -272,16 +303,23 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
       svg.style.opacity = "0";
     }
 
-    // Dispatch introComplete event INMEDIATAMENTE
+    // Keep the page locked while the radial reveal exposes each layer.
     window.dispatchEvent(new Event("introComplete"));
-    document.body.classList.remove("sequence-only");
 
-    // Adelantar aparición del header solo en Home
-    const headerRevealTimeout = isHomePage
-      ? window.setTimeout(() => {
-          document.body.classList.add('header-visible');
-        }, HEADER_REVEAL_LEAD_MS)
-      : null;
+    const headerRevealTimeout = window.setTimeout(() => {
+      document.body.classList.add('header-visible');
+      window.dispatchEvent(new Event('revealHeader'));
+    }, HEADER_REVEAL_MS);
+
+    const blurRevealTimeout = window.setTimeout(() => {
+      document.body.classList.add('reveal-blur');
+      window.dispatchEvent(new Event('revealBlur'));
+    }, BLUR_REVEAL_MS);
+
+    const heroRevealTimeout = window.setTimeout(() => {
+      document.body.classList.add('hero-visible');
+      window.dispatchEvent(new Event('heroVisible'));
+    }, HERO_REVEAL_MS);
 
     // Calculate max radius (diagonal de la pantalla)
     const maxRadius = Math.hypot(window.innerWidth, window.innerHeight);
@@ -301,6 +339,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
         setTimeout(() => {
           setPhase('complete');
           setVisible(false);
+          document.body.classList.remove('sequence-only');
           onComplete?.();
         }, POST_REVEAL_MAX_DELAY);
       }
@@ -312,6 +351,8 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
       if (headerRevealTimeout) {
         clearTimeout(headerRevealTimeout);
       }
+      clearTimeout(blurRevealTimeout);
+      clearTimeout(heroRevealTimeout);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }

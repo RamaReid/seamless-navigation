@@ -4,6 +4,7 @@ import { Footer } from '@/components/Footer';
 import { HeroRevista } from '@/components/HeroRevista';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
+import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
 
 // Imágenes originales del proyecto
 import fondoCasaM from '@/assets/img/FondoCasaM.webp';
@@ -44,26 +45,7 @@ const Index = () => {
     }
   }, [handleTransitionComplete]);
 
-  // Intersection observer for scene cards
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const cards = entry.target.querySelectorAll('.scene-card');
-            cards.forEach((card, index) => {
-              setTimeout(() => card.classList.add('is-visible'), index * 250);
-            });
-          }
-        });
-      },
-      { threshold: 0.2, rootMargin: '0px 0px -15% 0px' }
-    );
-
-    document.querySelectorAll('[data-scene]').forEach((scene) => observer.observe(scene));
-
-    return () => observer.disconnect();
-  }, []);
+  useSceneCardReveal();
 
   // Parallax for plano-bg
   useEffect(() => {

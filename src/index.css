@@ -137,6 +137,7 @@
   backdrop-filter: blur(0.5px);
 }
 
+body.reveal-blur #plano-bg,
 body.hero-visible #plano-bg {
   filter: blur(3px);
   transform: scale(1.03);
@@ -300,7 +301,7 @@ body.hero-visible #plano-bg {
   stroke-width: 0.75;
   stroke-dasharray: 2000;
   stroke-dashoffset: 2000;
-  animation: drawLine 20s ease-out forwards;
+  animation: drawLine 5s ease-out forwards;
   animation-delay: 2.62s;
 }
 
@@ -309,7 +310,7 @@ body.hero-visible #plano-bg {
   stroke-width: 0.75;
   stroke-dasharray: 2000;
   stroke-dashoffset: -2000;
-  animation: drawLine 1.5s ease-in-out forwards;
+  animation: drawLine 0.75s ease-in-out forwards;
   animation-delay: 2.62s;
 }
 
@@ -318,7 +319,7 @@ body.hero-visible #plano-bg {
   stroke-width: 1;
   stroke-dasharray: 2000;
   stroke-dashoffset: -2000;
-  animation: drawLine 1.5s ease-in-out forwards;
+  animation: drawLine 0.75s ease-in-out forwards;
   animation-delay: 2.86s;
 }
 
@@ -327,7 +328,7 @@ body.hero-visible #plano-bg {
   stroke-width: 1;
   stroke-dasharray: 3000;
   stroke-dashoffset: 3000;
-  animation: drawLine 1.3s ease-in-out forwards;
+  animation: drawLine 0.65s ease-in-out forwards;
   animation-delay: 3.3s;
 }
 

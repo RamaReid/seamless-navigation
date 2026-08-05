@@ -3,6 +3,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
+import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
 import fondoCasaM from '@/assets/img/FondoCasaM.webp';
 
 // Hero Collage Images
@@ -66,18 +67,17 @@ import jobeExteriorNorte from '@/assets/img/jobehause/jobehause-exterior-norte (
 
 // Collage photo data
 const COLLAGE_PHOTOS = [
-  { href: '#hola', img: jobeEntrada, title: 'llegar', x: '16%', y: '30%', r: '-12deg', z: 3, delay: 0, dx: '-200px', dy: '-240px' },
-  { href: '#cafe', img: cedaCocina, title: 'respirar', x: '40.73%', y: '28%', r: '10deg', z: 5, delay: 140, dx: '-120px', dy: '-220px' },
-  { href: '#mesa', img: gadeComedor, title: 'compartir', x: '59.27%', y: '28%', r: '-18deg', z: 2, delay: 280, dx: '80px', dy: '-220px' },
-  { href: '#habitar', img: markLiving, title: 'habitar', x: '71.64%', y: '72%', r: '14deg', z: 6, delay: 420, dx: '200px', dy: '-200px' },
-  { href: '#portal', img: scoGaleria, title: 'cruzar', x: '84%', y: '32%', r: '-8deg', z: 7, delay: 560, dx: '-160px', dy: '-80px' },
-  { href: '#agua', img: cedaBanoDucha, title: 'refrescar', x: '22.18%', y: '72%', r: '12deg', z: 4, delay: 700, dx: '-40px', dy: '-80px' },
-  { href: '#sueno', img: jonoDormitorio, title: 'dormir', x: '65.45%', y: '52%', r: '8deg', z: 5, delay: 840, dx: '120px', dy: '-80px' },
-  { href: '#brasas', img: scoQuincho, title: 'encender', x: '77.82%', y: '66%', r: '-16deg', z: 0, delay: 980, dx: '200px', dy: '-60px' },
-  { href: '#hogar', img: markExterior, title: 'pertenecer', x: '46.91%', y: '52%', r: '16deg', z: 3, delay: 1120, dx: '-140px', dy: '140px' },
-  { href: '#cafe', img: jomaCocina, title: 'respirar', x: '53.09%', y: '68%', r: '12deg', z: 1, delay: 1260, dx: '40px', dy: '140px' },
-  { href: '#mesa', img: cedaComedor, title: 'compartir', x: '34.55%', y: '68%', r: '-12deg', z: 6, delay: 1400, dx: '160px', dy: '120px' },
-  { href: '#sueno', img: markDormitorio, title: 'dormir', x: '28.36%', y: '54%', r: '-10deg', z: 1, delay: 1540, dx: '200px', dy: '140px' },
+  { href: '#hola', img: jobeEntrada, title: 'llegar', x: '16%', y: '31%', r: '-12deg', z: 3, delay: 0, dx: '-200px', dy: '-240px' },
+  { href: '#cafe', img: cedaCocina, title: 'respirar', x: '38%', y: '27%', r: '10deg', z: 5, delay: 140, dx: '-120px', dy: '-220px' },
+  { href: '#mesa', img: gadeComedor, title: 'compartir', x: '61%', y: '27%', r: '-18deg', z: 2, delay: 280, dx: '80px', dy: '-220px' },
+  { href: '#portal', img: scoGaleria, title: 'cruzar', x: '84%', y: '31%', r: '-8deg', z: 7, delay: 560, dx: '-160px', dy: '-80px' },
+  { href: '#agua', img: cedaBanoDucha, title: 'refrescar', x: '27%', y: '51%', r: '8deg', z: 5, delay: 840, dx: '120px', dy: '-80px' },
+  { href: '#hogar', img: markExterior, title: 'pertenecer', x: '49.5%', y: '51%', r: '16deg', z: 3, delay: 1120, dx: '-140px', dy: '140px' },
+  { href: '#sueno', img: jonoDormitorio, title: 'dormir', x: '72.5%', y: '51%', r: '12deg', z: 4, delay: 700, dx: '-40px', dy: '-80px' },
+  { href: '#habitar', img: markLiving, title: 'habitar', x: '16%', y: '72%', r: '14deg', z: 6, delay: 420, dx: '200px', dy: '-200px' },
+  { href: '#brasas', img: scoQuincho, title: 'encender', x: '38%', y: '72%', r: '-16deg', z: 0, delay: 980, dx: '200px', dy: '-60px' },
+  { href: '#mesa', img: cedaComedor, title: 'compartir', x: '61%', y: '72%', r: '-12deg', z: 6, delay: 1400, dx: '160px', dy: '120px' },
+  { href: '#sueno', img: markDormitorio, title: 'dormir', x: '84%', y: '72%', r: '-10deg', z: 1, delay: 1540, dx: '200px', dy: '140px' },
 ];
 
 // Chapters data
@@ -199,32 +199,24 @@ const Momentos = () => {
 
   // Timings de entrada de Hero + Header + Collage
   useEffect(() => {
-    const timeouts: number[] = [];
+    let collageTimer: number | null = null;
     const hasActiveLoader = !!document.getElementById('intro-layer');
-
-    const queueTimeout = (fn: () => void, ms: number) => {
-      const id = window.setTimeout(fn, ms);
-      timeouts.push(id);
-    };
 
     const revealMomentos = () => {
       if (didRevealRef.current) return;
       didRevealRef.current = true;
 
       document.body.classList.add('hero-visible');
-
-      // Header entra después del hero para recuperar la secuencia visual
-      queueTimeout(() => {
-        document.body.classList.add('header-visible');
-      }, 120);
-
-      // Collage cae después de header + hero
-      queueTimeout(() => {
+      collageTimer = window.setTimeout(() => {
+        document.body.classList.remove('header-visible');
+        window.dispatchEvent(new CustomEvent('heroInteraction', {
+          detail: { type: 'HERO_INTERACTION' },
+        }));
         setCollageReady(true);
       }, 560);
     };
 
-    const handleTransitionComplete = () => {
+    const handleHeroVisible = () => {
       revealMomentos();
     };
 
@@ -236,41 +228,22 @@ const Momentos = () => {
       document.body.classList.remove('hero-visible', 'header-visible');
     }
 
-    window.addEventListener('transitionComplete', handleTransitionComplete);
+    window.addEventListener('heroVisible', handleHeroVisible);
 
     // Fallback para entrada directa sin transición activa
     if (!hasActiveLoader) {
-      queueTimeout(() => {
-        revealMomentos();
-      }, 140);
+      revealMomentos();
     }
 
     return () => {
-      window.removeEventListener('transitionComplete', handleTransitionComplete);
-      timeouts.forEach((id) => clearTimeout(id));
+      window.removeEventListener('heroVisible', handleHeroVisible);
+      if (collageTimer !== null) {
+        window.clearTimeout(collageTimer);
+      }
     };
   }, []);
 
-  // Intersection observer for cards
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const cards = entry.target.querySelectorAll('.scene-card');
-            cards.forEach((card, index) => {
-              setTimeout(() => card.classList.add('is-visible'), index * 250);
-            });
-          }
-        });
-      },
-      { threshold: 0.2, rootMargin: '0px 0px -15% 0px' }
-    );
-
-    document.querySelectorAll('.projects-chapter').forEach((ch) => observer.observe(ch));
-
-    return () => observer.disconnect();
-  }, []);
+  useSceneCardReveal();
 
   return (
     <div className="min-h-screen bg-background">
