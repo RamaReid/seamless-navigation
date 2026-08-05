@@ -31,7 +31,7 @@ export interface ProjectPage {
 export const projectPages: ProjectPage[] = [
   {
     "id": "cedahause",
-    "name": "CeDa Hause",
+    "name": "CeDaHause",
     "hero": {
       "src": "/img/cedahause/cedahause-exterior-hero-oeste.webp",
       "backgroundSize": "cover",
@@ -219,7 +219,7 @@ export const projectPages: ProjectPage[] = [
   },
   {
     "id": "donahause",
-    "name": "DoNa Hause",
+    "name": "DoNaHause",
     "hero": {
       "src": "/img/donahause/donahause-exterior-hero-este.webp",
       "backgroundSize": "cover",
@@ -407,7 +407,7 @@ export const projectPages: ProjectPage[] = [
   },
   {
     "id": "gadehause",
-    "name": "GaDe Hause",
+    "name": "GaDeHause",
     "hero": {
       "src": "/img/gadehause/gadehause-exterior-norte.webp",
       "backgroundSize": "100% auto",
@@ -595,7 +595,7 @@ export const projectPages: ProjectPage[] = [
   },
   {
     "id": "jobehause",
-    "name": "JoBe Hause",
+    "name": "JoBeHause",
     "hero": {
       "src": "/img/jobehause/jobehause-exterior-frente-hero (2).webp",
       "backgroundSize": "cover",
@@ -783,7 +783,7 @@ export const projectPages: ProjectPage[] = [
   },
   {
     "id": "jomahause",
-    "name": "JoMa Hause",
+    "name": "JoMaHause",
     "hero": {
       "src": "/img/jomahause/jomahause-exterior-hero.webp",
       "backgroundSize": "cover",
@@ -971,7 +971,7 @@ export const projectPages: ProjectPage[] = [
   },
   {
     "id": "jonohause",
-    "name": "JoNo Hause",
+    "name": "JoNoHause",
     "hero": {
       "src": "/img/jonohause/jonohause-esterior-hero.webp",
       "backgroundSize": "cover",
@@ -1159,7 +1159,7 @@ export const projectPages: ProjectPage[] = [
   },
   {
     "id": "magahause",
-    "name": "MaGa Hause",
+    "name": "MaGaHause",
     "hero": {
       "src": "/img/magahause/magahause-exterior-sur-entrada-hero.webp",
       "backgroundSize": "cover",
@@ -1347,7 +1347,7 @@ export const projectPages: ProjectPage[] = [
   },
   {
     "id": "markhause",
-    "name": "Mark Hause",
+    "name": "MarkHause",
     "hero": {
       "src": "/img/markhause/markhause-exterior-hero.webp",
       "backgroundSize": "cover",
@@ -1475,7 +1475,7 @@ export const projectPages: ProjectPage[] = [
   },
   {
     "id": "scohause",
-    "name": "Sco Hause",
+    "name": "ScoHause",
     "hero": {
       "src": "/img/scohause/scohause-exterior-hero.webp",
       "backgroundSize": "cover",
@@ -1624,7 +1624,7 @@ export const projectPages: ProjectPage[] = [
   },
   {
     "id": "vidahause",
-    "name": "ViDa Hause",
+    "name": "ViDaHause",
     "hero": {
       "src": "/img/vidahause/vidahause-exterior-este.webp",
       "backgroundSize": "cover",
@@ -1676,7 +1676,7 @@ export const projectPages: ProjectPage[] = [
         "cards": [
           {
             "variant": "square",
-            "src": "/img/vidahause/vidahause-cocina.webp",
+            "src": "/img/vidahause/vidahause-cocina.png",
             "alt": "Cocina en Vidahause"
           },
           {
@@ -1686,7 +1686,7 @@ export const projectPages: ProjectPage[] = [
           },
           {
             "variant": "square",
-            "src": "/img/vidahause/vidahause-cocina (3).webp",
+            "src": "/img/vidahause/vidahause-cocina.webp",
             "alt": "Detalle de cocina en Vidahause"
           }
         ]
@@ -1760,7 +1760,7 @@ export const projectPages: ProjectPage[] = [
         "alt": "Detalle exterior en Vidahause"
       },
       {
-        "src": "/img/vidahause/vidahause-cocina.webp",
+        "src": "/img/vidahause/vidahause-cocina.png",
         "alt": "Cocina en Vidahause"
       },
       {
@@ -1768,7 +1768,7 @@ export const projectPages: ProjectPage[] = [
         "alt": "Estar en Vidahause"
       },
       {
-        "src": "/img/vidahause/vidahause-cocina (3).webp",
+        "src": "/img/vidahause/vidahause-cocina.webp",
         "alt": "Detalle de cocina en Vidahause"
       },
       {

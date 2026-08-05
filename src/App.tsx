@@ -24,7 +24,8 @@ const App = () => (
             <Route path="/estudio" element={<Estudio />} />
             <Route path="/contacto" element={<Navigate to="/estudio#contacto" replace />} />
             <Route path="/momentos" element={<Momentos />} />
-            {/* Nota: /proyectos NO es una página, solo /proyectos/:id */}
+            <Route path="/proyectos" element={<Navigate to="/momentos" replace />} />
+            {/* Las fichas individuales usan /proyectos/:id */}
             <Route path="/proyectos/:id" element={<Proyecto />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

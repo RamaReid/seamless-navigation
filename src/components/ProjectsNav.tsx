@@ -42,7 +42,7 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
   const { id } = useParams<{ id: string }>();
   
   const isProyectoPage = location.pathname.startsWith('/proyectos/');
-  const isMomentosPage = location.pathname === '/momentos';
+  const isMomentosPage = location.pathname === '/momentos' || location.pathname === '/proyectos';
   
   // Determinar si debe ser visible (solo en /momentos o /proyectos/:id)
   const shouldBeVisible = isProyectoPage || isMomentosPage;
