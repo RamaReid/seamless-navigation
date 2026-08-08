@@ -5,34 +5,40 @@ import { HeroSection } from '@/components/HeroSection';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
 import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
-import fondoCasaM from '@/assets/img/FondoCasaM.webp';
+const fondoCasaM = '/img/FondoCasaM.webp';
 
-import estudioExterior from '@/assets/img/gadehause/gadehause-exterior-hero-sur.webp';
-import gadehauseCocina from '@/assets/img/gadehause/gadehause-cocina.webp';
-import estudioTransicion from '@/assets/img/scohause/scohause-galeria-panoramica.webp';
-import cedahauseHero from '@/assets/img/cedahause/cedahause-exterior-hero-oeste.webp';
-import gadehauseComedor from '@/assets/img/gadehause/gadehause-comedor.webp';
-import gadehausePasillo from '@/assets/img/gadehause/gadehause-dormitorio.webp';
-import scohauseRelacion from '@/assets/img/scohause/scohause-galeria-relacion.webp';
-import markhauseDetalle from '@/assets/img/markhause/markhause-living.webp';
-import gadehauseObra from '@/assets/img/gadehause/gadehause-exterior-entrada.webp';
-import cedahauseComedor from '@/assets/img/cedahause/cedahause-comedor.webp';
-import cedahauseAcceso from '@/assets/img/cedahause/cedahause-exterior-entrada.webp';
-import markhauseExterior from '@/assets/img/markhause/markhause-exterior-hero.webp';
-import markhauseMaterialidad from '@/assets/img/markhause/markhause-dormitorio.webp';
-import vidahauseCocina from '@/assets/img/vidahause/vidahause-cocina.webp';
-import donahauseSocial from '@/assets/img/donahause/donahause-comedor-living.webp';
-import jomahauseTradicional from '@/assets/img/jomahause/jomahause-quincho.webp';
-import jomahauseExterior from '@/assets/img/jomahause/jomahause-exterior-hero.png';
-import cedahauseLiving from '@/assets/img/cedahause/cedahause-living.webp';
-import gadehauseBano from '@/assets/img/gadehause/gadehause-bano-principal.webp';
-import donahauseMesa from '@/assets/img/donahause/donahause-quincho.webp';
-import jomahauseCocina from '@/assets/img/jomahause/jomahause-cocina-comedor.webp';
-import vidahauseContemporanea from '@/assets/img/vidahause/vidahause-vista-sur-patio.webp';
+const estudioExterior = '/img/gadehause/gadehause-exterior-hero-sur.webp';
+const gadehauseCocina = '/img/gadehause/gadehause-cocina.webp';
+const estudioTransicion = '/img/scohause/scohause-galeria-panoramica.webp';
+const cedahauseHero = '/img/cedahause/cedahause-exterior-hero-oeste.webp';
+const gadehauseComedor = '/img/gadehause/gadehause-comedor.webp';
+const gadehausePasillo = '/img/gadehause/gadehause-dormitorio.webp';
+const scohauseRelacion = '/img/scohause/scohause-galeria-relacion.webp';
+const markhauseDetalle = '/img/markhause/markhause-living.webp';
+const gadehauseObra = '/img/gadehause/gadehause-exterior-entrada.webp';
+const cedahauseComedor = '/img/cedahause/cedahause-comedor.webp';
+const cedahauseAcceso = '/img/cedahause/cedahause-exterior-entrada.webp';
+const markhauseExterior = '/img/markhause/markhause-exterior-hero.webp';
+const markhauseMaterialidad = '/img/markhause/markhause-dormitorio.webp';
+const vidahauseCocina = '/img/vidahause/vidahause-cocina.webp';
+const donahauseSocial = '/img/donahause/donahause-comedor-living.webp';
+const jomahauseTradicional = '/img/jomahause/jomahause-quincho.webp';
+const jomahauseExterior = '/img/jomahause/jomahause-exterior-hero.webp';
+const cedahauseLiving = '/img/cedahause/cedahause-living.webp';
+const gadehauseBano = '/img/gadehause/gadehause-bano-principal.webp';
+const donahauseMesa = '/img/donahause/donahause-quincho.webp';
+const jomahauseCocina = '/img/jomahause/jomahause-cocina-comedor.webp';
+const vidahauseContemporanea = '/img/vidahause/vidahause-vista-sur-patio.webp';
 
 const Estudio = () => {
   const [headerVisible, setHeaderVisible] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
 
   const scrollToContact = useCallback(() => {
     if (window.location.hash !== '#contacto') return;
@@ -60,6 +66,19 @@ const Estudio = () => {
   }, [scrollToContact]);
 
   useSceneCardReveal();
+
+  const handleContactSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const { name, email, subject, message } = contactForm;
+    const body = `Nombre: ${name}\nEmail: ${email}\n\n${message}`;
+    const params = new URLSearchParams({
+      subject: subject || `Consulta desde la web de GD`,
+      body,
+    });
+
+    window.location.href = `mailto:rgarciareid@gmail.com?${params.toString()}`;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -159,6 +178,70 @@ const Estudio = () => {
             <SceneText>
               Contanos tu historia, tu rutina o la idea que querés transformar en arquitectura.
             </SceneText>
+            <form
+              className="mx-auto mt-8 flex w-full max-w-3xl flex-col gap-5 text-left"
+              onSubmit={handleContactSubmit}
+              aria-label="Formulario de contacto"
+            >
+              <div className="grid gap-5 md:grid-cols-2">
+                <label className="flex flex-col gap-2 text-sm text-foreground">
+                  Nombre
+                  <input
+                    className="rounded-md border border-border bg-background/70 px-4 py-3 text-base text-foreground outline-none transition focus:border-foreground"
+                    type="text"
+                    name="name"
+                    value={contactForm.name}
+                    onChange={(event) => setContactForm({ ...contactForm, name: event.target.value })}
+                    required
+                    autoComplete="name"
+                  />
+                </label>
+                <label className="flex flex-col gap-2 text-sm text-foreground">
+                  Email
+                  <input
+                    className="rounded-md border border-border bg-background/70 px-4 py-3 text-base text-foreground outline-none transition focus:border-foreground"
+                    type="email"
+                    name="email"
+                    value={contactForm.email}
+                    onChange={(event) => setContactForm({ ...contactForm, email: event.target.value })}
+                    required
+                    autoComplete="email"
+                  />
+                </label>
+              </div>
+              <label className="flex flex-col gap-2 text-sm text-foreground">
+                Asunto
+                <input
+                  className="rounded-md border border-border bg-background/70 px-4 py-3 text-base text-foreground outline-none transition focus:border-foreground"
+                  type="text"
+                  name="subject"
+                  value={contactForm.subject}
+                  onChange={(event) => setContactForm({ ...contactForm, subject: event.target.value })}
+                  autoComplete="off"
+                />
+              </label>
+              <label className="flex flex-col gap-2 text-sm text-foreground">
+                Mensaje
+                <textarea
+                  className="min-h-36 resize-y rounded-md border border-border bg-background/70 px-4 py-3 text-base text-foreground outline-none transition focus:border-foreground"
+                  name="message"
+                  value={contactForm.message}
+                  onChange={(event) => setContactForm({ ...contactForm, message: event.target.value })}
+                  required
+                />
+              </label>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Se abrirá tu aplicación de correo para completar el envío.
+                </p>
+                <button
+                  className="rounded-md border border-foreground px-5 py-3 text-sm font-medium text-foreground transition hover:bg-foreground hover:text-background"
+                  type="submit"
+                >
+                  Enviar consulta
+                </button>
+              </div>
+            </form>
             <div className="contact-actions" aria-label="Canales de contacto">
               <a className="contact-link" href="mailto:rgarciareid@gmail.com">rgarciareid@gmail.com</a>
               <a className="contact-link" href="https://wa.me/5492494626455" target="_blank" rel="noopener noreferrer">WhatsApp</a>

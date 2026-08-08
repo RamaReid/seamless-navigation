@@ -727,6 +727,14 @@ body.hero-visible .hero-revista-section {
   overflow: hidden;
 }
 
+.hero-revista-shell.hero-static {
+  background: #f7f6f2;
+}
+
+.project-hero-image {
+  display: block;
+}
+
 .hero-revista-shell iframe {
   display: block;
   width: 100%;

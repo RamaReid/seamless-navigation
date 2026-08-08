@@ -33,7 +33,7 @@ export const projectPages: ProjectPage[] = [
     "id": "cedahause",
     "name": "CeDaHause",
     "hero": {
-      "src": "/img/cedahause/cedahause-exterior-hero-oeste.webp",
+      "src": "/img/cedahause/cedahause-exterior-hero-este.webp",
       "backgroundSize": "cover",
       "backgroundPosition": "center",
       "backgroundRepeat": "no-repeat"
@@ -168,7 +168,7 @@ export const projectPages: ProjectPage[] = [
     ],
     "lightboxImages": [
       {
-        "src": "/img/cedahause/cedahause-exterior-hero-oeste.webp",
+        "src": "/img/cedahause/cedahause-exterior-hero-este.webp",
         "alt": "Hero CeDa Hause"
       },
       {
@@ -1676,7 +1676,7 @@ export const projectPages: ProjectPage[] = [
         "cards": [
           {
             "variant": "square",
-            "src": "/img/vidahause/vidahause-cocina.png",
+            "src": "/img/vidahause/vidahause-cocina.webp",
             "alt": "Cocina en Vidahause"
           },
           {
@@ -1686,7 +1686,7 @@ export const projectPages: ProjectPage[] = [
           },
           {
             "variant": "square",
-            "src": "/img/vidahause/vidahause-cocina.webp",
+            "src": "/img/vidahause/vidahause-cocina (3).webp",
             "alt": "Detalle de cocina en Vidahause"
           }
         ]
@@ -1760,7 +1760,7 @@ export const projectPages: ProjectPage[] = [
         "alt": "Detalle exterior en Vidahause"
       },
       {
-        "src": "/img/vidahause/vidahause-cocina.png",
+        "src": "/img/vidahause/vidahause-cocina.webp",
         "alt": "Cocina en Vidahause"
       },
       {
@@ -1768,7 +1768,7 @@ export const projectPages: ProjectPage[] = [
         "alt": "Estar en Vidahause"
       },
       {
-        "src": "/img/vidahause/vidahause-cocina.webp",
+        "src": "/img/vidahause/vidahause-cocina (3).webp",
         "alt": "Detalle de cocina en Vidahause"
       },
       {

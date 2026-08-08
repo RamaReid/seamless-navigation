@@ -6,7 +6,7 @@ import { getProjectById } from '@/data/projects';
 import { getProjectPageById } from '@/data/projectPages';
 import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
 import type { ProjectPageCard, ProjectPageScene } from '@/data/projectPages';
-import fondoCasaM from '@/assets/img/FondoCasaM.webp';
+const fondoCasaM = '/img/FondoCasaM.webp';
 
 const Proyecto: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -88,7 +88,7 @@ const Proyecto: React.FC = () => {
   const renderCard = (card: ProjectPageCard) => (
     <div
       key={card.src}
-      className={`scene-card ${card.variant} cursor-pointer`}
+      className={`scene-card ${card.variant} cursor-pointer is-visible`}
       onClick={() => openLightboxBySrc(card.src)}
       role="button"
       tabIndex={0}
@@ -155,17 +155,18 @@ const Proyecto: React.FC = () => {
           aria-label={`Hero ${project.name}`}
         >
           <div className="hero-revista-shell hero-static" id="hero-revista-shell">
-            <div
-              className="w-full h-full cursor-pointer"
+            <img
+              className="project-hero-image w-full h-full cursor-pointer"
+              src={page.hero.src}
+              alt={`Hero ${project.name}`}
               style={{
-                backgroundImage: `url(${page.hero.src})`,
-                backgroundSize: page.hero.backgroundSize,
-                backgroundPosition: page.hero.backgroundPosition,
-                backgroundRepeat: page.hero.backgroundRepeat,
+                objectFit: page.hero.backgroundSize === 'cover' ? 'cover' : 'contain',
+                objectPosition: page.hero.backgroundPosition,
               }}
               onClick={() => openLightbox(0)}
               role="button"
               aria-label="Ver galeria"
+              draggable={false}
             />
           </div>
         </section>

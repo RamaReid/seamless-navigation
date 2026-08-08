@@ -7,14 +7,14 @@ import { SceneCard } from '@/components/SceneCard';
 import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
 
 // Imágenes originales del proyecto
-import fondoCasaM from '@/assets/img/FondoCasaM.webp';
-import magahauseTerrazaVida from '@/assets/img/magahause/magahause-terraza-vida.webp';
-import gadehausePiletaPortal from '@/assets/img/gadehause/gadehause-pileta-portal.webp';
-import gadehauseCocina from '@/assets/img/gadehause/gadehause-cocina-panoramica.webp';
-import markhauseComedor from '@/assets/img/markhause/markhause-comedor.webp';
-import cedahauseLiving from '@/assets/img/cedahause/cedahause-living.webp';
-import jonohauseBano from '@/assets/img/jonohause/jonohause-bano.webp';
-import donahauseQuincho from '@/assets/img/donahause/donahause-quincho.webp';
+const fondoCasaM = '/img/FondoCasaM.webp';
+const magahauseTerrazaVida = '/img/magahause/magahause-terraza-vida.webp';
+const gadehausePiletaPortal = '/img/gadehause/gadehause-pileta-portal.webp';
+const gadehauseCocina = '/img/gadehause/gadehause-cocina-panoramica.webp';
+const markhauseComedor = '/img/markhause/markhause-comedor.webp';
+const cedahauseLiving = '/img/cedahause/cedahause-living.webp';
+const jonohauseBano = '/img/jonohause/jonohause-bano.webp';
+const donahauseQuincho = '/img/donahause/donahause-quincho.webp';
 
 const Index = () => {
   // Handle transition complete - header visible IMMEDIATELY (no delays)
