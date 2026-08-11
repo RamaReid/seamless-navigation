@@ -1,4 +1,4 @@
-# Corte del loader al completar los dos ciclos
+# Cortar el loader al terminar el segundo ciclo
 
 ## Situación actual (medida en el navegador, home `/`)
 
@@ -6,39 +6,38 @@
 1.6 s   revista lista (REVISTA_READY)
 4.4 s   fin del ciclo 1 del logo
 7.2 s   fin del ciclo 2 -> se abre la compuerta (gate)
-7.2 s   pausa post-loop + lift (2 s)
+7.2 s   pausa + lift (2 s)
 9.3 s   drop (0.55 s)
 10.1 s  bounce (0.4 s)
-10.8 s  empieza el reveal radial (5 s)
+10.8 s  reveal radial (5 s)
 15.6 s  el loader desaparece
 ```
 
-Los dos ciclos ya se cumplen a los 7.2 s. Todo lo que sigue son ~8.4 s de cola fija.
+Los dos ciclos se cumplen a los 7.2 s. Lo demás es cola fija.
 
 ## Objetivo
 
-El loader corta cuando se cumplen los dos ciclos: al terminar el segundo dibujado del logo arranca de inmediato la salida, sin pausa intermedia y sin estirar el reveal.
+El loader corta exactamente al terminar el segundo ciclo del logo. Nada más.
 
 ## Cambio propuesto
 
-- Se mantienen los 2 ciclos completos (`COLD_START_CYCLES = 2`) y el gate de assets/revista tal cual.
-- Se elimina la pausa post-loop de 100 ms: al detectar el fin del ciclo 2 se entra directo en la salida.
-- Se comprime la coreografía de salida (lift + drop + bounce) para que ocupe ~1.2 s en lugar de ~3 s, conservando las mismas animaciones originales y su orden.
-- Se acorta el reveal radial de 5 s a 1.2 s, con el mismo easing cúbico y la misma máscara.
-- Se reescalonan las capas dentro del reveal: header 0.2 s, blur 0.5 s, hero 0.9 s.
+Al detectar el fin del ciclo 2 (el `animationend` de `str5` que deja `loaderCycles === 2`), con `assetsReady` y `revistaReady` ya en true, pasar directamente a `complete`:
 
-Resultado esperado: el loader desaparece a los ~9.6 s, encadenado sin huecos al final del segundo ciclo (hoy ~15.6 s). En navegación interna (1 ciclo, sin lift/drop/bounce) el corte queda en ~1.5 s tras el ciclo.
+- Saltar las fases `post-loop`, `lift`, `drop`, `bounce` y `reveal`.
+- Desmontar el loader (`setVisible(false)`) y disparar `onComplete`.
+- Aplicar de inmediato `header-visible`, `reveal-blur` y `hero-visible` para que la página quede visible sin hueco.
+
+El loader desaparece a los ~7.2 s, justo al cerrar el segundo ciclo.
 
 ## Detalle técnico
 
-Sólo se toca `src/components/Loader.tsx` (y las duraciones de las animaciones de salida que se declaran ahí mismo en `getPhaseClass`):
+Sólo se toca `src/components/Loader.tsx`:
 
-- Gate: entrar a `lift` sin el `setTimeout(..., 100)` intermedio.
-- `lift` 2 s -> 0.7 s, `drop` 0.55 s -> 0.3 s, `bounce` 0.4 s -> 0.25 s (mismos cubic-bezier).
-- `RADIAL_REVEAL_DURATION`: 5000 -> 1200.
-- `HEADER_REVEAL_MS` 1000 -> 200, `BLUR_REVEAL_MS` 2000 -> 500, `HERO_REVEAL_MS` 3000 -> 900.
-- Sin cambios en CSS de strokes, en el conteo por `animationend` de `str5`, ni en la revista. Se mantiene el timeout de seguridad de 14 s.
+- En el gate final, para arranque en frío (`!isNavSkip`), ir directo a `setPhase('complete')` + `setVisible(false)` + `onComplete?.()` en vez de entrar a `post-loop`/`lift`.
+- Mantener el comportamiento de navegación interna (1 ciclo) tal cual está, salvo que también corte al cerrar su ciclo.
+- Las clases `header-visible`/`reveal-blur`/`hero-visible` se aplican en el mismo instante del corte (Index ya las gestiona en `transitionComplete`).
+- Sin cambios en ciclos, CSS, gate de assets ni revista. Se mantiene el timeout de seguridad de 14 s.
 
 ## Verificación
 
-Volver a medir en el navegador: fin del ciclo 2, inicio de lift, inicio del reveal y desaparición de `#intro-layer`, confirmando que no queda ningún hueco muerto y que `header-visible`, `reveal-blur` y `hero-visible` se aplican en orden.
+Medir en el navegador: fin del ciclo 2 y desaparición de `#intro-layer` en el mismo instante (~7.2 s), con `header-visible`, `reveal-blur` y `hero-visible` aplicados.
