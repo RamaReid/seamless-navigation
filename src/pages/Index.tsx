@@ -16,17 +16,34 @@ const cedahauseLiving = '/img/cedahause/cedahause-living.webp';
 const jonohauseBano = '/img/jonohause/jonohause-bano.webp';
 const donahauseQuincho = '/img/donahause/donahause-quincho.webp';
 
+const BEAT = 465;
+
 const Index = () => {
-  // Handle transition complete - header visible IMMEDIATELY (no delays)
-  const handleTransitionComplete = useCallback(() => {
-    // Header visible immediately (<=100ms from transitionComplete)
-    document.body.classList.add('header-visible');
-    
-    // Hero visible immediately after header
-    document.body.classList.add('hero-visible');
-    window.dispatchEvent(new Event('heroVisible'));
-    
+  const seqTimersRef = React.useRef<number[]>([]);
+
+  const clearSeqTimers = useCallback(() => {
+    seqTimersRef.current.forEach(clearTimeout);
+    seqTimersRef.current = [];
   }, []);
+
+  // Coreografía original: header a 3 BEATs, hero (revista) a 8 BEATs
+  const handleTransitionComplete = useCallback(() => {
+    clearSeqTimers();
+
+    seqTimersRef.current.push(
+      window.setTimeout(() => {
+        document.body.classList.add('header-visible');
+      }, BEAT * 3)
+    );
+
+    seqTimersRef.current.push(
+      window.setTimeout(() => {
+        document.body.classList.remove('header-visible');
+        document.body.classList.add('hero-visible');
+        window.dispatchEvent(new Event('heroVisible'));
+      }, BEAT * 8)
+    );
+  }, [clearSeqTimers]);
 
   // Listen for transitionComplete event from TransitionShell
   useEffect(() => {
@@ -34,16 +51,18 @@ const Index = () => {
 
     return () => {
       window.removeEventListener('transitionComplete', handleTransitionComplete);
+      clearSeqTimers();
     };
-  }, [handleTransitionComplete]);
+  }, [handleTransitionComplete, clearSeqTimers]);
 
-  // Fallback: if no active loader exists, apply the same final state immediately.
+  // Fallback: if no active loader exists, apply the same sequence immediately.
   useEffect(() => {
     const hasActiveLoader = !!document.getElementById('intro-layer');
     if (!hasActiveLoader) {
       handleTransitionComplete();
     }
   }, [handleTransitionComplete]);
+
 
   useSceneCardReveal();
 
