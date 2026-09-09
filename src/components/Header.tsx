@@ -81,17 +81,25 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
 
   // Scroll-based header visibility (from header-on-scroll.js)
   useEffect(() => {
+    const isHomeWithHero = location.pathname === '/';
     let ticking = false;
 
     const update = () => {
       const y = window.scrollY || 0;
 
-      // If the user scrolls down, the header shows and stays visible
       if (y > SHOW_THRESHOLD) {
+        // Scrolleando hacia abajo: header visible
         document.body.classList.add('header-visible');
         clearHeroTimer();
+      } else if (isHomeWithHero && document.body.classList.contains('hero-visible')) {
+        // De vuelta arriba con la revista a la vista: se oculta y espera inactividad
+        document.body.classList.remove('header-visible');
+        clearHeroTimer();
+        heroTimerRef.current = window.setTimeout(() => {
+          if ((window.scrollY || 0) > SHOW_THRESHOLD) return;
+          document.body.classList.add('header-visible');
+        }, HERO_IDLE_MS);
       }
-      // Note: We don't hide the header on scroll up - that's controlled by the hero sequence
 
       ticking = false;
     };
@@ -104,7 +112,8 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
 
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [clearHeroTimer]);
+  }, [clearHeroTimer, location.pathname]);
+
 
   const handleNavClick = (item: typeof navItems[0], e: React.MouseEvent) => {
     if (item.isToggle) {
