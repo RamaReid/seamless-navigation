@@ -34,45 +34,45 @@ body {
 
 /* ---------- 2. ESCALA TIPOGRÁFICA FLUIDA ---------- */
 @media (max-width: 768px) {
-  .scene-title {
+  body .scene-title {
     font-size: clamp(26px, 7.5vw, 34px);
     line-height: 1.15;
     margin-bottom: 14px;
   }
 
-  .scene-subtitle {
+  body .scene-subtitle {
     font-size: clamp(18px, 5vw, 22px);
     line-height: 1.3;
   }
 
-  .scene-text {
+  body .scene-text {
     font-size: clamp(16px, 4.4vw, 19px);
     line-height: 1.5;
   }
 
-  .scene {
+  body .scene {
     padding: 22px 0;
   }
 }
 
 /* ---------- 3. HEADER COMPACTO ---------- */
 @media (max-width: 768px) {
-  .gd-header {
+  body .gd-header {
     top: 0;
     left: 12px;
     right: 12px;
   }
 
-  .navbar {
+  body .navbar {
     margin-top: 16px;
     padding: 6px 12px 6px 10px;
   }
 
-  .brand-logo {
+  body .brand-logo {
     width: 68px;
   }
 
-  .brand-tagline {
+  body .brand-tagline {
     display: none;
   }
 
@@ -81,7 +81,7 @@ body {
     display: none !important;
   }
 
-  .nav-toggle {
+  body .nav-toggle {
     display: flex;
     width: 44px;
     height: 44px;
@@ -91,7 +91,7 @@ body {
 }
 
 @media (min-width: 769px) {
-  .nav-toggle {
+  body .nav-toggle {
     display: none;
   }
 }
@@ -195,11 +195,11 @@ body.nav-open {
 
 /* ---------- 5. INICIO — CARRUSEL ---------- */
 @media (max-width: 768px) {
-  .hero-revista-section {
+  body .hero-revista-section {
     padding: 10px;
   }
 
-  .hero-revista-shell {
+  body .hero-revista-shell {
     border-radius: 10px;
   }
 
@@ -284,20 +284,20 @@ body.nav-open {
 
 /* ---------- 6. GRILLAS EN UNA COLUMNA ---------- */
 @media (max-width: 768px) {
-  #home-board {
+  body #home-board {
     padding: 0 18px;
   }
 
-  .scene-moments,
-  .scene-details,
-  .scene-space,
-  .chapter-triptych {
+  body .scene-moments,
+  body .scene-details,
+  body .scene-space,
+  body .chapter-triptych {
     grid-template-columns: 1fr !important;
     gap: 18px;
     margin-top: 18px;
   }
 
-  .scene-card.wide {
+  body .scene-card.wide {
     width: calc(100% + 36px);
     margin: 0 -18px;
     aspect-ratio: 16 / 10;
@@ -305,45 +305,45 @@ body.nav-open {
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
-  .scene-moments,
-  .scene-details,
-  .chapter-triptych {
+  body .scene-moments,
+  body .scene-details,
+  body .chapter-triptych {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
 /* ---------- 7. MOMENTOS ---------- */
 @media (max-width: 768px) {
-  .projects-main {
+  body .projects-main {
     padding: 40px 18px 20px;
   }
 
-  .project-index .projects-chapter {
+  body .project-index .projects-chapter {
     scroll-margin-top: 96px;
   }
 
-  .hero-collage {
+  body .hero-collage {
     padding: 16px 12px;
     gap: 10px;
   }
 
-  .hero-photo {
+  body .hero-photo {
     flex: 0 0 62vw;
   }
 
-  .hero-photo-title {
+  body .hero-photo-title {
     font-size: 0.8rem;
   }
 
   /* El mini-menú flotante se reemplaza por el panel de menú */
-  .projects-nav {
+  body .projects-nav {
     display: none;
   }
 }
 
 /* ---------- 8. PROYECTO — VISOR DE FOTOS ---------- */
 @media (max-width: 768px) {
-  .gd-lightbox-inner {
+  body .gd-lightbox-inner {
     width: 100vw;
     height: 100dvh;
     display: flex;
@@ -351,19 +351,19 @@ body.nav-open {
     justify-content: center;
   }
 
-  .gd-lightbox-image {
+  body .gd-lightbox-image {
     max-width: 100vw !important;
     max-height: 100dvh !important;
   }
 
-  .gd-lightbox-close {
+  body .gd-lightbox-close {
     width: 48px;
     height: 48px;
     top: calc(14px + env(safe-area-inset-top));
     right: 14px;
   }
 
-  .gd-lightbox-nav {
+  body .gd-lightbox-nav {
     width: 48px;
     height: 48px;
     bottom: calc(20px + env(safe-area-inset-bottom));
@@ -371,35 +371,35 @@ body.nav-open {
     transform: none;
   }
 
-  .gd-lightbox-prev {
+  body .gd-lightbox-prev {
     left: 18px;
   }
 
-  .gd-lightbox-next {
+  body .gd-lightbox-next {
     right: 18px;
   }
 
-  .gd-lightbox-nav:hover {
+  body .gd-lightbox-nav:hover {
     transform: none;
   }
 }
 
 /* ---------- 9. PIE ---------- */
 @media (max-width: 768px) {
-  #gd-footer {
+  body #gd-footer {
     padding: 32px 0 calc(28px + env(safe-area-inset-bottom));
   }
 
-  .footer-icons {
+  body .footer-icons {
     gap: 18px !important;
     flex-wrap: wrap;
   }
 
-  .footer-icons .icon-link {
+  body .footer-icons .icon-link {
     padding: 10px;
   }
 
-  .footer-icons .icon-link img {
+  body .footer-icons .icon-link img {
     width: 34px;
   }
 }
