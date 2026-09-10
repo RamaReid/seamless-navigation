@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { GDLogo } from './GDLogo';
 import { ProjectsNav } from './ProjectsNav';
+import { projects } from '@/data/projects';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
