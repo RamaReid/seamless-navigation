@@ -52,7 +52,10 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
   // Gate conditions
   const [loaderCycles, setLoaderCycles] = useState(0);
   const [assetsReady, setAssetsReady] = useState(false);
-  const [revistaReady, setRevistaReady] = useState(!isHomePage); // TRUE by default on non-home routes
+  // TRUE por defecto fuera del inicio y en celular (ahí no hay revista, hay carrusel)
+  const [revistaReady, setRevistaReady] = useState(
+    () => !isHomePage || (typeof window !== 'undefined' && window.innerWidth < 768)
+  );
   const [timedOut, setTimedOut] = useState(false);
   
   const requiredCycles = isNavSkip ? NAV_SKIP_CYCLES : COLD_START_CYCLES;
