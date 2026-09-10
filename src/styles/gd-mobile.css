@@ -243,14 +243,17 @@ body.nav-open {
     height: 100%;
     scroll-snap-align: center;
     scroll-snap-stop: always;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
   }
 
   .gd-carousel-slide img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
     object-position: center;
     display: block;
     -webkit-user-drag: none;
@@ -258,8 +261,9 @@ body.nav-open {
 
   .gd-carousel-label {
     position: absolute;
-    left: 18px;
-    bottom: 46px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 40px;
     padding: 8px 14px;
     border-radius: 9999px;
     background: rgba(15, 19, 32, 0.6);
@@ -268,6 +272,7 @@ body.nav-open {
     font-size: 0.85rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 
   .gd-carousel-dots {
