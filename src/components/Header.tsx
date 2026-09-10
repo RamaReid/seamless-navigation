@@ -202,11 +202,10 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
           {/* Mobile Menu Toggle */}
           <button 
             className="nav-toggle"
-            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-            onClick={() => {
-              setMobileMenuOpen(!mobileMenuOpen);
-              document.body.classList.toggle('nav-open', !mobileMenuOpen);
-            }}
+            aria-label="Abrir menú"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMobileMenuOpen(true)}
           >
             <span />
             <span />
@@ -214,6 +213,55 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
           </button>
         </nav>
       </header>
+
+      {/* Panel de menú a pantalla completa (celular) */}
+      <div
+        id="mobile-menu"
+        className={cn("mobile-menu", mobileMenuOpen && "is-open")}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menú"
+        aria-hidden={!mobileMenuOpen}
+      >
+        <div className="mobile-menu-top">
+          <button
+            className="mobile-menu-close"
+            aria-label="Cerrar menú"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            ×
+          </button>
+        </div>
+
+        <ul className="mobile-menu-list">
+          <li>
+            <Link to="/" className={cn(location.pathname === '/' && 'is-active')}>Inicio</Link>
+          </li>
+          <li>
+            <Link to="/momentos" className={cn(isMomentosPage && 'is-active')}>Momentos</Link>
+          </li>
+          <li>
+            <Link to="/estudio" className={cn(location.pathname === '/estudio' && 'is-active')}>Estudio</Link>
+          </li>
+          <li>
+            <Link to="/estudio#contacto">Contacto</Link>
+          </li>
+        </ul>
+
+        <p className="mobile-menu-section-title">Proyectos</p>
+        <ul className="mobile-menu-list mobile-menu-projects">
+          {projects.map((project) => (
+            <li key={project.id}>
+              <Link
+                to={`/proyectos/${project.id}`}
+                className={cn(location.pathname === `/proyectos/${project.id}` && 'is-active')}
+              >
+                {project.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* Projects Navigation - contextual por ruta */}
       <ProjectsNav 
