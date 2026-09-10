@@ -44,54 +44,13 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
     setIframeLoaded(true);
   }, []);
 
-  // Mobile carousel fallback (matching original revista.html mobile carousel)
+  // Mobile: carrusel de fotos (una por pantalla)
   if (isMobile) {
-    const slides = [
-      { href: '/proyectos/magahause', img: '/img/magahause/magahause-exterior-sur-entrada-hero.webp' },
-      { href: '/proyectos/donahause', img: '/img/donahause/donahause-hero2.webp' },
-      { href: '/proyectos/gadehause', img: '/img/gadehause/gadehause-exterior-hero-sur.webp' },
-      { href: '/proyectos/jobehause', img: '/img/jobehause/jobehause-exterior-frente-hero.webp' },
-      { href: '/proyectos/jomahause', img: '/img/jomahause/jomahause-exterior-hero.webp' },
-      { href: '/proyectos/jonohause', img: '/img/jonohause/jonohause-exterior-hero.webp' },
-      { href: '/proyectos/cedahause', img: '/img/cedahause/cedahause-exterior-hero-este.webp' },
-      { href: '/proyectos/markhause', img: '/img/markhause/markhause-exterior-hero.webp' },
-      { href: '/proyectos/scohause', img: '/img/scohause/scohause-exterior-hero.webp' },
-      { href: '/proyectos/vidahause', img: '/img/vidahause/vidahause-exterior-hero.webp' },
-    ];
-
     return (
-      <section
-        id="hero-revista-section"
-        className={cn(
-          "hero-revista-section",
-          "transition-all gd-transition-2500 ease-out",
-          visible ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none",
-          className
-        )}
-        aria-label="Hero Revista"
-      >
-        <div className="hero-revista-shell">
-          <div id="hero-carousel" className="carousel w-full h-full overflow-x-auto overflow-y-hidden">
-            <div className="carousel-track flex gap-4 h-full px-4 snap-x snap-mandatory scroll-smooth">
-              {slides.map((slide, idx) => (
-                <Link
-                  key={idx}
-                  to={slide.href}
-                  className="slide flex-shrink-0 w-[85vw] h-full rounded-lg snap-center block"
-                  style={{
-                    backgroundImage: `url(${slide.img})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }}
-                  aria-label={`Ver proyecto ${idx + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <MobileHeroCarousel visible={visible} className={className} />
     );
   }
+
 
   // Desktop: iframe with PageFlip flip-book (matching original home.js behavior)
   return (
@@ -125,6 +84,84 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
           onLoad={handleIframeLoad}
           title="Revista GD Arquitectura"
         />
+      </div>
+    </section>
+  );
+};
+
+const MOBILE_SLIDES = [
+  { href: '/proyectos/magahause', img: '/img/magahause/magahause-exterior-sur-entrada-hero.webp', name: 'MaGa Hause' },
+  { href: '/proyectos/donahause', img: '/img/donahause/donahause-hero2.webp', name: 'Dona Hause' },
+  { href: '/proyectos/gadehause', img: '/img/gadehause/gadehause-exterior-hero-sur.webp', name: 'Gade Hause' },
+  { href: '/proyectos/jobehause', img: '/img/jobehause/jobehause-exterior-frente-hero.webp', name: 'Jobe Hause' },
+  { href: '/proyectos/jomahause', img: '/img/jomahause/jomahause-exterior-hero.webp', name: 'Joma Hause' },
+  { href: '/proyectos/jonohause', img: '/img/jonohause/jonohause-exterior-hero.webp', name: 'Jono Hause' },
+  { href: '/proyectos/cedahause', img: '/img/cedahause/cedahause-exterior-hero-este.webp', name: 'Ceda Hause' },
+  { href: '/proyectos/markhause', img: '/img/markhause/markhause-exterior-hero.webp', name: 'Mark Hause' },
+  { href: '/proyectos/scohause', img: '/img/scohause/scohause-exterior-hero.webp', name: 'Sco Hause' },
+  { href: '/proyectos/vidahause', img: '/img/vidahause/vidahause-exterior-hero.webp', name: 'Vida Hause' },
+];
+
+const MobileHeroCarousel: React.FC<{ visible: boolean; className?: string }> = ({ visible, className }) => {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  const handleScroll = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const index = Math.round(track.scrollLeft / Math.max(track.clientWidth, 1));
+    setActive(Math.min(Math.max(index, 0), MOBILE_SLIDES.length - 1));
+  }, []);
+
+  return (
+    <section
+      id="hero-revista-section"
+      className={cn(
+        'hero-revista-section',
+        'transition-all gd-transition-2500 ease-out',
+        visible ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none',
+        className
+      )}
+      aria-label="Hero Revista"
+    >
+      <div className="hero-revista-shell">
+        <div className="gd-carousel">
+          <div
+            ref={trackRef}
+            className="gd-carousel-track"
+            onScroll={handleScroll}
+            role="group"
+            aria-label="Proyectos destacados"
+          >
+            {MOBILE_SLIDES.map((slide, idx) => (
+              <Link
+                key={slide.href}
+                to={slide.href}
+                className="gd-carousel-slide"
+                aria-label={`Ver ${slide.name}`}
+              >
+                <img
+                  src={slide.img}
+                  alt={slide.name}
+                  loading={idx === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  sizes="100vw"
+                  draggable={false}
+                />
+                <span className="gd-carousel-label">{slide.name}</span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="gd-carousel-dots" aria-hidden="true">
+            {MOBILE_SLIDES.map((slide, idx) => (
+              <span
+                key={slide.href}
+                className={cn('gd-carousel-dot', idx === active && 'is-active')}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

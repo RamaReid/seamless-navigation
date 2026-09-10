@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -16,6 +16,7 @@ const Proyecto: React.FC = () => {
   const lightboxImages = page?.lightboxImages ?? [];
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   useSceneCardReveal();
 
@@ -184,7 +185,27 @@ const Proyecto: React.FC = () => {
         aria-modal="true"
         aria-label="Galeria de imagenes"
       >
-        <div className="gd-lightbox-inner" onClick={(event) => event.stopPropagation()}>
+        <div
+          className="gd-lightbox-inner"
+          onClick={(event) => event.stopPropagation()}
+          onTouchStart={(event) => {
+            const touch = event.changedTouches[0];
+            touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+          }}
+          onTouchEnd={(event) => {
+            const start = touchStartRef.current;
+            if (!start) return;
+            touchStartRef.current = null;
+            const touch = event.changedTouches[0];
+            const dx = touch.clientX - start.x;
+            const dy = touch.clientY - start.y;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+              navigateLightbox(dx < 0 ? 'next' : 'prev');
+            } else if (dy > 80 && Math.abs(dy) > Math.abs(dx)) {
+              closeLightbox();
+            }
+          }}
+        >
           {lightboxImages[lightboxIndex] && (
             <img
               src={lightboxImages[lightboxIndex].src}

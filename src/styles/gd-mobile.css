@@ -1,0 +1,428 @@
+/* ======================================================
+   GD — CAPA MOBILE FIRST
+   Base pensada para pantalla chica; en pantallas grandes
+   se restablece la composición original.
+====================================================== */
+
+/* ---------- 1. BASE TÁCTIL ---------- */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+}
+
+@media (hover: none) {
+  a,
+  button,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Sin efectos que dependan del mouse */
+  .nav-list a:hover,
+  .brand-link:hover .brand-logo,
+  .footer-icons .icon-link:hover,
+  .scene-card:hover img {
+    transform: none;
+  }
+}
+
+/* ---------- 2. ESCALA TIPOGRÁFICA FLUIDA ---------- */
+@media (max-width: 768px) {
+  body .scene-title {
+    font-size: clamp(26px, 7.5vw, 34px);
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  body .scene-subtitle {
+    font-size: clamp(18px, 5vw, 22px);
+    line-height: 1.3;
+  }
+
+  body .scene-text {
+    font-size: clamp(16px, 4.4vw, 19px);
+    line-height: 1.5;
+  }
+
+  body .scene {
+    padding: 22px 0;
+  }
+}
+
+/* ---------- 3. HEADER COMPACTO ---------- */
+@media (max-width: 768px) {
+  body .gd-header {
+    top: 0;
+    left: 12px;
+    right: 12px;
+  }
+
+  body .navbar {
+    margin-top: 16px;
+    padding: 6px 12px 6px 10px;
+  }
+
+  body .brand-logo {
+    width: 68px;
+  }
+
+  body .brand-tagline {
+    display: none;
+  }
+
+  /* La navegación de escritorio no se usa en celular */
+  .nav-area {
+    display: none !important;
+  }
+
+  body .nav-toggle {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    padding: 10px 6px;
+    box-sizing: border-box;
+  }
+}
+
+@media (min-width: 769px) {
+  body .nav-toggle {
+    display: none;
+  }
+}
+
+/* ---------- 4. PANEL DE MENÚ A PANTALLA COMPLETA ---------- */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(15, 19, 32, 0.97);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px calc(28px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.28s ease, transform 0.28s ease, visibility 0.28s;
+}
+
+.mobile-menu.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.mobile-menu-top {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mobile-menu-close {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--gd-grey);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mobile-menu-list {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-menu-list a,
+.mobile-menu-list button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  padding: 6px 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--gd-grey);
+  font-family: inherit;
+  font-size: 1.35rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mobile-menu-list a.is-active {
+  color: #ffffff;
+}
+
+.mobile-menu-section-title {
+  margin: 28px 0 6px;
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(196, 195, 196, 0.6);
+}
+
+.mobile-menu-projects a {
+  min-height: 50px;
+  font-size: 1.05rem;
+  letter-spacing: 0.12em;
+}
+
+body.nav-open {
+  overflow: hidden;
+}
+
+@media (min-width: 769px) {
+  .mobile-menu {
+    display: none;
+  }
+}
+
+/* ---------- 5. INICIO — CARRUSEL ---------- */
+@media (max-width: 768px) {
+  body .hero-revista-section {
+    padding: 10px;
+  }
+
+  body .hero-revista-shell {
+    border-radius: 10px;
+  }
+
+  .gd-carousel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .gd-carousel-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .gd-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gd-carousel-slide {
+    position: relative;
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    display: block;
+    overflow: hidden;
+  }
+
+  .gd-carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .gd-carousel-label {
+    position: absolute;
+    left: 18px;
+    bottom: 46px;
+    padding: 8px 14px;
+    border-radius: 9999px;
+    background: rgba(15, 19, 32, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .gd-carousel-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .gd-carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.35);
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+
+  .gd-carousel-dot.is-active {
+    background: #ffffff;
+    transform: scale(1.5);
+  }
+}
+
+/* ---------- 6. GRILLAS EN UNA COLUMNA ---------- */
+@media (max-width: 768px) {
+  body #home-board {
+    padding: 0 18px;
+  }
+
+  body .scene-moments,
+  body .scene-details,
+  body .scene-space,
+  body .chapter-triptych {
+    grid-template-columns: 1fr !important;
+    gap: 18px;
+    margin-top: 18px;
+  }
+
+  body .scene-card.wide {
+    width: calc(100% + 36px);
+    margin: 0 -18px;
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  body .scene-moments,
+  body .scene-details,
+  body .chapter-triptych {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ---------- 7. MOMENTOS ---------- */
+@media (max-width: 768px) {
+  body .projects-main {
+    padding: 40px 18px 20px;
+  }
+
+  body .project-index .projects-chapter {
+    scroll-margin-top: 96px;
+  }
+
+  body .hero-collage {
+    padding: 16px 12px;
+    gap: 10px;
+  }
+
+  body .hero-photo {
+    flex: 0 0 62vw;
+  }
+
+  body .hero-photo-title {
+    font-size: 0.8rem;
+  }
+
+  /* El mini-menú flotante se reemplaza por el panel de menú */
+  body .projects-nav {
+    display: none;
+  }
+}
+
+/* ---------- 8. PROYECTO — VISOR DE FOTOS ---------- */
+@media (max-width: 768px) {
+  body .gd-lightbox-inner {
+    width: 100vw;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  body .gd-lightbox-image {
+    max-width: 100vw !important;
+    max-height: 100dvh !important;
+  }
+
+  body .gd-lightbox-close {
+    width: 48px;
+    height: 48px;
+    top: calc(14px + env(safe-area-inset-top));
+    right: 14px;
+  }
+
+  body .gd-lightbox-nav {
+    width: 48px;
+    height: 48px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    top: auto;
+    transform: none;
+  }
+
+  body .gd-lightbox-prev {
+    left: 18px;
+  }
+
+  body .gd-lightbox-next {
+    right: 18px;
+  }
+
+  body .gd-lightbox-nav:hover {
+    transform: none;
+  }
+}
+
+/* ---------- 9. PIE ---------- */
+@media (max-width: 768px) {
+  body #gd-footer {
+    padding: 32px 0 calc(28px + env(safe-area-inset-bottom));
+  }
+
+  body .footer-icons {
+    gap: 18px !important;
+    flex-wrap: wrap;
+  }
+
+  body .footer-icons .icon-link {
+    padding: 10px;
+  }
+
+  body .footer-icons .icon-link img {
+    width: 34px;
+  }
+}
+
+/* ---------- 10. INTRO ---------- */
+@media (max-width: 768px) {
+  :root {
+    --gd-logo-width: min(220px, 62vw);
+  }
+}
+
+/* ---------- 11. FORMULARIOS ---------- */
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* evita el zoom automático en iOS */
+  }
+
+  input,
+  textarea,
+  select,
+  .gd-form button {
+    min-height: 48px;
+  }
+}
