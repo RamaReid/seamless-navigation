@@ -188,21 +188,30 @@ const Proyecto: React.FC = () => {
         <div
           className="gd-lightbox-inner"
           onClick={(event) => event.stopPropagation()}
-          onTouchStart={(event) => {
-            const touch = event.changedTouches[0];
-            touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+          onPointerDown={(event) => {
+            touchStartRef.current = { x: event.clientX, y: event.clientY };
           }}
-          onTouchEnd={(event) => {
+          onPointerUp={(event) => {
             const start = touchStartRef.current;
             if (!start) return;
             touchStartRef.current = null;
-            const touch = event.changedTouches[0];
-            const dx = touch.clientX - start.x;
-            const dy = touch.clientY - start.y;
+            const dx = event.clientX - start.x;
+            const dy = event.clientY - start.y;
             if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
               navigateLightbox(dx < 0 ? 'next' : 'prev');
             } else if (dy > 80 && Math.abs(dy) > Math.abs(dx)) {
               closeLightbox();
+            }
+          }}
+          onPointerCancel={() => {
+            touchStartRef.current = null;
+          }}
+          onWheel={(event) => {
+            if (Math.abs(event.deltaX) > 30 && Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+              if (wheelLockRef.current) return;
+              wheelLockRef.current = true;
+              window.setTimeout(() => { wheelLockRef.current = false; }, 350);
+              navigateLightbox(event.deltaX > 0 ? 'next' : 'prev');
             }
           }}
         >
