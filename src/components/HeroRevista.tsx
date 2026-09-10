@@ -145,7 +145,6 @@ const MobileHeroCarousel: React.FC<{ visible: boolean; className?: string }> = (
                   alt={slide.name}
                   loading={idx === 0 ? 'eager' : 'lazy'}
                   decoding="async"
-                  fetchPriority={idx === 0 ? 'high' : 'low'}
                   sizes="100vw"
                   draggable={false}
                 />
