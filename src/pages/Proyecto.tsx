@@ -17,6 +17,7 @@ const Proyecto: React.FC = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const wheelLockRef = useRef(false);
 
   useSceneCardReveal();
 
