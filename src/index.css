@@ -3,6 +3,7 @@
 @import './styles/gd-loader.css';
 @import './styles/gd-intro.css';
 @import './styles/gd-home.css';
+@import './styles/gd-mobile.css';
 
 @tailwind base;
 @tailwind components;
