@@ -36,7 +36,26 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
   // Close projects nav on route change
   useEffect(() => {
     setProjectsNavOpen(false);
+    setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  // Mobile menu: body scroll lock + cierre con Escape
+  useEffect(() => {
+    document.body.classList.toggle('nav-open', mobileMenuOpen);
+
+    if (!mobileMenuOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false);
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileMenuOpen]);
+
+  useEffect(() => () => {
+    document.body.classList.remove('nav-open');
+  }, []);
 
   // Clear hero timer helper
   const clearHeroTimer = useCallback(() => {
