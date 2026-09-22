@@ -22,7 +22,19 @@ export const HeroRevista: React.FC<HeroRevistaProps> = ({ visible = true, classN
   // Handle messages from the revista iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      const type = event?.data?.type;
+      const iframe = document.getElementById('hero-iframe') as HTMLIFrameElement | null;
+      if (
+        !iframe ||
+        event.origin !== window.location.origin ||
+        event.source !== iframe.contentWindow
+      ) {
+        return;
+      }
+
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+
+      const type = data.type;
       if (typeof type !== 'string') return;
       
       // Re-dispatch to parent for header-on-scroll behavior

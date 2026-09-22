@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         registerUserInteraction(e);
         window.parent.postMessage(
             { type: "HERO_INTERACTION" },
-            "*"
+            window.location.origin
         );
     });
 
@@ -174,9 +174,60 @@ document.addEventListener('DOMContentLoaded', function () {
 
         window.parent.postMessage(
             { type: "HERO_SCROLL_INTENT" },
-            "*"
+            window.location.origin
         );  
     };
+
+    const postVerticalScroll = (deltaY) => {
+        if (!Number.isFinite(deltaY) || deltaY === 0) return;
+
+        const boundedDelta = Math.max(-1200, Math.min(1200, deltaY));
+        window.parent.postMessage(
+            { type: "HERO_VERTICAL_SCROLL", deltaY: boundedDelta },
+            window.location.origin
+        );
+    };
+
+    // A vertical gesture over the magazine belongs to the parent document.
+    // Capture it before PageFlip so the wheel does not turn pages as well.
+    const handleVerticalWheel = (event) => {
+        if (event.isTrusted === false || event.shiftKey) return;
+        if (!Number.isFinite(event.deltaY) || Math.abs(event.deltaY) < Math.abs(event.deltaX || 0)) return;
+
+        let deltaY = event.deltaY;
+        if (event.deltaMode === 1) deltaY *= 16;
+        if (event.deltaMode === 2) deltaY *= window.innerHeight;
+
+        registerUserInteraction(event);
+        notifyScrollIntent();
+        postVerticalScroll(deltaY);
+        event.preventDefault();
+        event.stopPropagation();
+    };
+
+    const handleVerticalKey = (event) => {
+        if (event.isTrusted === false) return;
+
+        const pageStep = Math.max(240, Math.round(window.innerHeight * 0.85));
+        let deltaY = 0;
+
+        if (event.key === "ArrowDown") deltaY = 80;
+        if (event.key === "ArrowUp") deltaY = -80;
+        if (event.key === "PageDown") deltaY = pageStep;
+        if (event.key === "PageUp") deltaY = -pageStep;
+        if (event.key === " ") deltaY = event.shiftKey ? -pageStep : pageStep;
+
+        if (deltaY === 0) return;
+
+        registerUserInteraction(event);
+        notifyScrollIntent();
+        postVerticalScroll(deltaY);
+        event.preventDefault();
+        event.stopPropagation();
+    };
+
+    document.addEventListener("wheel", handleVerticalWheel, { passive: false, capture: true });
+    document.addEventListener("keydown", handleVerticalKey, { capture: true });
 
     // Rueda de mouse
     document.addEventListener("wheel", notifyScrollIntent, { passive: true });
@@ -356,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function () {
         registerUserInteraction();
         window.parent.postMessage(
             { type: "HERO_PAGE_FLIP" },
-            "*"
+            window.location.origin
         );
     });
 
@@ -395,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (stableFrameCount >= 2) {
             revistaReadySent = true;
-            window.parent.postMessage({ type: "REVISTA_READY" }, "*");
+            window.parent.postMessage({ type: "REVISTA_READY" }, window.location.origin);
         } else {
             requestAnimationFrame(checkRevistaStability);
         }

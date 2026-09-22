@@ -27,6 +27,19 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
   const previousPath = useRef<string | null>(null);
   const scrollCueTimerRef = useRef<number | null>(null);
 
+  const scrollFromHero = useCallback((deltaY: number) => {
+    if (!Number.isFinite(deltaY)) return;
+
+    const boundedDelta = Math.max(-1200, Math.min(1200, deltaY));
+    if (boundedDelta === 0) return;
+
+    window.scrollBy({
+      top: boundedDelta,
+      left: 0,
+      behavior: 'auto',
+    });
+  }, []);
+
   const scrollToLocation = useCallback(() => {
     const hash = location.hash.replace(/^#/, '');
 
@@ -169,9 +182,26 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
     };
 
     const handleHeroMessage = (event: MessageEvent) => {
-      const type = event?.data?.type;
+      const heroIframe = document.getElementById('hero-iframe') as HTMLIFrameElement | null;
+      if (
+        !heroIframe ||
+        event.origin !== window.location.origin ||
+        event.source !== heroIframe.contentWindow
+      ) {
+        return;
+      }
+
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+
+      const type = data.type;
       if (type === 'HERO_INTERACTION' || type === 'HERO_PAGE_FLIP' || type === 'HERO_SCROLL_INTENT') {
         registerInteraction();
+      }
+
+      if (type === 'HERO_VERTICAL_SCROLL') {
+        registerInteraction();
+        scrollFromHero(data.deltaY);
       }
     };
 
@@ -204,7 +234,7 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
       window.removeEventListener('heroInteraction', handleHeroInteraction);
       window.removeEventListener('message', handleHeroMessage);
     };
-  }, [isTransitioning, location.pathname]);
+  }, [isTransitioning, location.pathname, scrollFromHero]);
 
   return (
     <>

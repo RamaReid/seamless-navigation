@@ -218,6 +218,7 @@ body.nav-open {
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
     cursor: grab;
     outline: none;
   }
