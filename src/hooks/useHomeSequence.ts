@@ -67,7 +67,6 @@ export function useHomeSequence(options: UseHomeSequenceOptions = {}) {
   const unlockScroll = useCallback(() => {
     if (state.scrollUnlocked) return;
     setState(prev => ({ ...prev, scrollUnlocked: true }));
-    document.body.classList.remove('sequence-only');
   }, [state.scrollUnlocked]);
 
   // Escuchar mensajes del iframe de revista

@@ -13,11 +13,6 @@ body {
   margin: 0; 
 }
 
-body.sequence-only { 
-  height: 100%; 
-  overflow: hidden; 
-}
-
 #app-layer { 
   position: relative; 
   z-index: 30;

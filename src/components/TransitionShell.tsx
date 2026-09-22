@@ -63,11 +63,26 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
     };
   }, []);
 
+  // The intro is the only sequence that owns the global page lock. Once the
+  // Loader finishes, the document returns to native scrolling. Keeping this
+  // lifecycle here also guarantees cleanup if a transition is interrupted.
+  useEffect(() => {
+    if (isTransitioning) {
+      document.body.classList.add('sequence-only');
+    } else {
+      document.body.classList.remove('sequence-only');
+    }
+
+    return () => {
+      document.body.classList.remove('sequence-only');
+    };
+  }, [isTransitioning]);
+
   // Initial mount - determine if cold start or nav skip
   useEffect(() => {
     if (!hasInitialized.current) {
       hasInitialized.current = true;
-      document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur', 'sequence-only');
+      document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur');
       setShowScrollCue(false);
       previousPath.current = location.pathname;
       // Loader is already shown (isTransitioning = true)
@@ -80,7 +95,7 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
       if (!location.hash) {
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
       }
-      document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur', 'sequence-only');
+      document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur');
       setShowScrollCue(false);
 
       setIsNavSkip(true);

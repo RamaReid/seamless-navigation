@@ -342,7 +342,6 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
         setTimeout(() => {
           setPhase('complete');
           setVisible(false);
-          document.body.classList.remove('sequence-only');
           onComplete?.();
         }, POST_REVEAL_MAX_DELAY);
       }
