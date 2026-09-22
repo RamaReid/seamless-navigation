@@ -86,15 +86,7 @@
   }
   
   html {
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  
-  html::-webkit-scrollbar,
-  body::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+    scroll-behavior: auto;
   }
   
   body {

@@ -7,7 +7,7 @@
  * - Al entrar al destino: scrollTo(0,0), limpiar clases, recalcular header
  */
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Loader } from '@/components/Loader';
 
@@ -27,6 +27,42 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
   const previousPath = useRef<string | null>(null);
   const scrollCueTimerRef = useRef<number | null>(null);
 
+  const scrollToLocation = useCallback(() => {
+    const hash = location.hash.replace(/^#/, '');
+
+    if (!hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      return;
+    }
+
+    let targetId = hash;
+    try {
+      targetId = decodeURIComponent(hash);
+    } catch {
+      // Keep the raw hash when a malformed URL encoding is provided.
+    }
+
+    const target = document.getElementById(targetId);
+
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [location.hash]);
+
+  // Let the application own scroll restoration so route changes and history
+  // navigation follow the same policy on every browser.
+  useEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
   // Initial mount - determine if cold start or nav skip
   useEffect(() => {
     if (!hasInitialized.current) {
@@ -40,8 +76,10 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
 
     // Subsequent navigation (always transition on route change)
     if (previousPath.current !== location.pathname) {
-      // Reset for transition
-      window.scrollTo(0, 0);
+      // Reset for transition. Hash destinations are handled after mounting.
+      if (!location.hash) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      }
       document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur', 'sequence-only');
       setShowScrollCue(false);
 
@@ -49,13 +87,31 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
       setIsTransitioning(true);
       previousPath.current = location.pathname;
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.hash]);
+
+  // Run after the destination has mounted. Hash destinations scroll smoothly;
+  // every route without a hash starts at the top, including back/forward.
+  useLayoutEffect(() => {
+    let firstFrame = 0;
+    let secondFrame = 0;
+
+    firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(scrollToLocation);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+    };
+  }, [location.pathname, location.hash, scrollToLocation]);
 
   const handleLoaderComplete = useCallback(() => {
     setIsTransitioning(false);
     
-    // Ensure scroll is at top
-    window.scrollTo(0, 0);
+    // Keep hash destinations intact after the loader completes.
+    if (!location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
     
     // Dispatch event for pages to react
     window.dispatchEvent(new CustomEvent('transitionComplete', { 

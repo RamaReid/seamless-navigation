@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { projects } from '@/data/projects';
 
@@ -39,6 +39,7 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
   onClose,
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   
   const isProyectoPage = location.pathname.startsWith('/proyectos/');
@@ -56,10 +57,16 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
 
   const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    const targetId = href.replace(/^#/, '');
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    onClose?.();
+    navigate({
+      pathname: location.pathname,
+      search: location.search,
+      hash: href,
+    });
   };
 
   const formatChapterLabel = (label: string) => label.toUpperCase();
