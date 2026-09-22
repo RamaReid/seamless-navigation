@@ -35,6 +35,10 @@ const Proyecto: React.FC = () => {
     document.body.classList.remove('lightbox-open');
   }, [id, navigate, page, project]);
 
+  useEffect(() => () => {
+    document.body.classList.remove('lightbox-open');
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!lightboxOpen || !lightboxImages.length) return;

@@ -20,6 +20,11 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
   const heroTimerRef = useRef<number | null>(null);
   const mobileMenuTriggerRef = useRef<HTMLButtonElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const currentRouteKey = `${location.pathname}${location.search}${location.hash}`;
+  const currentRouteKeyRef = useRef(currentRouteKey);
+  const mobileMenuOpenedAtRef = useRef<string | null>(null);
+  const mobileMenuScrollPositionRef = useRef(0);
+  currentRouteKeyRef.current = currentRouteKey;
 
   // Determinar contexto de ruta
   const isMomentosPage = location.pathname === '/momentos';
@@ -44,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
   useEffect(() => {
     setProjectsNavOpen(false);
     closeMobileMenu();
-  }, [closeMobileMenu, location.pathname]);
+  }, [closeMobileMenu, location.pathname, location.search, location.hash]);
 
   // Mobile menu: body scroll lock, focus trap, Escape and focus restoration.
   useEffect(() => {
@@ -56,6 +61,8 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
     const menu = mobileMenuRef.current;
     const trigger = mobileMenuTriggerRef.current;
     const scrollPosition = window.scrollY || 0;
+    mobileMenuOpenedAtRef.current = currentRouteKeyRef.current;
+    mobileMenuScrollPositionRef.current = scrollPosition;
 
     document.body.classList.add('nav-open');
 
@@ -104,7 +111,16 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
       window.cancelAnimationFrame(focusFirst);
       window.removeEventListener('keydown', onKeyDown);
       document.body.classList.remove('nav-open');
-      window.scrollTo({ top: scrollPosition, left: 0, behavior: 'auto' });
+
+      if (mobileMenuOpenedAtRef.current === currentRouteKeyRef.current) {
+        window.scrollTo({
+          top: mobileMenuScrollPositionRef.current,
+          left: 0,
+          behavior: 'auto',
+        });
+      }
+
+      mobileMenuOpenedAtRef.current = null;
 
       if (trigger && document.contains(trigger)) {
         window.requestAnimationFrame(() => trigger.focus());
