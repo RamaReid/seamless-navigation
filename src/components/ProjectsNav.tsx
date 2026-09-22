@@ -76,6 +76,7 @@ export const ProjectsNav: React.FC<ProjectsNavProps> = ({
 
   return (
     <nav 
+      id="projects-nav"
       className={cn(
         "projects-nav",
         showProjects && "is-projects"

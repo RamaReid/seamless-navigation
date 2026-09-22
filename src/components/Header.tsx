@@ -18,6 +18,8 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [projectsNavOpen, setProjectsNavOpen] = useState(false);
   const heroTimerRef = useRef<number | null>(null);
+  const mobileMenuTriggerRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   // Determinar contexto de ruta
   const isMomentosPage = location.pathname === '/momentos';
@@ -33,25 +35,82 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
     { path: '/estudio', label: 'Estudio', isToggle: false },
   ];
 
-  // Close projects nav on route change
+  const closeMobileMenu = useCallback(() => {
+    setMobileMenuOpen(false);
+  }, []);
+
+  // Close contextual navigation on route change and always close the mobile
+  // panel when a route link is selected, including the current route.
   useEffect(() => {
     setProjectsNavOpen(false);
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
+    closeMobileMenu();
+  }, [closeMobileMenu, location.pathname]);
 
-  // Mobile menu: body scroll lock + cierre con Escape
+  // Mobile menu: body scroll lock, focus trap, Escape and focus restoration.
   useEffect(() => {
-    document.body.classList.toggle('nav-open', mobileMenuOpen);
+    if (!mobileMenuOpen) {
+      document.body.classList.remove('nav-open');
+      return;
+    }
 
-    if (!mobileMenuOpen) return;
+    const menu = mobileMenuRef.current;
+    const trigger = mobileMenuTriggerRef.current;
+    const scrollPosition = window.scrollY || 0;
+
+    document.body.classList.add('nav-open');
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMobileMenuOpen(false);
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMobileMenu();
+        return;
+      }
+
+      if (event.key !== 'Tab' || !menu) return;
+
+      const focusable = Array.from(
+        menu.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+
+      if (!focusable.length) {
+        event.preventDefault();
+        menu.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
 
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [mobileMenuOpen]);
+    const focusFirst = window.requestAnimationFrame(() => {
+      const firstFocusable = menu?.querySelector<HTMLElement>(
+        'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      );
+      (firstFocusable || menu)?.focus();
+    });
+
+    return () => {
+      window.cancelAnimationFrame(focusFirst);
+      window.removeEventListener('keydown', onKeyDown);
+      document.body.classList.remove('nav-open');
+      window.scrollTo({ top: scrollPosition, left: 0, behavior: 'auto' });
+
+      if (trigger && document.contains(trigger)) {
+        window.requestAnimationFrame(() => trigger.focus());
+      }
+    };
+  }, [closeMobileMenu, mobileMenuOpen]);
 
   useEffect(() => () => {
     document.body.classList.remove('nav-open');
@@ -157,6 +216,7 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
               aria-label="Ir al inicio"
               onClick={() => {
                 setProjectsNavOpen(false);
+                closeMobileMenu();
               }}
             >
               <GDLogo className="brand-logo" />
@@ -201,11 +261,13 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
 
           {/* Mobile Menu Toggle */}
           <button 
+            ref={mobileMenuTriggerRef}
+            type="button"
             className="nav-toggle"
-            aria-label="Abrir menú"
+            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-menu"
-            onClick={() => setMobileMenuOpen(true)}
+            onClick={() => setMobileMenuOpen((open) => !open)}
           >
             <span />
             <span />
@@ -217,17 +279,20 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
       {/* Panel de menú a pantalla completa (celular) */}
       <div
         id="mobile-menu"
+        ref={mobileMenuRef}
         className={cn("mobile-menu", mobileMenuOpen && "is-open")}
         role="dialog"
         aria-modal="true"
         aria-label="Menú"
         aria-hidden={!mobileMenuOpen}
+        tabIndex={-1}
       >
         <div className="mobile-menu-top">
           <button
+            type="button"
             className="mobile-menu-close"
             aria-label="Cerrar menú"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={closeMobileMenu}
           >
             ×
           </button>
@@ -235,16 +300,16 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
 
         <ul className="mobile-menu-list">
           <li>
-            <Link to="/" className={cn(location.pathname === '/' && 'is-active')}>Inicio</Link>
+            <Link to="/" className={cn(location.pathname === '/' && 'is-active')} onClick={closeMobileMenu}>Inicio</Link>
           </li>
           <li>
-            <Link to="/momentos" className={cn(isMomentosPage && 'is-active')}>Momentos</Link>
+            <Link to="/momentos" className={cn(isMomentosPage && 'is-active')} onClick={closeMobileMenu}>Momentos</Link>
           </li>
           <li>
-            <Link to="/estudio" className={cn(location.pathname === '/estudio' && 'is-active')}>Estudio</Link>
+            <Link to="/estudio" className={cn(location.pathname === '/estudio' && 'is-active')} onClick={closeMobileMenu}>Estudio</Link>
           </li>
           <li>
-            <Link to="/estudio#contacto">Contacto</Link>
+            <Link to="/estudio#contacto" onClick={closeMobileMenu}>Contacto</Link>
           </li>
         </ul>
 
@@ -255,6 +320,7 @@ export const Header: React.FC<HeaderProps> = ({ visible = true }) => {
               <Link
                 to={`/proyectos/${project.id}`}
                 className={cn(location.pathname === `/proyectos/${project.id}` && 'is-active')}
+                onClick={closeMobileMenu}
               >
                 {project.name}
               </Link>
