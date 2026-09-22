@@ -31,6 +31,7 @@ vi.mock('@/components/Loader', () => ({
 
 const originalInnerWidth = window.innerWidth;
 const originalScrollTo = window.scrollTo;
+const originalScrollBy = window.scrollBy;
 const originalScrollIntoView = Element.prototype.scrollIntoView;
 const originalElementScrollTo = HTMLElement.prototype.scrollTo;
 
@@ -73,6 +74,17 @@ const renderProject = () => render(
   </MemoryRouter>,
 );
 
+const renderHomeWithHero = () => render(
+  <MemoryRouter initialEntries={['/']}>
+    <TransitionShell>
+      <HeroRevista />
+      <Routes>
+        <Route path="*" element={<RouteContent />} />
+      </Routes>
+    </TransitionShell>
+  </MemoryRouter>,
+);
+
 beforeEach(() => {
   vi.clearAllMocks();
   vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
@@ -91,6 +103,11 @@ beforeEach(() => {
   );
 
   Object.defineProperty(window, 'scrollTo', {
+    configurable: true,
+    writable: true,
+    value: vi.fn(),
+  });
+  Object.defineProperty(window, 'scrollBy', {
     configurable: true,
     writable: true,
     value: vi.fn(),
@@ -126,6 +143,11 @@ afterEach(() => {
     writable: true,
     value: originalScrollTo,
   });
+  Object.defineProperty(window, 'scrollBy', {
+    configurable: true,
+    writable: true,
+    value: originalScrollBy,
+  });
   Object.defineProperty(Element.prototype, 'scrollIntoView', {
     configurable: true,
     writable: true,
@@ -146,6 +168,26 @@ afterEach(() => {
 });
 
 describe('route scroll behavior', () => {
+  it('locks only during the transition and releases native scrolling on completion', () => {
+    renderTransitionShell(['/momentos']);
+
+    expect(document.body).toHaveClass('sequence-only');
+
+    fireEvent.click(screen.getByTestId('mock-loader'));
+
+    expect(document.body).not.toHaveClass('sequence-only');
+  });
+
+  it('cleans the transition lock when the shell unmounts', () => {
+    const view = renderTransitionShell(['/estudio']);
+
+    expect(document.body).toHaveClass('sequence-only');
+
+    view.unmount();
+
+    expect(document.body).not.toHaveClass('sequence-only');
+  });
+
   it('starts a route without a hash at the top', () => {
     renderTransitionShell(['/momentos']);
 
@@ -235,6 +277,27 @@ describe('mobile navigation', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
     expect(document.body).not.toHaveClass('nav-open');
   });
+
+  it('does not restore the previous scroll position after changing route', async () => {
+    render(
+      <MemoryRouter initialEntries={['/', '/estudio']} initialIndex={0}>
+        <Header />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Abrir/ }));
+    vi.mocked(window.scrollTo).mockClear();
+
+    const menu = screen.getByRole('dialog', { name: /Men/ });
+    fireEvent.click(within(menu).getByRole('link', { name: 'Estudio' }));
+
+    await waitFor(() => expect(screen.getByRole('button', { name: /Abrir/ })).toBeTruthy());
+    expect(window.scrollTo).not.toHaveBeenCalledWith({
+      top: 120,
+      left: 0,
+      behavior: 'auto',
+    });
+  });
 });
 
 describe('project lightbox interaction', () => {
@@ -267,6 +330,72 @@ describe('project lightbox interaction', () => {
 
     expect(screen.getByRole('dialog', { name: 'Galeria de imagenes' }))
       .toHaveAttribute('aria-hidden', 'false');
+  });
+
+  it('cleans the lightbox lock when leaving a project', () => {
+    const view = renderProject();
+    const card = document.querySelector('.scene-card') as HTMLElement;
+
+    fireEvent.keyDown(card, { key: ' ' });
+    expect(document.body).toHaveClass('lightbox-open');
+
+    view.unmount();
+
+    expect(document.body).not.toHaveClass('lightbox-open');
+  });
+});
+
+describe('magazine scroll bridge', () => {
+  it('accepts bounded vertical scroll only from the same-origin hero iframe', async () => {
+    renderHomeWithHero();
+    fireEvent.click(screen.getByTestId('mock-loader'));
+
+    const iframe = screen.getByTitle('Revista GD Arquitectura') as HTMLIFrameElement;
+    const trustedMessage = new MessageEvent('message', {
+      data: { type: 'HERO_VERTICAL_SCROLL', deltaY: 2400 },
+      origin: window.location.origin,
+    });
+    Object.defineProperty(trustedMessage, 'source', { value: iframe.contentWindow });
+    window.dispatchEvent(trustedMessage);
+
+    expect(window.scrollBy).toHaveBeenCalledWith({
+      top: 1200,
+      left: 0,
+      behavior: 'auto',
+    });
+
+    vi.mocked(window.scrollBy).mockClear();
+
+    const untrustedMessage = new MessageEvent('message', {
+      data: { type: 'HERO_VERTICAL_SCROLL', deltaY: 240 },
+      origin: 'https://example.invalid',
+    });
+    Object.defineProperty(untrustedMessage, 'source', { value: iframe.contentWindow });
+    window.dispatchEvent(untrustedMessage);
+
+    expect(window.scrollBy).not.toHaveBeenCalled();
+  });
+
+  it('ignores lateral and unknown hero messages', () => {
+    renderHomeWithHero();
+    fireEvent.click(screen.getByTestId('mock-loader'));
+
+    const iframe = screen.getByTitle('Revista GD Arquitectura') as HTMLIFrameElement;
+    const lateralMessage = new MessageEvent('message', {
+      data: { type: 'HERO_PAGE_FLIP', deltaY: 240 },
+      origin: window.location.origin,
+    });
+    Object.defineProperty(lateralMessage, 'source', { value: iframe.contentWindow });
+    window.dispatchEvent(lateralMessage);
+
+    const unknownMessage = new MessageEvent('message', {
+      data: { type: 'UNKNOWN', deltaY: 240 },
+      origin: window.location.origin,
+    });
+    Object.defineProperty(unknownMessage, 'source', { value: iframe.contentWindow });
+    window.dispatchEvent(unknownMessage);
+
+    expect(window.scrollBy).not.toHaveBeenCalled();
   });
 });
 
