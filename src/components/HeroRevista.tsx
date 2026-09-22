@@ -109,6 +109,7 @@ const MobileHeroCarousel: React.FC<{ visible: boolean; className?: string }> = (
   const [active, setActive] = useState(0);
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef<{ startX: number; startScroll: number; moved: boolean } | null>(null);
+  const suppressClickRef = useRef(false);
 
   const handleScroll = useCallback(() => {
     const track = trackRef.current;
@@ -152,10 +153,17 @@ const MobileHeroCarousel: React.FC<{ visible: boolean; className?: string }> = (
     track.releasePointerCapture?.(event.pointerId);
     const dx = event.clientX - drag.startX;
     const current = Math.round(drag.startScroll / Math.max(track.clientWidth, 1));
+    const moved = drag.moved;
     if (Math.abs(dx) > DRAG_THRESHOLD) {
       goTo(dx < 0 ? current + 1 : current - 1);
     } else {
       goTo(current);
+    }
+    if (moved) {
+      suppressClickRef.current = true;
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 0);
     }
   }, [goTo]);
 
@@ -203,7 +211,10 @@ const MobileHeroCarousel: React.FC<{ visible: boolean; className?: string }> = (
                 aria-label={`Ver ${slide.name}`}
                 draggable={false}
                 onClick={(event) => {
-                  if (dragRef.current?.moved || dragging) event.preventDefault();
+                  if (suppressClickRef.current || dragRef.current?.moved || dragging) {
+                    event.preventDefault();
+                    suppressClickRef.current = false;
+                  }
                 }}
               >
                 <img

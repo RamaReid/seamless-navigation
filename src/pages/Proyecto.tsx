@@ -7,6 +7,7 @@ import { getProjectPageById } from '@/data/projectPages';
 import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
 import type { ProjectPageCard, ProjectPageScene } from '@/data/projectPages';
 const fondoCasaM = '/img/FondoCasaM.webp';
+const FOCUSABLE_SELECTOR = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 const Proyecto: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +17,8 @@ const Proyecto: React.FC = () => {
   const lightboxImages = page?.lightboxImages ?? [];
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const lightboxRef = useRef<HTMLDivElement>(null);
+  const lightboxTriggerRef = useRef<HTMLElement | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const wheelLockRef = useRef(false);
 
@@ -51,28 +54,75 @@ const Proyecto: React.FC = () => {
           current === lightboxImages.length - 1 ? 0 : current + 1,
         );
       }
+
+      if (event.key === 'Tab') {
+        const dialog = lightboxRef.current;
+        if (!dialog) return;
+
+        const focusable = Array.from(
+          dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+        );
+
+        if (!focusable.length) {
+          event.preventDefault();
+          dialog.focus();
+          return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxImages.length, lightboxOpen]);
 
-  const openLightbox = (index: number) => {
+  useEffect(() => {
+    if (!lightboxOpen) return;
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      const dialog = lightboxRef.current;
+      const firstFocusable = dialog?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+      (firstFocusable || dialog)?.focus();
+    });
+
+    return () => window.cancelAnimationFrame(focusFrame);
+  }, [lightboxOpen]);
+
+  const openLightbox = (index: number, trigger?: HTMLElement) => {
     if (!lightboxImages[index]) return;
 
+    lightboxTriggerRef.current = trigger ?? (
+      document.activeElement instanceof HTMLElement ? document.activeElement : null
+    );
     setLightboxIndex(index);
     setLightboxOpen(true);
     document.body.classList.add('lightbox-open');
   };
 
-  const openLightboxBySrc = (src: string) => {
+  const openLightboxBySrc = (src: string, trigger?: HTMLElement) => {
     const index = lightboxImages.findIndex((image) => image.src === src);
-    openLightbox(index === -1 ? 0 : index);
+    openLightbox(index === -1 ? 0 : index, trigger);
   };
 
   const closeLightbox = () => {
     setLightboxOpen(false);
     document.body.classList.remove('lightbox-open');
+
+    const trigger = lightboxTriggerRef.current;
+    lightboxTriggerRef.current = null;
+    if (trigger && document.contains(trigger)) {
+      window.requestAnimationFrame(() => trigger.focus());
+    }
   };
 
   const navigateLightbox = (direction: 'prev' | 'next') => {
@@ -91,10 +141,14 @@ const Proyecto: React.FC = () => {
     <div
       key={card.src}
       className={`scene-card ${card.variant} cursor-pointer is-visible`}
-      onClick={() => openLightboxBySrc(card.src)}
+      onClick={(event) => openLightboxBySrc(card.src, event.currentTarget)}
       role="button"
       tabIndex={0}
-      onKeyDown={(event) => event.key === 'Enter' && openLightboxBySrc(card.src)}
+      onKeyDown={(event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        openLightboxBySrc(card.src, event.currentTarget);
+      }}
       aria-label={card.alt}
     >
       <img src={card.src} alt={card.alt} loading="lazy" draggable={false} />
@@ -165,8 +219,14 @@ const Proyecto: React.FC = () => {
                 objectFit: page.hero.backgroundSize === 'cover' ? 'cover' : 'contain',
                 objectPosition: page.hero.backgroundPosition,
               }}
-              onClick={() => openLightbox(0)}
+              onClick={(event) => openLightbox(0, event.currentTarget)}
+              onKeyDown={(event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                openLightbox(0, event.currentTarget);
+              }}
               role="button"
+              tabIndex={0}
               aria-label="Ver galeria"
               draggable={false}
             />
@@ -181,10 +241,13 @@ const Proyecto: React.FC = () => {
 
       <div
         className={`gd-lightbox ${lightboxOpen ? 'is-open' : ''}`}
+        ref={lightboxRef}
         onClick={closeLightbox}
         role="dialog"
         aria-modal="true"
         aria-label="Galeria de imagenes"
+        aria-hidden={!lightboxOpen}
+        tabIndex={-1}
       >
         <div
           className="gd-lightbox-inner"
