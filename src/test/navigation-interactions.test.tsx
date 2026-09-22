@@ -176,6 +176,23 @@ describe('route scroll behavior', () => {
     fireEvent.click(screen.getByTestId('mock-loader'));
 
     expect(document.body).not.toHaveClass('sequence-only');
+
+    fireEvent.scroll(window);
+    expect(document.body).not.toHaveClass('sequence-only');
+  });
+
+  it('re-locks only for a new route transition and releases again after completion', async () => {
+    renderTransitionShell(['/momentos']);
+
+    fireEvent.click(screen.getByTestId('mock-loader'));
+    expect(document.body).not.toHaveClass('sequence-only');
+
+    fireEvent.click(screen.getByRole('link', { name: 'Ir a Estudio' }));
+    await waitFor(() => expect(screen.getByTestId('current-route')).toHaveTextContent('/estudio'));
+    expect(document.body).toHaveClass('sequence-only');
+
+    fireEvent.click(screen.getByTestId('mock-loader'));
+    expect(document.body).not.toHaveClass('sequence-only');
   });
 
   it('cleans the transition lock when the shell unmounts', () => {

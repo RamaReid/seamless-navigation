@@ -369,11 +369,11 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
   const getPhaseClass = () => {
     switch (phase) {
       case 'lift':
-        return 'animate-[lift_2s_cubic-bezier(0.22,0.6,0.2,1)_forwards]';
+        return 'lift-logo';
       case 'drop':
-        return 'animate-[drop_0.55s_cubic-bezier(0,0,0.2,1)_forwards]';
+        return 'drop-logo';
       case 'bounce':
-        return 'animate-[bounce_0.4s_cubic-bezier(0.25,0.5,0.5,1)_forwards]';
+        return 'bounce-logo';
       default:
         return '';
     }
@@ -434,7 +434,7 @@ export const Loader: React.FC<LoaderProps> = ({ onComplete, isNavSkip = false })
             ref={svgRef}
             viewBox="0 0 210 170" 
             className={cn(
-              "w-full h-auto block",
+              "loader-svg w-full h-auto block",
               getPhaseClass()
             )}
             style={{ 
