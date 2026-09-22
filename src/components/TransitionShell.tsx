@@ -118,7 +118,7 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
       detail: { path: location.pathname } 
     }));
     
-  }, [location.pathname]);
+  }, [location.hash, location.pathname]);
 
   // Scroll cue global para todas las rutas: solo visible cuando no hay interaccion
   useEffect(() => {
