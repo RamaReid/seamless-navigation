@@ -20,6 +20,7 @@ describe('native scroll CSS contract', () => {
     expect(mobileCss).not.toMatch(
       /body\.nav-open\s*\{[^}]*overflow\s*:\s*hidden/s,
     );
+    expect(mobileCss).not.toMatch(/overscroll-behavior-y:\s*none/s);
   });
 
   it('allows vertical overflow on the mobile carousel track', () => {
