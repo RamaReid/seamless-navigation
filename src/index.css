@@ -98,10 +98,6 @@
     padding: 0;
   }
   
-  body.sequence-only {
-    height: 100vh;
-    overflow: hidden;
-  }
 }
 
 /* ======================================================
@@ -1705,10 +1701,6 @@ body.project-index #gd-footer .icon-link:nth-child(3) svg {
    LIGHTBOX
 ====================================================== */
 
-body.lightbox-open {
-  overflow: hidden;
-}
-
 .gd-lightbox {
   position: fixed;
   inset: 0;
@@ -2186,10 +2178,6 @@ body.header-visible .projects-nav {
 
 .gd-lightbox-next {
   right: -70px;
-}
-
-body.lightbox-open {
-  overflow: hidden;
 }
 
 /* Responsive lightbox */
