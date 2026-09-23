@@ -245,7 +245,7 @@ describe('route scroll behavior', () => {
 });
 
 describe('mobile navigation', () => {
-  it('locks scroll, traps focus, closes with Escape and restores the trigger', async () => {
+  it('keeps document scrolling, traps focus, closes with Escape and restores the trigger', async () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <Header />
@@ -359,6 +359,33 @@ describe('project lightbox interaction', () => {
     view.unmount();
 
     expect(document.body).not.toHaveClass('lightbox-open');
+  });
+});
+
+describe('mobile carousel scroll behavior', () => {
+  it('keeps horizontal scrolling while allowing vertical wheel propagation', async () => {
+    window.innerWidth = 480;
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <HeroRevista />
+      </MemoryRouter>,
+    );
+
+    const track = await waitFor(() => {
+      const element = document.querySelector('.gd-carousel-track');
+      expect(element).toBeTruthy();
+      return element as HTMLElement;
+    });
+
+    const verticalWheel = new WheelEvent('wheel', {
+      bubbles: true,
+      cancelable: true,
+      deltaY: 120,
+    });
+    track.dispatchEvent(verticalWheel);
+
+    expect(verticalWheel.defaultPrevented).toBe(false);
   });
 });
 
