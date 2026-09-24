@@ -362,8 +362,8 @@ describe('project lightbox interaction', () => {
   });
 });
 
-describe('mobile carousel scroll behavior', () => {
-  it('keeps horizontal scrolling while allowing vertical wheel propagation', async () => {
+describe('mobile OMMI stage', () => {
+  it('keeps the first mobile viewport focused and exposes a tactile project rack', async () => {
     window.innerWidth = 480;
 
     render(
@@ -372,20 +372,24 @@ describe('mobile carousel scroll behavior', () => {
       </MemoryRouter>,
     );
 
-    const track = await waitFor(() => {
-      const element = document.querySelector('.gd-carousel-track');
-      expect(element).toBeTruthy();
-      return element as HTMLElement;
-    });
+    await waitFor(() => expect(document.querySelector('.gd-mobile-ommi-stage')).toBeTruthy());
+    expect(document.querySelector('.gd-carousel-track')).toBeNull();
+    expect(screen.getByRole('link', { name: 'Ver MaGa Hause' })).toHaveAttribute(
+      'href',
+      '/proyectos/magahause',
+    );
+    expect(screen.getByRole('heading', { name: 'El escenario de tu vida' })).toBeTruthy();
+    expect(screen.queryByText('MaGa Hause', { selector: 'h1, h2, h3, p, span' })).toBeNull();
+    expect(screen.getByRole('tablist', { name: 'Seleccionar proyecto destacado' })).toBeTruthy();
+    expect(screen.getAllByRole('tab', { name: 'Mostrar MaGa Hause' }).some(
+      (tab) => tab.getAttribute('aria-selected') === 'true',
+    )).toBe(true);
 
-    const verticalWheel = new WheelEvent('wheel', {
-      bubbles: true,
-      cancelable: true,
-      deltaY: 120,
-    });
-    track.dispatchEvent(verticalWheel);
-
-    expect(verticalWheel.defaultPrevented).toBe(false);
+    fireEvent.click(screen.getByRole('tab', { name: 'Mostrar Gade Hause' }));
+    expect(screen.getByRole('link', { name: 'Ver Gade Hause' })).toHaveAttribute(
+      'href',
+      '/proyectos/gadehause',
+    );
   });
 });
 
@@ -443,8 +447,8 @@ describe('magazine scroll bridge', () => {
   });
 });
 
-describe('mobile hero carousel', () => {
-  it('uses the mobile carousel at 768px and ignores clicks after dragging', async () => {
+describe('mobile hero stage', () => {
+  it('uses the OMMI-style stage at 768px and keeps project navigation explicit', async () => {
     window.innerWidth = 768;
 
     render(
@@ -454,13 +458,15 @@ describe('mobile hero carousel', () => {
       </MemoryRouter>,
     );
 
-    const track = await screen.findByRole('group', { name: 'Proyectos destacados' });
-    const firstLink = within(track).getByRole('link', { name: 'Ver MaGa Hause' });
-
-    fireEvent.pointerDown(track, { pointerType: 'mouse', pointerId: 1, clientX: 10 });
-    fireEvent.pointerMove(track, { pointerType: 'mouse', pointerId: 1, clientX: 100 });
-    fireEvent.pointerUp(track, { pointerType: 'mouse', pointerId: 1, clientX: 100 });
-    fireEvent.click(firstLink);
+    await screen.findByRole('link', { name: 'Ver MaGa Hause' });
+    expect(screen.getAllByRole('tab', { name: 'Mostrar MaGa Hause' }).some(
+      (tab) => tab.getAttribute('aria-selected') === 'true',
+    )).toBe(true);
+    expect(screen.getAllByRole('tab', { name: 'Mostrar Vida Hause' }).length).toBeGreaterThan(0);
+    expect(screen.getByRole('link', { name: 'Ver MaGa Hause' })).toHaveAttribute(
+      'href',
+      '/proyectos/magahause',
+    );
 
     expect(screen.getByTestId('route-probe')).toHaveTextContent('/');
   });

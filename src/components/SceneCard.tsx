@@ -7,6 +7,8 @@ interface SceneCardProps {
   image: string;
   alt: string;
   variant?: 'square' | 'wide';
+  label?: string;
+  actionLabel?: string;
   className?: string;
 }
 
@@ -15,6 +17,8 @@ export const SceneCard: React.FC<SceneCardProps> = ({
   image, 
   alt, 
   variant = 'square',
+  label,
+  actionLabel = 'Ver proyecto',
   className 
 }) => {
   return (
@@ -34,6 +38,12 @@ export const SceneCard: React.FC<SceneCardProps> = ({
         loading="lazy"
         draggable={false}
       />
+      {label && (
+        <span className="scene-card-caption">
+          <span>{label}</span>
+          <span className="scene-card-action">{actionLabel}</span>
+        </span>
+      )}
     </Link>
   );
 };

@@ -1,5 +1,9 @@
 # Welcome to your Lovable project
 
+## Criterio visual móvil
+
+Las decisiones de estructura, tipografía, proporciones, carruseles y accesibilidad mobile-first están documentadas en [docs/DESIGN_SYSTEM_MOBILE.md](docs/DESIGN_SYSTEM_MOBILE.md).
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID

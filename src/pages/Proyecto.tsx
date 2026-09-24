@@ -5,9 +5,31 @@ import { Footer } from '@/components/Footer';
 import { getProjectById } from '@/data/projects';
 import { getProjectPageById } from '@/data/projectPages';
 import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
+import { useHorizontalDrag } from '@/hooks/useHorizontalDrag';
 import type { ProjectPageCard, ProjectPageScene } from '@/data/projectPages';
 const fondoCasaM = '/img/FondoCasaM.webp';
 const FOCUSABLE_SELECTOR = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+interface ProjectCardsSceneProps {
+  scene: ProjectPageScene;
+  className: string;
+  renderCard: (card: ProjectPageCard) => React.ReactNode;
+}
+
+const ProjectCardsScene: React.FC<ProjectCardsSceneProps> = ({ scene, className, renderCard }) => {
+  const { isDragging, dragHandlers } = useHorizontalDrag();
+  const isTriad = scene.cards?.length === 3;
+
+  return (
+    <section
+      className={`${className}${isTriad ? ' scene-triad' : ''}${isTriad && isDragging ? ' is-dragging' : ''}`}
+      data-scene={scene.dataScene}
+      {...(isTriad ? dragHandlers : {})}
+    >
+      {scene.cards?.map(renderCard)}
+    </section>
+  );
+};
 
 const Proyecto: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -176,13 +198,12 @@ const Proyecto: React.FC = () => {
 
     if (scene.cards?.length) {
       return (
-        <section
+        <ProjectCardsScene
           key={scene.dataScene}
+          scene={scene}
           className={sectionClassName}
-          data-scene={scene.dataScene}
-        >
-          {scene.cards.map(renderCard)}
-        </section>
+          renderCard={renderCard}
+        />
       );
     }
 
@@ -211,7 +232,7 @@ const Proyecto: React.FC = () => {
 
         <section
           id="hero-revista-section"
-          className="hero-revista-section"
+          className="hero-revista-section project-hero-section"
           aria-label={`Hero ${project.name}`}
         >
           <div className="hero-revista-shell hero-static" id="hero-revista-shell">
@@ -238,6 +259,12 @@ const Proyecto: React.FC = () => {
         </section>
 
         <main id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">
+          <header className="project-mobile-intro" aria-labelledby="project-mobile-title">
+            <p className="gd-mobile-kicker">Proyecto</p>
+            <h1 id="project-mobile-title">{project.name}</h1>
+            <p>Una casa pensada desde la forma concreta de habitarla.</p>
+          </header>
+          <div id="project-scenes" className="project-scenes-anchor" />
           {page.scenes.map(renderScene)}
           <Footer />
         </main>

@@ -101,6 +101,942 @@
 }
 
 /* ======================================================
+   MOBILE-FIRST EDITORIAL SYSTEM
+   The mobile experience is a vertical sequence:
+   threshold -> inhabiting -> scenes -> projects -> contact.
+====================================================== */
+
+.project-mobile-intro {
+  display: none;
+}
+
+.mobile-momentos-index {
+  display: none;
+}
+
+.project-scenes-anchor {
+  scroll-margin-top: 96px;
+}
+
+.chapter-media {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+}
+
+.chapter-secondary-rail {
+  display: contents;
+}
+
+.scene-card-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 2px 0;
+  color: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.gd-copy-desktop {
+  display: inline;
+}
+
+.gd-copy-mobile {
+  display: none;
+}
+
+.scene-card-action {
+  opacity: 0.58;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  html,
+  body {
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  body {
+    background: #0f1320;
+  }
+
+  /* The first screen is an editorial threshold, not a 10-slide catalog. */
+  .hero-revista-section,
+  .project-index .hero-revista-section,
+  .estudio-hero-section {
+    height: auto;
+    min-height: 0;
+    padding: 76px 12px 18px;
+    align-items: stretch;
+  }
+
+  .hero-revista-section .hero-revista-shell,
+  .project-index .hero-revista-shell,
+  .estudio-hero-section .hero-revista-shell {
+    height: auto;
+    min-height: 0;
+    border-radius: 18px;
+  }
+
+  .gd-mobile-threshold {
+    display: flex;
+    min-height: calc(100svh - 112px);
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 82px 16px 18px;
+  }
+
+  .gd-mobile-threshold-copy {
+    max-width: 34rem;
+  }
+
+  .gd-mobile-kicker {
+    margin: 0 0 14px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .gd-mobile-threshold h1,
+  .project-mobile-intro h1 {
+    margin: 0;
+    color: #f2f0e9;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.04;
+  }
+
+  .gd-mobile-threshold-copy > p:last-child,
+  .project-mobile-intro > p:not(.gd-mobile-kicker) {
+    max-width: 30ch;
+    margin: 16px 0 0;
+    color: rgba(242, 240, 233, 0.72);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .gd-mobile-threshold-image {
+    position: relative;
+    display: block;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .gd-mobile-threshold-image::after {
+    position: absolute;
+    inset: 45% 0 0;
+    background: linear-gradient(180deg, transparent, rgba(8, 11, 20, 0.82));
+    content: '';
+  }
+
+  .gd-mobile-threshold-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gd-mobile-threshold-image span {
+    position: absolute;
+    z-index: 1;
+    right: 16px;
+    bottom: 14px;
+    left: 16px;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .gd-mobile-threshold-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .gd-mobile-action,
+  .project-mobile-intro a {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    color: #f2f0e9;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .gd-mobile-action-primary {
+    background: #f2f0e9;
+    border-color: #f2f0e9;
+    color: #0f1320;
+  }
+
+  /* Home: image, thought, image, thought — no desktop-sized empty bands. */
+  #home-board {
+    max-width: none;
+    padding: 0 18px;
+  }
+
+  .scene {
+    padding: 30px 0;
+  }
+
+  .scene-intro {
+    padding-top: 42px;
+    padding-bottom: 12px;
+  }
+
+  .scene-title {
+    margin-bottom: 10px;
+    font-size: clamp(1.8rem, 8vw, 2.4rem);
+    line-height: 1.06;
+  }
+
+  .scene-subtitle {
+    max-width: 30ch;
+    margin-bottom: 10px;
+    font-size: clamp(1.15rem, 5.2vw, 1.45rem);
+    line-height: 1.25;
+  }
+
+  .scene-text {
+    max-width: 34ch;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .scene-divider {
+    padding-top: 24px;
+    padding-bottom: 18px;
+  }
+
+  .scene-moments,
+  .scene-details {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 28px;
+    margin-top: 8px;
+  }
+
+  .scene-card {
+    border-radius: 10px;
+  }
+
+  .scene-card-caption {
+    min-height: 44px;
+    padding: 10px 2px 0;
+    font-size: 0.68rem;
+  }
+
+  .scene-card.wide {
+    width: 100%;
+    margin: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .scene-card.wide img {
+    height: 100%;
+  }
+
+  /* Project pages: title and context follow the hero image naturally. */
+  .project-hero-section {
+    padding-bottom: 4px;
+  }
+
+  .project-hero-section .hero-revista-shell {
+    min-height: 56svh;
+  }
+
+  .project-hero-section .project-hero-image {
+    min-height: 56svh;
+    object-fit: cover;
+  }
+
+  .project-mobile-intro {
+    display: block;
+    padding: 32px 0 14px;
+  }
+
+  .project-mobile-intro h1 {
+    font-size: clamp(2.1rem, 10vw, 3.4rem);
+  }
+
+  .project-mobile-intro > p:not(.gd-mobile-kicker) {
+    margin-bottom: 20px;
+  }
+
+  .project-mobile-intro a {
+    width: 100%;
+  }
+
+  .project-scenes-anchor {
+    height: 1px;
+    scroll-margin-top: 92px;
+  }
+
+  /* Momentos: chapter index replaces the desktop collage on small screens. */
+  .project-index .hero-board {
+    min-height: 30svh;
+    padding: 76px 12px 8px;
+  }
+
+  .project-index .hero-board-shell {
+    min-height: 0;
+    background: rgba(15, 19, 32, 0.36);
+  }
+
+  .project-index .hero-collage {
+    display: none;
+  }
+
+  .mobile-momentos-index {
+    display: block;
+    padding: 10px 18px 28px;
+    color: #0f1320;
+  }
+
+  .mobile-momentos-index-kicker {
+    max-width: 30ch;
+    margin: 0 0 16px;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .mobile-momentos-index-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid rgba(15, 19, 32, 0.28);
+  }
+
+  .mobile-momentos-index-list a {
+    display: flex;
+    min-height: 52px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid rgba(15, 19, 32, 0.28);
+    color: inherit;
+    font-size: 0.76rem;
+    letter-spacing: 0.13em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .mobile-momentos-index-list a:nth-child(odd) {
+    padding-right: 14px;
+    border-right: 1px solid rgba(15, 19, 32, 0.28);
+  }
+
+  .mobile-momentos-index-list a:nth-child(even) {
+    padding-left: 14px;
+  }
+
+  .project-index .projects-main {
+    padding: 26px 18px 30px;
+  }
+
+  .project-index .projects-chapter {
+    scroll-margin-top: 92px;
+    margin-bottom: 42px;
+  }
+
+  .chapter-media {
+    display: block;
+  }
+
+  .chapter-primary {
+    display: block;
+  }
+
+  .chapter-secondary-rail {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chapter-secondary-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chapter-secondary {
+    flex: 0 0 72vw;
+    scroll-snap-align: start;
+  }
+
+  .project-index .projects-chapter .projects-chapter-text {
+    max-width: none;
+    margin-top: 18px;
+    padding: 0;
+  }
+
+  /* Study/contact remain a single readable narrative column. */
+  .estudio-hero-section .hero-revista-shell {
+    min-height: 52svh;
+  }
+
+  .estudio-hero-section .hero-revista-shell {
+    background-position: center;
+  }
+
+  .scene-contact {
+    padding-top: 34px;
+  }
+
+  .scene-contact form {
+    margin-top: 24px;
+  }
+
+  .scene-contact form input,
+  .scene-contact form textarea,
+  .scene-contact form button {
+    min-height: 48px;
+  }
+
+  #gd-footer {
+    padding-top: 32px;
+  }
+}
+
+/* Approved mobile hero proportions. Keep this block last so legacy hero rules
+   cannot reintroduce the desktop frame around the mobile composition. */
+@media (max-width: 768px) {
+  body .mobile-ommi-section {
+    width: 100vw;
+    min-height: 100svh;
+    margin: 0;
+    padding: 0 0 18px;
+    overflow: hidden;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-stage {
+    width: 100vw;
+    min-height: 100svh;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-main {
+    width: 100vw;
+    height: auto;
+    margin: 0;
+    aspect-ratio: 1 / 1;
+    border: 0;
+    border-radius: 0;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-rack {
+    display: block;
+    width: calc(100vw - 30px);
+    box-sizing: border-box;
+    margin: 14px 15px 0;
+    padding: 4px 0;
+    background: rgba(15, 19, 32, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-rack-viewport {
+    width: 100%;
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-rack-track {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    padding: 0;
+    touch-action: pan-y;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-thumb {
+    flex: 0 0 24%;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    border-radius: 0;
+    scroll-snap-align: center;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-title {
+    margin: 0;
+    padding: 18px 15px 12px;
+    color: #f2f0e9;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  body .gd-header {
+    z-index: 80;
+    top: 10px;
+    right: 15px;
+    left: 15px;
+  }
+
+  body .navbar {
+    min-height: 48px;
+    padding: 4px 8px;
+    background: rgba(15, 19, 32, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 1px;
+    box-shadow: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  body .brand-logo {
+    width: 62px;
+  }
+
+  body .nav-toggle {
+    width: 44px;
+    height: 44px;
+    gap: 4px;
+    padding: 8px;
+  }
+
+  body .nav-toggle span {
+    width: 23px;
+    height: 1.5px;
+    opacity: 0.76;
+  }
+
+  body .gd-copy-desktop {
+    display: none;
+  }
+
+  body .gd-copy-mobile {
+    display: inline;
+  }
+
+  body .scene-title,
+  body .scene-subtitle,
+  body .scene-text,
+  body .project-mobile-intro h1,
+  body .project-mobile-intro p,
+  body .mobile-momentos-index,
+  body .mobile-momentos-index a,
+  body .scene-contact,
+  body .scene-contact label,
+  body .scene-contact input,
+  body .scene-contact textarea,
+  body .scene-contact button {
+    font-family: Georgia, 'Times New Roman', serif;
+    letter-spacing: normal;
+    font-weight: 400;
+  }
+
+  body .scene-title {
+    line-height: 1.15;
+  }
+
+  body .scene-subtitle {
+    font-size: clamp(22px, 6.5vw, 28px);
+    line-height: 1.25;
+  }
+
+  body .scene-text {
+    font-size: 18px;
+    line-height: 1.55;
+    text-align: left;
+  }
+
+  body .scene-card-caption {
+    display: none;
+  }
+
+  body .chapter-media {
+    display: flex;
+    gap: 12px;
+    margin: 0;
+    overflow-x: auto;
+    padding: 0 0 4px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body .chapter-media::-webkit-scrollbar {
+    display: none;
+  }
+
+  body .chapter-secondary-rail {
+    display: contents;
+  }
+
+  body .chapter-primary,
+  body .chapter-secondary,
+  body .chapter-triad-card {
+    flex: 0 0 84vw;
+    width: 84vw;
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  body .chapter-primary,
+  body .chapter-secondary,
+  body .chapter-triad-card,
+  body .chapter-primary img,
+  body .chapter-secondary img,
+  body .chapter-triad-card img {
+    border-radius: 1px;
+  }
+
+  body .scene-contact input,
+  body .scene-contact textarea,
+  body .scene-contact button {
+    min-height: 48px;
+    border-radius: 1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Last mobile contract: the hero itself owns the full viewport. */
+@media (max-width: 768px) {
+  body .mobile-ommi-section {
+    width: 100vw;
+    min-height: 100svh;
+    margin: 0;
+    padding: 78px 0 18px;
+    overflow: hidden;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-stage {
+    width: 100vw;
+    min-height: calc(100svh - 96px);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-main {
+    width: 100vw;
+    height: auto;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-rack {
+    width: calc(100vw - 36px);
+    margin: 14px 18px 0;
+    padding: 10px 12px;
+    background: rgba(15, 19, 32, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-title {
+    margin: 0;
+    padding: 18px 18px 12px;
+    color: #f2f0e9;
+    font-family: inherit;
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: inherit;
+    line-height: 1.05;
+    text-align: center;
+  }
+}
+
+/* Mobile hero contract: full-bleed image, tactile rack, one editorial title. */
+@media (max-width: 768px) {
+  body .mobile-ommi-section {
+    width: 100%;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  body .mobile-ommi-section .hero-revista-shell {
+    width: 100%;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-stage {
+    width: 100%;
+    min-height: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-main {
+    width: 100vw;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-rack {
+    width: calc(100% - 36px);
+    margin: 14px 18px 0;
+    padding: 10px 12px;
+    overflow-x: auto;
+    background: rgba(15, 19, 32, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-title {
+    margin: 0;
+    padding: 18px 18px 12px;
+    color: #f2f0e9;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  body .home-mobile-opening-copy {
+    display: none;
+  }
+}
+
+/* ======================================================
+   MOBILE-FIRST PROPORTIONS
+   Header = threshold marker. Containers = one readable frame.
+====================================================== */
+@media (max-width: 768px) {
+  :root {
+    --gd-mobile-gutter: 18px;
+    --gd-mobile-header-height: 64px;
+    --gd-mobile-frame-radius: 20px;
+  }
+
+  body .gd-header {
+    top: 14px;
+    left: var(--gd-mobile-gutter);
+    right: var(--gd-mobile-gutter);
+  }
+
+  body .navbar {
+    min-height: var(--gd-mobile-header-height);
+    margin-top: 0;
+    padding: 0 12px 0 10px;
+    background: rgba(15, 19, 32, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(5, 8, 16, 0.18);
+  }
+
+  .brand {
+    gap: 8px;
+  }
+
+  body .brand-logo {
+    width: 56px;
+  }
+
+  body .nav-toggle {
+    width: 44px;
+    height: 44px;
+    gap: 5px;
+    padding: 8px;
+  }
+
+  body .nav-toggle span {
+    width: 28px;
+    height: 2px;
+  }
+
+  /* The header no longer consumes the visual center of the hero. */
+  .hero-revista-section,
+  .project-index .hero-board,
+  .estudio-hero-section {
+    padding-top: calc(var(--gd-mobile-header-height) + 28px);
+    padding-right: var(--gd-mobile-gutter);
+    padding-left: var(--gd-mobile-gutter);
+  }
+
+  .hero-revista-section .hero-revista-shell,
+  .project-index .hero-board-shell,
+  .estudio-hero-section .hero-revista-shell {
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: var(--gd-mobile-frame-radius);
+    box-shadow: 0 18px 46px rgba(5, 8, 16, 0.16);
+  }
+
+  .gd-mobile-threshold {
+    min-height: calc(100svh - 112px);
+    gap: 20px;
+    padding: 32px 14px 16px;
+  }
+
+  .gd-mobile-threshold h1 {
+    max-width: 13ch;
+    font-size: clamp(1.9rem, 8vw, 2.65rem);
+    line-height: 1.08;
+  }
+
+  .gd-mobile-threshold-copy > p:last-child {
+    max-width: 26ch;
+    margin-top: 12px;
+    font-size: 0.95rem;
+  }
+
+  .gd-mobile-threshold-image {
+    aspect-ratio: 1.18 / 1;
+    border-radius: 10px;
+  }
+
+  .gd-mobile-threshold-actions {
+    gap: 8px;
+  }
+
+  .gd-mobile-action {
+    min-height: 46px;
+    font-size: 0.64rem;
+  }
+
+  /* One lateral grid for all narrative containers. */
+  #home-board,
+  .projects-main,
+  .mobile-momentos-index {
+    width: auto;
+    margin-right: var(--gd-mobile-gutter);
+    margin-left: var(--gd-mobile-gutter);
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .scene {
+    width: 100%;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .scene-subtitle,
+  .scene-text {
+    max-width: 32ch;
+  }
+
+  .scene-text {
+    font-size: 0.98rem;
+    line-height: 1.58;
+  }
+
+  .scene-card-caption {
+    letter-spacing: 0.12em;
+  }
+
+  .project-index .hero-board {
+    min-height: 0;
+    padding-bottom: 10px;
+  }
+
+  .project-index .hero-board-shell {
+    min-height: 22svh;
+  }
+
+  .mobile-momentos-index {
+    padding-top: 8px;
+    padding-bottom: 26px;
+  }
+
+  .project-index .projects-main {
+    padding-top: 16px;
+  }
+
+  .project-index .projects-chapter {
+    margin-bottom: 48px;
+  }
+
+  .chapter-secondary-rail {
+    margin-right: calc(var(--gd-mobile-gutter) * -1);
+    margin-left: calc(var(--gd-mobile-gutter) * -1);
+    padding-right: var(--gd-mobile-gutter);
+    padding-left: var(--gd-mobile-gutter);
+  }
+
+  .project-hero-section .hero-revista-shell,
+  .project-hero-section .project-hero-image {
+    min-height: 48svh;
+  }
+
+  .project-mobile-intro {
+    padding-top: 24px;
+  }
+
+  .project-mobile-intro h1 {
+    max-width: 12ch;
+    font-size: clamp(2rem, 9vw, 3rem);
+    line-height: 1.05;
+  }
+
+  .estudio-hero-section .hero-revista-shell {
+    min-height: 46svh;
+  }
+}
+
+/* ======================================================
    PLANO DE FONDO
 ====================================================== */
 
@@ -590,123 +1526,6 @@ body.hero-visible .hero-revista-section {
   visibility: visible;
 }
 
-.home-scroll-cue {
-  position: fixed;
-  left: 50%;
-  bottom: 20px;
-  transform: translateX(-50%);
-  --cue-beat: 1.2s;  /* 50 BPM */
-  --cue-bar: 4.8s;   /* 4 beats */
-  --cue-beat-third: 0.4s;
-  width: 220px;
-  height: 96px;
-  z-index: 52;
-  pointer-events: none;
-  opacity: 0;
-  animation: scrollCueFadeIn 0.5s ease forwards;
-}
-
-.home-scroll-cue__glow {
-  position: absolute;
-  inset: auto 20px 12px 20px;
-  height: 34px;
-  background: radial-gradient(ellipse at center, hsl(0 0% 100% / 0.28), hsl(0 0% 100% / 0));
-  filter: blur(8px);
-  animation: scrollCueGlow var(--cue-bar) ease-in-out infinite;
-}
-
-.home-scroll-cue__chevrons {
-  position: absolute;
-  left: 50%;
-  bottom: 22px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.home-scroll-cue__chevrons span {
-  width: 16px;
-  height: 14px;
-  border-right: 2px solid hsl(0 0% 100% / 0.86);
-  border-bottom: 2px solid hsl(0 0% 100% / 0.86);
-  transform: rotate(45deg);
-  opacity: 0;
-  animation: scrollCueDrop var(--cue-beat) ease-in-out infinite;
-}
-
-.home-scroll-cue__chevrons span:nth-child(2) {
-  animation-delay: var(--cue-beat-third);
-}
-
-.home-scroll-cue__chevrons span:nth-child(3) {
-  animation-delay: calc(var(--cue-beat-third) * 2);
-}
-
-.home-scroll-cue__peek {
-  position: absolute;
-  left: 50%;
-  bottom: 2px;
-  transform: translateX(-50%);
-  width: 140px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, hsl(0 0% 100% / 0), hsl(0 0% 100% / 0.75), hsl(0 0% 100% / 0));
-  animation: scrollCuePeek calc(var(--cue-beat) * 2) ease-in-out infinite;
-}
-
-@keyframes scrollCueFadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-@keyframes scrollCueGlow {
-  0%, 100% {
-    opacity: 0.32;
-    transform: scaleX(0.9);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scaleX(1);
-  }
-}
-
-@keyframes scrollCueDrop {
-  0% {
-    opacity: 0;
-    transform: rotate(45deg) translateY(-10px) scale(0.82);
-  }
-  28% {
-    opacity: 1;
-    transform: rotate(45deg) translateY(-2px) scale(1);
-  }
-  58% {
-    opacity: 0.65;
-    transform: rotate(45deg) translateY(4px) scale(0.96);
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(45deg) translateY(12px) scale(0.86);
-  }
-}
-
-@keyframes scrollCuePeek {
-  0%, 100% {
-    opacity: 0.42;
-    width: 116px;
-  }
-  50% {
-    opacity: 0.9;
-    width: 150px;
-  }
-}
-
 .hero-revista-shell {
   width: 100%;
   height: 100%;
@@ -1091,12 +1910,12 @@ body.hero-visible .hero-revista-section {
   .animate-slideDown {
     animation: slideDown 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
-  
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -2218,5 +3037,944 @@ body.header-visible .projects-nav {
   .projects-nav-item {
     font-size: 0.65rem;
     letter-spacing: 0.12em;
+  }
+}
+
+/* Final mobile-first overrides: kept at the end so legacy responsive rules
+   cannot restore desktop-sized hero spacing or chapter grids. */
+@media (max-width: 768px) {
+  /* High-specificity proportion layer for the mobile visual grammar. */
+  body .mobile-ommi-section {
+    padding-top: 76px;
+    padding-right: 0;
+    padding-bottom: 14px;
+    padding-left: 0;
+  }
+
+  body .mobile-ommi-section .hero-revista-shell {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body .gd-mobile-ommi-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body .gd-mobile-ommi-main {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 0;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  body .gd-mobile-ommi-main img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.25s ease, transform 0.5s ease;
+  }
+
+  body .gd-mobile-ommi-rack {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    margin-top: 12px;
+    padding: 2px 18px 5px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    cursor: grab;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body .gd-mobile-ommi-rack.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  body .gd-mobile-ommi-rack::-webkit-scrollbar {
+    display: none;
+  }
+
+  body .gd-mobile-ommi-thumb {
+    flex: 0 0 72px;
+    aspect-ratio: 1;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.52;
+    scroll-snap-align: start;
+    transition: opacity 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+
+  body .gd-mobile-ommi-thumb.is-active {
+    border-color: rgba(255, 255, 255, 0.9);
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+
+  body .gd-mobile-ommi-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  body .gd-mobile-ommi-title {
+    display: block;
+    padding: 4px 18px 16px;
+    color: #f2f0e9;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.45rem, 6vw, 1.9rem);
+    letter-spacing: 0.015em;
+    line-height: 1.1;
+    text-decoration: none;
+  }
+
+  body .home-mobile-opening-copy {
+    display: none;
+  }
+
+  body .navbar {
+    min-height: 52px;
+    padding: 0 4px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  body .gd-header {
+    top: 16px;
+    left: 18px;
+    right: 18px;
+  }
+
+  body .brand-logo {
+    width: 52px;
+  }
+
+  body .nav-toggle {
+    width: 44px;
+    height: 44px;
+    gap: 5px;
+    padding: 8px;
+  }
+
+  body .nav-toggle span {
+    width: 28px;
+    height: 2px;
+  }
+
+  body .hero-revista-section,
+  body .project-index .hero-board,
+  body .estudio-hero-section {
+    padding-top: 78px;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  body .mobile-threshold-section {
+    padding-top: 76px;
+    padding-bottom: 12px;
+  }
+
+  body .mobile-threshold-section .hero-revista-shell {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body .mobile-threshold-section .gd-mobile-threshold {
+    min-height: auto;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 24px 14px 14px;
+    background: rgba(15, 19, 32, 0.68);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 20px;
+    box-shadow: 0 18px 46px rgba(5, 8, 16, 0.16);
+  }
+
+  body .hero-revista-section .hero-revista-shell,
+  body .project-index .hero-board-shell,
+  body .estudio-hero-section .hero-revista-shell {
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 20px;
+    box-shadow: 0 18px 46px rgba(5, 8, 16, 0.16);
+  }
+
+  body .mobile-threshold-section .hero-revista-shell {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body .gd-mobile-threshold {
+    min-height: calc(100svh - 112px);
+    gap: 20px;
+    padding: 32px 14px 16px;
+  }
+
+  body .gd-mobile-threshold h1 {
+    max-width: 18ch;
+    font-size: clamp(1.75rem, 7.2vw, 2.35rem);
+    line-height: 1.06;
+  }
+
+  body .mobile-threshold-section .gd-mobile-threshold-image {
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+  }
+
+  body #home-board,
+  body .projects-main,
+  body .mobile-momentos-index {
+    width: auto;
+    margin-right: 18px;
+    margin-left: 18px;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  body .scene {
+    width: 100%;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  body .scene-text {
+    max-width: 32ch;
+    font-size: 0.98rem;
+    line-height: 1.58;
+  }
+
+  body .project-index .hero-board {
+    min-height: 0;
+    padding-bottom: 10px;
+  }
+
+  body .project-index .hero-board-shell {
+    min-height: 22svh;
+  }
+
+  body .project-index .projects-main {
+    padding-top: 16px;
+  }
+
+  body .chapter-secondary-rail {
+    margin-right: -18px;
+    margin-left: -18px;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  body .project-hero-section .hero-revista-shell,
+  body .project-hero-section .project-hero-image {
+    min-height: 48svh;
+  }
+
+  body .project-mobile-intro {
+    padding-top: 24px;
+  }
+
+  body .estudio-hero-section .hero-revista-shell {
+    min-height: 46svh;
+  }
+
+  .hero-revista-section,
+  .project-index .hero-revista-section,
+  .estudio-hero-section {
+    height: auto;
+    min-height: 0;
+    padding: 76px 12px 18px;
+    align-items: stretch;
+  }
+
+  .hero-revista-section .hero-revista-shell,
+  .project-index .hero-revista-shell,
+  .estudio-hero-section .hero-revista-shell {
+    height: auto;
+    min-height: 0;
+    border-radius: 18px;
+  }
+
+  .gd-mobile-threshold {
+    display: flex;
+    min-height: calc(100svh - 112px);
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 82px 16px 18px;
+  }
+
+  .gd-mobile-threshold-copy {
+    max-width: 34rem;
+  }
+
+  .gd-mobile-kicker {
+    margin: 0 0 14px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .gd-mobile-threshold h1,
+  .project-mobile-intro h1 {
+    margin: 0;
+    color: #f2f0e9;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.04;
+  }
+
+  .gd-mobile-threshold-copy > p:last-child,
+  .project-mobile-intro > p:not(.gd-mobile-kicker) {
+    max-width: 30ch;
+    margin: 16px 0 0;
+    color: rgba(242, 240, 233, 0.72);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .gd-mobile-threshold-image {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .gd-mobile-threshold-image::after {
+    position: absolute;
+    inset: 45% 0 0;
+    background: linear-gradient(180deg, transparent, rgba(8, 11, 20, 0.82));
+    content: '';
+  }
+
+  .gd-mobile-threshold-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gd-mobile-threshold-image span {
+    position: absolute;
+    z-index: 1;
+    right: 16px;
+    bottom: 14px;
+    left: 16px;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .gd-mobile-threshold-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .gd-mobile-action,
+  .project-mobile-intro a {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    color: #f2f0e9;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .gd-mobile-action-primary {
+    background: #f2f0e9;
+    border-color: #f2f0e9;
+    color: #0f1320;
+  }
+
+  #home-board {
+    max-width: none;
+    padding: 0 18px;
+  }
+
+  .scene {
+    padding: 30px 0;
+  }
+
+  .scene-intro {
+    padding-top: 42px;
+    padding-bottom: 12px;
+  }
+
+  .scene-title {
+    margin-bottom: 10px;
+    font-size: clamp(1.8rem, 8vw, 2.4rem);
+    line-height: 1.06;
+  }
+
+  .scene-subtitle {
+    max-width: 30ch;
+    margin-bottom: 10px;
+    font-size: clamp(1.15rem, 5.2vw, 1.45rem);
+    line-height: 1.25;
+  }
+
+  .scene-text {
+    max-width: 34ch;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .scene-divider {
+    padding-top: 24px;
+    padding-bottom: 18px;
+  }
+
+  .scene-moments,
+  .scene-details {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 28px;
+    margin-top: 8px;
+  }
+
+  .scene-card-caption {
+    min-height: 44px;
+    padding: 10px 2px 0;
+    font-size: 0.68rem;
+  }
+
+  .scene-card.wide {
+    width: 100%;
+    margin: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .scene-card.wide img {
+    height: 100%;
+  }
+
+  .project-hero-section {
+    padding-bottom: 4px;
+  }
+
+  .project-hero-section .hero-revista-shell,
+  .project-hero-section .project-hero-image {
+    min-height: 56svh;
+  }
+
+  .project-hero-section .project-hero-image {
+    object-fit: cover;
+  }
+
+  .project-mobile-intro {
+    display: block;
+    padding: 32px 0 14px;
+  }
+
+  .project-mobile-intro h1 {
+    font-size: clamp(2.1rem, 10vw, 3.4rem);
+  }
+
+  .project-mobile-intro > p:not(.gd-mobile-kicker) {
+    margin-bottom: 20px;
+  }
+
+  .project-mobile-intro a {
+    width: 100%;
+  }
+
+  .project-scenes-anchor {
+    height: 1px;
+    scroll-margin-top: 92px;
+  }
+
+  .project-index .hero-board {
+    min-height: 30svh;
+    padding: 76px 12px 8px;
+  }
+
+  .project-index .hero-board-shell {
+    min-height: 0;
+    background: rgba(15, 19, 32, 0.36);
+  }
+
+  .project-index .hero-collage {
+    display: none;
+  }
+
+  .mobile-momentos-index {
+    display: block;
+    padding: 10px 18px 28px;
+    color: #0f1320;
+  }
+
+  .mobile-momentos-index-kicker {
+    max-width: 30ch;
+    margin: 0 0 16px;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .mobile-momentos-index-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid rgba(15, 19, 32, 0.28);
+  }
+
+  .mobile-momentos-index-list a {
+    display: flex;
+    min-height: 52px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid rgba(15, 19, 32, 0.28);
+    color: inherit;
+    font-size: 0.76rem;
+    letter-spacing: 0.13em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .mobile-momentos-index-list a:nth-child(odd) {
+    padding-right: 14px;
+    border-right: 1px solid rgba(15, 19, 32, 0.28);
+  }
+
+  .mobile-momentos-index-list a:nth-child(even) {
+    padding-left: 14px;
+  }
+
+  .project-index .projects-main {
+    padding: 26px 18px 30px;
+  }
+
+  .project-index .projects-chapter {
+    scroll-margin-top: 92px;
+    margin-bottom: 42px;
+  }
+
+  .chapter-media {
+    display: block;
+  }
+
+  .chapter-secondary-rail {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chapter-secondary-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chapter-secondary {
+    flex: 0 0 72vw;
+    scroll-snap-align: start;
+  }
+
+  .project-index .projects-chapter .projects-chapter-text {
+    max-width: none;
+    margin-top: 18px;
+    padding: 0;
+  }
+
+  .estudio-hero-section .hero-revista-shell {
+    min-height: 52svh;
+  }
+
+  .scene-contact {
+    padding-top: 34px;
+  }
+
+  .scene-contact form {
+    margin-top: 24px;
+  }
+
+  #gd-footer {
+    padding-top: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Final mobile hero contract. */
+@media (max-width: 768px) {
+  body #home-board {
+    padding-right: 15px !important;
+    padding-left: 15px !important;
+  }
+
+  body .project-mobile-intro {
+    display: block;
+    margin: 0;
+    padding: 16px 0 20px;
+  }
+
+  body .project-mobile-intro .gd-mobile-kicker {
+    margin: 0 0 12px;
+    color: rgba(242, 240, 233, 0.72);
+    font-size: 13px;
+    line-height: 1.4;
+    letter-spacing: normal;
+  }
+
+  body .project-mobile-intro h1 {
+    max-width: 12ch;
+    margin: 0;
+    font-size: clamp(40px, 11vw, 48px);
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1.1;
+  }
+
+  body .project-mobile-intro > p:not(.gd-mobile-kicker) {
+    max-width: 30ch;
+    margin: 12px 0 0;
+    color: rgba(242, 240, 233, 0.76);
+    font-size: 18px;
+    line-height: 1.55;
+  }
+
+  body .project-mobile-intro a {
+    display: none;
+  }
+
+  body .scene-title {
+    margin: 0 0 12px;
+    font-size: clamp(28px, 8vw, 38px);
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1.15;
+  }
+
+  body .project-hero-section,
+  body .estudio-hero-section {
+    display: block;
+    width: 100vw;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  body .project-hero-section .hero-revista-shell,
+  body .estudio-hero-section .hero-revista-shell {
+    width: 100vw;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+  }
+
+  body .project-hero-section .project-hero-image {
+    display: block;
+    width: 100vw;
+    height: 100%;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    border: 0;
+    border-radius: 0;
+    object-fit: cover;
+  }
+
+  body .mobile-ommi-section {
+    width: 100vw;
+    min-height: 100svh;
+    margin: 0;
+    padding: 0 0 18px;
+    overflow: hidden;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-stage {
+    width: 100vw;
+    min-height: 100svh;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-main {
+    width: 100vw;
+    height: auto;
+    margin: 0;
+    aspect-ratio: 1 / 1;
+    border: 0;
+    border-radius: 0;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-rack {
+    display: block;
+    width: calc(100vw - 30px);
+    box-sizing: border-box;
+    margin: 14px 15px 0;
+    padding: 4px 0;
+    background: rgba(15, 19, 32, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-rack-viewport {
+    width: 100%;
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-rack-track {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    padding: 0;
+    touch-action: pan-y;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-thumb {
+    flex: 0 0 24%;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    border-radius: 0;
+    scroll-snap-align: center;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  body .mobile-ommi-section .gd-mobile-ommi-title {
+    margin: 0;
+    padding: 16px 15px 12px;
+    color: #f2f0e9;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  body .gd-header {
+    z-index: 80;
+    top: 10px;
+    right: 15px;
+    left: 15px;
+  }
+
+  body .navbar {
+    min-height: 48px;
+    padding: 4px 8px;
+    background: rgba(15, 19, 32, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 1px;
+    box-shadow: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  body .brand-logo {
+    width: 62px;
+  }
+
+  body .nav-toggle {
+    width: 44px;
+    height: 44px;
+    gap: 4px;
+    padding: 8px;
+  }
+
+  body .nav-toggle span {
+    width: 23px;
+    height: 1.5px;
+    opacity: 0.76;
+  }
+
+  body .gd-copy-desktop {
+    display: none;
+  }
+
+  body .gd-copy-mobile {
+    display: inline;
+  }
+
+  body .scene-title,
+  body .scene-subtitle,
+  body .scene-text,
+  body .project-mobile-intro h1,
+  body .project-mobile-intro p,
+  body .mobile-momentos-index,
+  body .mobile-momentos-index a,
+  body .scene-contact,
+  body .scene-contact label,
+  body .scene-contact input,
+  body .scene-contact textarea,
+  body .scene-contact button {
+    font-family: Georgia, 'Times New Roman', serif;
+    letter-spacing: normal;
+    font-weight: 400;
+  }
+
+  body .scene-title {
+    line-height: 1.15;
+  }
+
+  body .scene-subtitle {
+    font-size: clamp(22px, 6.5vw, 28px);
+    line-height: 1.25;
+  }
+
+  body .scene-text {
+    font-size: 18px;
+    line-height: 1.55;
+    text-align: left;
+  }
+
+  body .scene-card-caption {
+    display: none;
+  }
+
+  body .scene-triad {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: 12px;
+    margin: 0;
+    overflow-x: auto;
+    padding: 0 0 4px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    overscroll-behavior-inline: contain;
+    cursor: grab;
+  }
+
+  body .scene-triad.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  body .scene-triad::-webkit-scrollbar {
+    display: none;
+  }
+
+  body .scene-triad > .scene-card {
+    flex: 0 0 84vw;
+    width: 84vw;
+    min-width: 0;
+    scroll-snap-align: start;
+    border-radius: 1px;
+  }
+
+  body .chapter-media {
+    display: flex;
+    gap: 12px;
+    margin: 0;
+    overflow-x: auto;
+    padding: 0 0 4px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+  }
+
+  body .chapter-media.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  body .chapter-media::-webkit-scrollbar {
+    display: none;
+  }
+
+  body .chapter-secondary-rail {
+    display: contents;
+  }
+
+  body .chapter-primary,
+  body .chapter-secondary,
+  body .chapter-triad-card {
+    flex: 0 0 84vw;
+    width: 84vw;
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  body .chapter-primary,
+  body .chapter-secondary,
+  body .chapter-triad-card,
+  body .chapter-primary img,
+  body .chapter-secondary img,
+  body .chapter-triad-card img {
+    border-radius: 1px;
+  }
+
+  body .scene-contact input,
+  body .scene-contact textarea,
+  body .scene-contact button {
+    min-height: 48px;
+    border-radius: 1px;
   }
 }

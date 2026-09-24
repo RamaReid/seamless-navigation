@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { useHorizontalDrag } from '@/hooks/useHorizontalDrag';
 
 interface SceneProps {
   variant?: 'intro' | 'divider' | 'moments' | 'space' | 'bridge' | 'details';
@@ -8,6 +9,9 @@ interface SceneProps {
 }
 
 export const Scene: React.FC<SceneProps> = ({ variant = 'divider', children, className }) => {
+  const { isDragging, dragHandlers } = useHorizontalDrag();
+  const isTriad = variant === 'moments' || variant === 'details';
+
   const getVariantClass = () => {
     switch (variant) {
       case 'intro':
@@ -16,8 +20,9 @@ export const Scene: React.FC<SceneProps> = ({ variant = 'divider', children, cla
       case 'bridge':
         return 'scene scene-divider';
       case 'moments':
+        return 'scene scene-moments scene-triad';
       case 'details':
-        return 'scene scene-moments';
+        return 'scene scene-details scene-triad';
       case 'space':
         return 'scene';
       default:
@@ -27,8 +32,9 @@ export const Scene: React.FC<SceneProps> = ({ variant = 'divider', children, cla
 
   return (
     <section 
-      className={cn(getVariantClass(), className)}
+      className={cn(getVariantClass(), isTriad && isDragging && 'is-dragging', className)}
       data-scene={variant}
+      {...(isTriad ? dragHandlers : {})}
     >
       {children}
     </section>
@@ -37,24 +43,34 @@ export const Scene: React.FC<SceneProps> = ({ variant = 'divider', children, cla
 
 interface SceneTextProps {
   children: React.ReactNode;
+  mobileChildren?: React.ReactNode;
   className?: string;
 }
 
-export const SceneTitle: React.FC<SceneTextProps> = ({ children, className }) => (
+const ResponsiveSceneCopy: React.FC<Pick<SceneTextProps, 'children' | 'mobileChildren'>> = ({ children, mobileChildren }) => (
+  mobileChildren === undefined ? <>{children}</> : (
+    <>
+      <span className="gd-copy-desktop">{children}</span>
+      <span className="gd-copy-mobile">{mobileChildren}</span>
+    </>
+  )
+);
+
+export const SceneTitle: React.FC<SceneTextProps> = ({ children, mobileChildren, className }) => (
   <p className={cn("scene-title", className)}>
-    {children}
+    <ResponsiveSceneCopy mobileChildren={mobileChildren}>{children}</ResponsiveSceneCopy>
   </p>
 );
 
-export const SceneSubtitle: React.FC<SceneTextProps> = ({ children, className }) => (
+export const SceneSubtitle: React.FC<SceneTextProps> = ({ children, mobileChildren, className }) => (
   <p className={cn("scene-subtitle", className)}>
-    {children}
+    <ResponsiveSceneCopy mobileChildren={mobileChildren}>{children}</ResponsiveSceneCopy>
   </p>
 );
 
-export const SceneText: React.FC<SceneTextProps> = ({ children, className }) => (
+export const SceneText: React.FC<SceneTextProps> = ({ children, mobileChildren, className }) => (
   <p className={cn("scene-text", className)}>
-    {children}
+    <ResponsiveSceneCopy mobileChildren={mobileChildren}>{children}</ResponsiveSceneCopy>
   </p>
 );
 

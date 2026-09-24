@@ -95,6 +95,7 @@ const Estudio = () => {
         <HeroSection
           visible={heroVisible}
           backgroundImage={cedahauseHero}
+          className="estudio-hero-section"
         />
 
         <main id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">

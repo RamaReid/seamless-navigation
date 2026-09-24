@@ -1,13 +1,10 @@
 /**
- * TransitionShell - Layout wrapper que aplica el Loader a TODAS las rutas internas
- * 
- * Protocolo de transición universal:
- * - Cambio de pathname => transición interna con loader
- * - Loader + radial reveal + reset
- * - Al entrar al destino: scrollTo(0,0), limpiar clases, recalcular header
+ * TransitionShell - Layout wrapper que aplica el Loader a todas las rutas internas.
+ * El scroll cue decorativo se retiró: la continuidad se expresa mediante el
+ * contenido y el scroll nativo, no mediante flechas superpuestas.
  */
 
-import React, { useEffect, useLayoutEffect, useState, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Loader } from '@/components/Loader';
 
@@ -17,15 +14,10 @@ interface TransitionShellProps {
 
 export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) => {
   const location = useLocation();
-  const [isTransitioning, setIsTransitioning] = useState(true); // Start with loader
-  // Canon:
-  // - cold start on "/" => FULL_HOME_INTRO
-  // - any other case => NAV_INTRO
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const [isNavSkip, setIsNavSkip] = useState(location.pathname !== '/');
-  const [showScrollCue, setShowScrollCue] = useState(false);
   const hasInitialized = useRef(false);
   const previousPath = useRef<string | null>(null);
-  const scrollCueTimerRef = useRef<number | null>(null);
 
   const scrollFromHero = useCallback((deltaY: number) => {
     if (!Number.isFinite(deltaY)) return;
@@ -52,11 +44,10 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
     try {
       targetId = decodeURIComponent(hash);
     } catch {
-      // Keep the raw hash when a malformed URL encoding is provided.
+      // Keep the raw hash when malformed URL encoding is provided.
     }
 
     const target = document.getElementById(targetId);
-
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
@@ -65,8 +56,6 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [location.hash]);
 
-  // Let the application own scroll restoration so route changes and history
-  // navigation follow the same policy on every browser.
   useEffect(() => {
     const previousScrollRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
@@ -76,9 +65,6 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
     };
   }, []);
 
-  // The intro is the only sequence that owns the global page lock. Once the
-  // Loader finishes, the document returns to native scrolling. Keeping this
-  // lifecycle here also guarantees cleanup if a transition is interrupted.
   useEffect(() => {
     if (isTransitioning) {
       document.body.classList.add('sequence-only');
@@ -91,34 +77,26 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
     };
   }, [isTransitioning]);
 
-  // Initial mount - determine if cold start or nav skip
   useEffect(() => {
     if (!hasInitialized.current) {
       hasInitialized.current = true;
       document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur');
-      setShowScrollCue(false);
       previousPath.current = location.pathname;
-      // Loader is already shown (isTransitioning = true)
       return;
     }
 
-    // Subsequent navigation (always transition on route change)
     if (previousPath.current !== location.pathname) {
-      // Reset for transition. Hash destinations are handled after mounting.
       if (!location.hash) {
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
       }
-      document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur');
-      setShowScrollCue(false);
 
+      document.body.classList.remove('hero-visible', 'header-visible', 'reveal-blur');
       setIsNavSkip(true);
       setIsTransitioning(true);
       previousPath.current = location.pathname;
     }
   }, [location.pathname, location.hash]);
 
-  // Run after the destination has mounted. Hash destinations scroll smoothly;
-  // every route without a hash starts at the top, including back/forward.
   useLayoutEffect(() => {
     let firstFrame = 0;
     let secondFrame = 0;
@@ -135,52 +113,17 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
 
   const handleLoaderComplete = useCallback(() => {
     setIsTransitioning(false);
-    
-    // Keep hash destinations intact after the loader completes.
+
     if (!location.hash) {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }
-    
-    // Dispatch event for pages to react
-    window.dispatchEvent(new CustomEvent('transitionComplete', { 
-      detail: { path: location.pathname } 
+
+    window.dispatchEvent(new CustomEvent('transitionComplete', {
+      detail: { path: location.pathname },
     }));
-    
   }, [location.hash, location.pathname]);
 
-  // Scroll cue global para todas las rutas: solo visible cuando no hay interaccion
   useEffect(() => {
-    if (isTransitioning) {
-      setShowScrollCue(false);
-      if (scrollCueTimerRef.current) {
-        clearTimeout(scrollCueTimerRef.current);
-        scrollCueTimerRef.current = null;
-      }
-      return;
-    }
-
-    const scheduleScrollCue = () => {
-      if (scrollCueTimerRef.current) {
-        clearTimeout(scrollCueTimerRef.current);
-      }
-
-      scrollCueTimerRef.current = window.setTimeout(() => {
-        if ((window.scrollY || 0) <= 24) {
-          setShowScrollCue(true);
-        }
-      }, 3000);
-    };
-
-    const registerInteraction = (event?: Event) => {
-      if (event && 'isTrusted' in event && event.isTrusted === false) return;
-      setShowScrollCue(false);
-      scheduleScrollCue();
-    };
-
-    const handleHeroInteraction = () => {
-      registerInteraction();
-    };
-
     const handleHeroMessage = (event: MessageEvent) => {
       const heroIframe = document.getElementById('hero-iframe') as HTMLIFrameElement | null;
       if (
@@ -192,71 +135,21 @@ export const TransitionShell: React.FC<TransitionShellProps> = ({ children }) =>
       }
 
       const data = event.data;
-      if (!data || typeof data !== 'object') return;
+      if (!data || typeof data !== 'object' || data.type !== 'HERO_VERTICAL_SCROLL') return;
 
-      const type = data.type;
-      if (type === 'HERO_INTERACTION' || type === 'HERO_PAGE_FLIP' || type === 'HERO_SCROLL_INTENT') {
-        registerInteraction();
-      }
-
-      if (type === 'HERO_VERTICAL_SCROLL') {
-        registerInteraction();
-        scrollFromHero(data.deltaY);
-      }
+      scrollFromHero(data.deltaY);
     };
 
-    // Primera aparicion solo tras inactividad
-    scheduleScrollCue();
-
-    window.addEventListener('mousemove', registerInteraction, { passive: true });
-    window.addEventListener('pointerdown', registerInteraction);
-    window.addEventListener('wheel', registerInteraction, { passive: true });
-    window.addEventListener('touchstart', registerInteraction, { passive: true });
-    window.addEventListener('touchmove', registerInteraction, { passive: true });
-    window.addEventListener('keydown', registerInteraction);
-    window.addEventListener('scroll', registerInteraction, { passive: true });
-    window.addEventListener('heroInteraction', handleHeroInteraction);
     window.addEventListener('message', handleHeroMessage);
-
-    return () => {
-      if (scrollCueTimerRef.current) {
-        clearTimeout(scrollCueTimerRef.current);
-        scrollCueTimerRef.current = null;
-      }
-
-      window.removeEventListener('mousemove', registerInteraction);
-      window.removeEventListener('pointerdown', registerInteraction);
-      window.removeEventListener('wheel', registerInteraction);
-      window.removeEventListener('touchstart', registerInteraction);
-      window.removeEventListener('touchmove', registerInteraction);
-      window.removeEventListener('keydown', registerInteraction);
-      window.removeEventListener('scroll', registerInteraction);
-      window.removeEventListener('heroInteraction', handleHeroInteraction);
-      window.removeEventListener('message', handleHeroMessage);
-    };
-  }, [isTransitioning, location.pathname, scrollFromHero]);
+    return () => window.removeEventListener('message', handleHeroMessage);
+  }, [scrollFromHero]);
 
   return (
     <>
       {isTransitioning && (
-        <Loader 
-          onComplete={handleLoaderComplete} 
-          isNavSkip={isNavSkip}
-        />
+        <Loader onComplete={handleLoaderComplete} isNavSkip={isNavSkip} />
       )}
-      {/* Always render children but they control their own visibility via body classes */}
       {children}
-      {showScrollCue && (
-        <div className="home-scroll-cue" aria-hidden="true">
-          <div className="home-scroll-cue__glow" />
-          <div className="home-scroll-cue__chevrons">
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className="home-scroll-cue__peek" />
-        </div>
-      )}
     </>
   );
 };

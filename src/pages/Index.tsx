@@ -111,15 +111,16 @@ const Index = () => {
 
         <main id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">
           {/* Bajada Hero */}
-          <Scene variant="intro">
+          <Scene variant="intro" className="home-mobile-opening-copy">
             <SceneTitle>El escenario de tu vida</SceneTitle>
           </Scene>
 
           <Scene variant="divider">
-            <SceneSubtitle>
+            <SceneSubtitle mobileChildren="Antes de pensar, una forma de habitar."
+            >
               Antes de pensar un espacio, existe una manera de habitarlo.
             </SceneSubtitle>
-            <SceneText>
+            <SceneText mobileChildren="Rutinas, encuentros y pausas definen el espacio.">
               Rutinas, encuentros, pausas, silencios y gestos cotidianos que dan forma a la vida real. 
               Ahí empieza a definirse el escenario sobre el que después se construye todo lo demás.
             </SceneText>
@@ -130,25 +131,29 @@ const Index = () => {
             <SceneCard
               to="/proyectos/magahause"
               image={magahauseTerrazaVida}
+              label="MaGa Hause"
               alt="Terraza vivida en Magahause"
             />
             <SceneCard
               to="/proyectos/gadehause"
               image={gadehausePiletaPortal}
+              label="Gade Hause"
               alt="Pileta y portal social en Gadehause"
             />
             <SceneCard
               to="/proyectos/markhause"
               image={markhauseComedor}
+              label="Mark Hause"
               alt="Comedor cotidiano en Markhause"
             />
           </Scene>
 
           <Scene variant="divider">
-            <SceneSubtitle>
+            <SceneSubtitle mobileChildren="De habitar nacen las preguntas del proyecto."
+            >
               De esa manera de habitar surgen las preguntas que importan.
             </SceneSubtitle>
-            <SceneText>
+            <SceneText mobileChildren="Uso, luz y recorridos convierten una casa en lugar.">
               Cómo se usan los espacios, cómo se conectan, qué necesita cada momento y qué puede quedar en segundo plano. 
               Cuando esas decisiones se ordenan, la arquitectura empieza a tomar forma.
             </SceneText>
@@ -159,6 +164,7 @@ const Index = () => {
             <SceneCard
               to="/proyectos/gadehause"
               image={gadehauseCocina}
+              label="Gade Hause"
               alt="Cocina panorámica en Gadehause"
               variant="wide"
             />
@@ -166,10 +172,11 @@ const Index = () => {
 
           {/* Texto Puente */}
           <Scene variant="bridge">
-            <SceneSubtitle>
+            <SceneSubtitle mobileChildren="Cada decisión nace de una forma de habitar."
+            >
               Cuando el espacio nace de esa dinámica, cada decisión encuentra su razón de ser.
             </SceneSubtitle>
-            <SceneText>
+            <SceneText mobileChildren="Materiales, límites y recorridos sostienen la vida cotidiana.">
               La luz, los recorridos, los límites y los materiales dejan de ser elecciones aisladas 
               y pasan a formar parte de un mismo escenario, pensado para sostener el día a día en el tiempo.
             </SceneText>
@@ -180,16 +187,19 @@ const Index = () => {
             <SceneCard
               to="/proyectos/cedahause"
               image={cedahauseLiving}
+              label="Ceda Hause"
               alt="Living principal en Cedahause"
             />
             <SceneCard
               to="/proyectos/jonohause"
               image={jonohauseBano}
+              label="Jono Hause"
               alt="Baño principal en Jonohause"
             />
             <SceneCard
               to="/proyectos/donahause"
               image={donahauseQuincho}
+              label="Dona Hause"
               alt="Quincho social en Donahause"
             />
           </Scene>

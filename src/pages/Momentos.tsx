@@ -4,6 +4,7 @@ import { Footer } from '@/components/Footer';
 import { Scene, SceneTitle, SceneSubtitle, SceneText } from '@/components/Scene';
 import { SceneCard } from '@/components/SceneCard';
 import { useSceneCardReveal } from '@/hooks/useSceneCardReveal';
+import { useHorizontalDrag } from '@/hooks/useHorizontalDrag';
 const fondoCasaM = '/img/FondoCasaM.webp';
 
 // Hero Collage Images
@@ -183,6 +184,55 @@ const CHAPTERS = [
   },
 ];
 
+const MOBILE_CHAPTER_TEXT: Record<string, string> = {
+  hola: 'Llegar también es encontrar una escala propia.',
+  cafe: 'La luz y el aire ordenan el ritmo de la casa.',
+  mesa: 'La mesa reúne y convierte el tiempo en encuentro.',
+  habitar: 'La pausa necesita un lugar donde quedarse.',
+  portal: 'Los límites se abren para extender la vida hacia afuera.',
+  agua: 'El agua devuelve calma y claridad al cuerpo.',
+  sueno: 'La atmósfera protege el descanso.',
+  brasas: 'El fuego reúne y alarga las horas compartidas.',
+  hogar: 'La materia se vuelve propia cuando empieza a ser habitada.',
+};
+
+interface ChapterImage {
+  img: string;
+  link: string;
+  alt: string;
+}
+
+const ChapterMedia: React.FC<{ title: string; images: ChapterImage[] }> = ({ title, images }) => {
+  const { isDragging, dragHandlers } = useHorizontalDrag();
+
+  return (
+    <div
+      className={`chapter-media scene-triad${isDragging ? ' is-dragging' : ''}`}
+      data-scene
+      {...dragHandlers}
+    >
+      <SceneCard
+        to={images[0].link}
+        image={images[0].img}
+        alt={images[0].alt}
+        label={title}
+        className="chapter-primary"
+      />
+      <div className="chapter-secondary-rail" aria-label={`Más imágenes del capítulo ${title}`}>
+        {images.slice(1).map((img) => (
+          <SceneCard
+            key={img.img}
+            to={img.link}
+            image={img.img}
+            alt={img.alt}
+            className="chapter-secondary"
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const Momentos = () => {
   const [collageReady, setCollageReady] = useState(false);
   const collageRef = useRef<HTMLDivElement>(null);
@@ -294,15 +344,28 @@ const Momentos = () => {
           </div>
         </section>
 
+        <nav className="mobile-momentos-index" aria-label="Índice de momentos">
+          <p className="mobile-momentos-index-kicker">Una casa también se piensa desde lo que hacemos en ella.</p>
+          <div className="mobile-momentos-index-list">
+            {COLLAGE_PHOTOS.map((photo, idx) => (
+              <a key={`${photo.href}-${photo.title}-${idx}`} href={photo.href}>
+                <span>{photo.title}</span>
+                <span aria-hidden="true">↘</span>
+              </a>
+            ))}
+          </div>
+        </nav>
+
         <div id="home-board" className="w-full max-w-gd mx-auto px-6 md:px-10 box-border">
           <Scene variant="intro">
             <SceneTitle>Los momentos de tu vida</SceneTitle>
           </Scene>
           <Scene variant="divider">
-            <SceneSubtitle>
+          <SceneSubtitle mobileChildren="La forma de vivir ordena el espacio."
+          >
               Tu forma de disfrutar los momentos define los espacios.
             </SceneSubtitle>
-            <SceneText>
+            <SceneText mobileChildren="Gestos y tiempos cotidianos convierten el momento en proyecto.">
               Gestos cotidianos, usos y tiempos personales que definen la manera de habitar.<br />
               Las formas, colores, texturas y dimensiones aparecen cuando ese momento encuentra un espacio que lo representa, lo estimula y lo contiene.<br />
               Un proceso claro, cuidado y sincero permite transformarlo en tu proyecto.
@@ -319,19 +382,13 @@ const Momentos = () => {
               id={chapter.id}
               aria-label={`Capítulo ${chapter.title}`}
             >
-              <div className="chapter-triptych" data-scene>
-                {chapter.images.map((img, idx) => (
-                  <SceneCard
-                    key={idx}
-                    to={img.link}
-                    image={img.img}
-                    alt={img.alt}
-                  />
-                ))}
-              </div>
+              <ChapterMedia title={chapter.title} images={chapter.images} />
               <section className="scene scene-divider projects-chapter-text">
                 <p className="scene-subtitle">{chapter.subtitle}</p>
-                <p className="scene-text">{chapter.text}</p>
+                <p className="scene-text">
+                  <span className="gd-copy-desktop">{chapter.text}</span>
+                  <span className="gd-copy-mobile">{MOBILE_CHAPTER_TEXT[chapter.id]}</span>
+                </p>
               </section>
             </section>
           ))}
