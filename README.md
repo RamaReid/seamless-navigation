@@ -1,77 +1,48 @@
-# Welcome to your Lovable project
+# GD Arquitectura — Del habitar a la experiencia digital
 
-## Criterio visual móvil
+La web presenta el trabajo de GD Arquitectura, Diseño y Construcción desde una pregunta que orienta sus proyectos: cómo quieren vivir las personas que van a habitar esos espacios.
 
-Las decisiones de estructura, tipografía, proporciones, carruseles y accesibilidad mobile-first están documentadas en [docs/DESIGN_SYSTEM_MOBILE.md](docs/DESIGN_SYSTEM_MOBILE.md).
+La propuesta lleva esa mirada al entorno digital. Las obras se presentan mediante imágenes, textos y recorridos que relacionan los espacios con sus usos, su luz, sus materiales y la vida cotidiana.
 
-## Project info
+## Fundamento de diseño
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+El lenguaje visual toma referencias de publicaciones de arquitectura e interiores como Living, D&D y Oasiss. La fotografía, la jerarquía tipográfica, las proporciones y las pausas entre contenidos construyen una lectura editorial.
 
-## How can I edit this code?
+El recorrido conecta la experiencia de las obras con la forma de trabajar del estudio: escuchar, proyectar y construir. La identidad gráfica y la organización del contenido mantienen esa continuidad entre lo que el estudio hace y cómo lo comunica.
 
-There are several ways of editing your application.
+## Diseño e implementación
 
-**Use Lovable**
+Desarrollé la identidad visual, la organización de contenidos y la experiencia web desde el conocimiento directo de los proyectos del estudio.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+La implementación utiliza React, TypeScript y Vite, con Tailwind CSS y componentes de interfaz. El trabajo incluye adaptación a dispositivos móviles, con criterios documentados de estructura, tipografía, proporciones, carruseles y accesibilidad.
 
-Changes made via Lovable will be committed automatically to this repo.
+Los criterios móviles están documentados en [docs/DESIGN_SYSTEM_MOBILE.md](docs/DESIGN_SYSTEM_MOBILE.md).
 
-**Use your preferred IDE**
+## Desarrollo y publicación
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+La codificación se realiza principalmente en Visual Studio Code, con asistencia de Codex y del asistente de Lovable. Las decisiones de diseño, la revisión y la validación del resultado están a mi cargo.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Lovable se utiliza también para facilitar la publicación y disponer de una dirección web desde la que explorar el proyecto.
 
-Follow these steps:
+## Mi aporte
+
+Definición conceptual, identidad visual, arquitectura de información, comunicación, diseño de interacción y desarrollo asistido por IA.
+
+## Ver el proyecto
+
+[Explorar GD Arquitectura](https://gdarq.lovable.app/)
+
+## Cómo ejecutarlo
+
+Descargar el repositorio, instalar las dependencias y ejecutar:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Abrir la dirección local que indique Vite.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Autor
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Ramiro García Reid.
